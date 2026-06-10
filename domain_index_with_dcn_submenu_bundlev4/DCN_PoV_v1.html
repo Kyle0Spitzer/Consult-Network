@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Data Center Networking - Point of View</title>
+<style>
+:root {
+  --primary:#0b6b4b;
+  --secondary:#0f8a63;
+  --bg:#f7f9fe;
+  --ink:#07163f;
+}
+body{margin:0;font-family:Arial;background:var(--bg);color:var(--ink)}
+header{padding:20px;border-bottom:1px solid #ddd}
+h1{color:var(--primary);margin-bottom:4px}
+p.subtitle{color:#555;margin-top:0}
+.container{display:grid;grid-template-columns:1fr 360px;gap:20px;padding:20px}
+.section{background:white;border-radius:8px;padding:15px;border:1px solid #ddd}
+.section h2{color:var(--primary)}
+.node{padding:10px;border:1px solid #ddd;margin:6px 0;border-radius:6px;cursor:pointer}
+.node:hover{background:#eef7f3;border-color:var(--secondary)}
+.detail{background:#07163f;color:white;padding:20px;border-radius:8px;height:100%}
+.detail h2{color:#8bd5ff}
+</style>
+</head>
+<body>
+<header>
+<h1>Data Center Networking - Point of View</h1>
+<p class="subtitle">Deterministic, resilient and audit-ready architecture for modern data centres</p>
+</header>
+<div class="container">
+
+<div>
+<div class="section">
+<h2>01 – Data Centre Fabric</h2>
+<div class="node" onclick="show('fabric')">Spine-Leaf Fabric</div>
+<div class="node" onclick="show('evpn')">EVPN-VXLAN Overlay</div>
+<div class="node" onclick="show('bgp')">BGP Underlay</div>
+</div>
+
+<div class="section">
+<h2>02 – Network Services</h2>
+<div class="node" onclick="show('fw')">Firewall Integration</div>
+<div class="node" onclick="show('lb')">Load Balancing</div>
+<div class="node" onclick="show('ddi')">DDI Services</div>
+</div>
+
+<div class="section">
+<h2>03 – Connectivity & DCI</h2>
+<div class="node" onclick="show('dci')">Data Centre Interconnect</div>
+<div class="node" onclick="show('border')">Border Leaf</div>
+<div class="node" onclick="show('cloud')">Hybrid Cloud</div>
+</div>
+
+<div class="section">
+<h2>04 – Operations</h2>
+<div class="node" onclick="show('obs')">Observability</div>
+<div class="node" onclick="show('auto')">Automation</div>
+<div class="node" onclick="show('gov')">Governance</div>
+</div>
+</div>
+
+<div class="detail" id="detail">
+<h2>Explore the Architecture</h2>
+<p>Click any element to see details</p>
+</div>
+
+</div>
+
+<script>
+function show(k){document.getElementById('detail').innerHTML = content[k];}
+var content={
+fabric:"<h2>Spine–Leaf Fabric</h2><p>L3 fabric with ECMP for deterministic performance and resilience.</p>",
+evpn:"<h2>EVPN-VXLAN</h2><p>Overlay enabling segmentation, multi-tenancy and workload mobility.</p>",
+bgp:"<h2>BGP Underlay</h2><p>Dynamic routing foundation with fast convergence and scalability.</p>",
+fw:"<h2>Firewall Integration</h2><p>Service insertion aligned with security policies and segmentation model.</p>",
+lb:"<h2>Load Balancing</h2><p>Application delivery and traffic management services (F5/Avi).</p>",
+ddi:"<h2>DDI</h2><p>DNS/DHCP/IPAM providing centralised address and resolution control.</p>",
+dci:"<h2>DCI</h2><p>Active-active interconnect using EVPN multi-site or L3 designs.</p>",
+border:"<h2>Border Leafs</h2><p>North-south connectivity to WAN, internet and external services.</p>",
+cloud:"<h2>Hybrid Cloud</h2><p>Connectivity to Azure, AWS or GCP via private interconnects.</p>",
+obs:"<h2>Observability</h2><p>Telemetry, metrics and flow analytics for full visibility.</p>",
+auto:"<h2>Automation</h2><p>Infrastructure-as-code using Ansible/Terraform pipelines.</p>",
+gov:"<h2>Governance</h2><p>Standards, policies and audit-ready operations.</p>"};
+</script>
+</body>
+</html>

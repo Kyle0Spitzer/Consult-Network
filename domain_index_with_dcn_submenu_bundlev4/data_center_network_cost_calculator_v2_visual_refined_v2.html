@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kyndryl | Data Center Network Cost Calculator</title>
+<style>
+:root{--brand:#FF462D;--bg:#f6f8fc;--card:#fff;--line:#d9e0ef;--soft:#eef3fb;--text:#132238;--muted:#5f718a;--band8:#0C3C78;--band7:#2e8f98;--band4:#f0ad4e;--shadow:0 18px 40px rgba(15,23,40,.09);--radius:18px}
+*{box-sizing:border-box}html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:Inter,Segoe UI,Arial,sans-serif}body.embed-mode{background:transparent}.page{max-width:1560px;margin:0 auto;padding:20px}body.embed-mode .page{padding:8px}.topbar{display:flex;justify-content:flex-start;align-items:center;background:var(--brand);color:#fff;padding:18px 22px;border-radius:24px;box-shadow:var(--shadow)}.title{font-size:30px;font-weight:800;line-height:1.1;margin:0}.layout{display:grid;grid-template-columns:370px 1fr;gap:20px;margin-top:20px}body.embed-mode .layout{grid-template-columns:330px 1fr;gap:12px}.panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}.inner{padding:18px}.section-title{margin:0 0 14px;font-size:17px;font-weight:800}.controls .group{margin-bottom:16px}.controls label{display:block;margin-bottom:8px;font-size:13px;color:var(--muted);font-weight:600}.controls .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.fieldset-group{border:1px solid var(--line);border-radius:16px;padding:14px 14px 8px 14px;margin-bottom:16px;background:linear-gradient(180deg,#f0f3f7,#e7ecf3)}.fieldset-title{font-size:13px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--brand);margin:0 0 12px 0}input[type=text],input[type=number],select{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:#fff;font-size:14px;color:var(--text)}.switch{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:#fff}input[type=checkbox]{transform:scale(1.15);accent-color:var(--brand)}.btn-row{display:flex;gap:10px;flex-wrap:wrap}.btn{appearance:none;border:0;border-radius:12px;padding:11px 14px;font-weight:700;cursor:pointer}.btn.primary{background:var(--brand);color:#fff}.btn.secondary{background:#0C3C78;color:#fff}.btn.ghost{background:#fff;color:var(--text);border:1px solid var(--line)}.btn.warn{background:#fff4f1;color:#b33f2b;border:1px solid #ffd7cf}.note{font-size:12px;color:var(--muted);line-height:1.5}
+.cards{display:grid;grid-template-columns:repeat(5,minmax(150px,1fr));gap:14px}.card{background:linear-gradient(180deg,#fff,#f9fbff);border:1px solid var(--line);border-radius:16px;padding:16px}.card .label{font-size:12px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.05em}.card .value{margin-top:8px;font-size:28px;font-weight:800;letter-spacing:-.03em}.card .sub{margin-top:6px;font-size:12px;color:var(--muted)}
+.grid2{display:grid;grid-template-columns:1.2fr .8fr;gap:16px;margin-top:16px}.grid-lower{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px;align-items:start}.left-stack{display:grid;grid-template-rows:auto auto;gap:16px}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse}th,td{padding:10px;border-bottom:1px solid var(--line);font-size:13px;text-align:left;vertical-align:top}th{color:var(--muted);font-weight:700;background:#fbfcff;position:sticky;top:0}td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}tr:last-child td{border-bottom:0}.table-caption{display:flex;justify-content:space-between;gap:12px;align-items:center;margin:0 0 12px}.mini-note{font-size:12px;color:var(--muted)}.bars{display:flex;flex-direction:column;gap:16px;margin-top:6px}.bar{display:grid;grid-template-columns:95px 1fr 74px;gap:12px;align-items:center}.track{height:14px;border-radius:999px;border:1px solid var(--line);background:#f5f7fb;overflow:hidden}.fill{height:100%;border-radius:999px}.fill.b8{background:linear-gradient(90deg,var(--band8),#2b5ea9)}.fill.b7{background:linear-gradient(90deg,var(--band7),#46b8c4)}.fill.b4{background:linear-gradient(90deg,var(--band4),#f4c77a)}.kpi-stack{display:grid;grid-template-columns:1fr;gap:12px;margin-top:14px}.kpi-lite{padding:14px;border:1px solid var(--line);border-radius:14px;background:var(--soft)}.kpi-lite .small{font-size:12px;color:var(--muted);font-weight:700}.kpi-lite .big{margin-top:6px;font-size:20px;font-weight:800}.footer-note{margin-top:16px;font-size:12px;color:var(--muted);line-height:1.55}.save-list{display:flex;flex-direction:column;gap:10px;margin-top:12px;max-height:280px;overflow:auto}.save-item{border:1px solid var(--line);border-radius:12px;padding:10px;background:#fff}.save-name{font-weight:700;font-size:13px;color:var(--text)}.save-meta{font-size:11px;color:var(--muted);margin-top:4px}.save-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}.small-btn{padding:7px 10px;border-radius:10px;border:1px solid var(--line);background:#fff;cursor:pointer;font-size:12px;font-weight:700}.small-btn.load{color:#0C3C78}.small-btn.delete{color:#b33f2b;background:#fff7f4}body.embed-mode .hide-embed{display:none!important}
+@media (max-width:1200px){.layout{grid-template-columns:1fr}.cards{grid-template-columns:repeat(2,minmax(180px,1fr))}.grid2,.grid-lower{grid-template-columns:1fr}.left-stack{grid-template-rows:auto}}
+@media (max-width:780px){.page{padding:12px}.controls .row,.cards{grid-template-columns:1fr}.title{font-size:24px}.bar{grid-template-columns:80px 1fr 60px}}
+@media print{.hide-print{display:none!important}body,html{background:#fff}.page{max-width:none;padding:0}.panel,.topbar,.card{box-shadow:none}.topbar{background:#fff;color:#000;border:1px solid #ddd}}
+</style>
+</head>
+<body>
+<div class="page">
+<header class="topbar"><h1 class="title">Kyndryl | Data Center Network Cost Calculator</h1></header>
+<div class="layout">
+<aside class="panel controls"><div class="inner">
+<h2 class="section-title">Inputs & actions</h2>
+<div class="group"><label for="clientName">Client name</label><input id="clientName" type="text" placeholder="Enter client name"></div>
+<div class="fieldset-group"><div class="fieldset-title">SD-LAN</div><div class="group"><label for="switches">Number of Switches (Including SPINES)</label><input id="switches" type="number" min="0" step="1"></div><div class="row"><div class="group"><label>Multi-Pod</label><div class="switch"><input id="multiPod" type="checkbox"><span>Enable</span></div></div><div class="group"><label>Multi-Site</label><div class="switch"><input id="multiSite" type="checkbox"><span>Enable</span></div></div></div></div>
+<div class="fieldset-group"><div class="fieldset-title">Firewall Clusters info</div><div class="group"><label for="fwClusters">Firewall Clusters (AS-IS)</label><input id="fwClusters" type="number" min="0" step="1"></div><div class="row"><div class="group"><label for="fwPolicySize">Firewall Policy Size</label><select id="fwPolicySize"><option value="S">Size S (0-500)</option><option value="M">Size M (500-1000)</option><option value="L">Size L (1000+)</option></select></div><div class="group"><label for="vpnSize">VPN Size</label><select id="vpnSize"><option value="S">VPNs Size S (0-20)</option><option value="M">VPNs Size M (20-40)</option><option value="L">VPNs Size L (40+)</option></select></div></div><div class="group"><label for="fwManagerSystems">FW Manager systems (optional add-on)</label><input id="fwManagerSystems" type="number" min="0" step="1"></div></div>
+<div class="fieldset-group"><div class="fieldset-title">Load Balancers Clusters info</div><div class="group"><label for="lbClusters">Load Balancer Clusters (AS-IS)</label><input id="lbClusters" type="number" min="0" step="1"></div><div class="group"><label for="vipSize">Load Balancer VIP Size</label><select id="vipSize"><option value="S">Size S (0-100)</option><option value="M">Size M (100-200)</option><option value="L">Size L (200+)</option></select></div></div>
+<div class="fieldset-group"><div class="fieldset-title">RTR/SW Swapout</div><div class="group"><label for="swapoutCount">Number of Router/Switches</label><input id="swapoutCount" type="number" min="0" step="1"></div></div>
+<div class="btn-row hide-print" style="margin-top:8px"><button class="btn primary" id="saveEstimateBtn">Save estimation</button><button class="btn ghost" id="resetBtn">Reset</button></div>
+<div class="btn-row hide-print" style="margin-top:10px"><button class="btn secondary" id="exportExcelBtn">Export Excel</button><button class="btn warn" id="exportPdfBtn">Export PDF</button></div>
+<h3 class="section-title hide-print" style="margin-top:18px">Saved estimations</h3><div class="note hide-print">Saved in your browser using local storage. You can load and compare client scenarios later.</div><div id="savedList" class="save-list hide-print"></div>
+</div></aside>
+<main>
+<section class="cards">
+  <article class="card"><div class="label">Total Cost</div><div class="value" id="totalCost">€0</div><div class="sub">SD-LAN + Firewall + LB + RTR/SW</div></article>
+  <article class="card"><div class="label">SD-LAN Subtotal</div><div class="value" id="sdlanSubtotalCard">€0</div><div class="sub">Fabric + Multi-Pod / Site add-ons</div></article>
+  <article class="card"><div class="label">Firewall Subtotal</div><div class="value" id="fwSubtotalCard">€0</div><div class="sub">Including FW Manager add-on</div></article>
+  <article class="card"><div class="label">LB Subtotal</div><div class="value" id="lbSubtotalCard">€0</div><div class="sub">Load Balancer services</div></article>
+  <article class="card"><div class="label">RTR/SW Subtotal</div><div class="value" id="rtSubtotalCard">€0</div><div class="sub">Router / Switch hardware swapout</div></article>
+</section>
+<section class="grid2">
+  <div class="panel"><div class="inner"><div class="table-caption"><h2 class="section-title" style="margin:0">SD-LAN FABRIC</h2><div class="mini-note" id="clientDisplay">Client: —</div></div><div class="table-wrap"><table><thead><tr><th>Line</th><th class="num">Weeks</th><th class="num">Hours</th><th class="num">Band</th><th class="num">Rate</th><th class="num">Cost</th></tr></thead><tbody id="coreTbody"></tbody></table></div><div class="kpi-stack" id="sdlanSubtotalBlock" style="margin-top:14px"><div class="kpi-lite"><div class="small">SD-LAN Fabric Subtotal</div><div class="big" id="sdlanSubtotal">€0</div></div></div></div></div>
+  <div class="panel"><div class="inner"><h2 class="section-title">Band distribution & quick metrics</h2><div class="bars"><div class="bar"><div>Band 8</div><div class="track"><div id="band8Bar" class="fill b8"></div></div><div id="band8Val" class="num">0 h</div></div><div class="bar"><div>Band 7</div><div class="track"><div id="band7Bar" class="fill b7"></div></div><div id="band7Val" class="num">0 h</div></div><div class="bar"><div>Band 4</div><div class="track"><div id="band4Bar" class="fill b4"></div></div><div id="band4Val" class="num">0 h</div></div></div><div class="kpi-stack" style="grid-template-columns:1fr; margin-top:14px"><div class="kpi-lite"><div class="small">Hours / Bandmix</div><div class="big"><span id="hoursBandmixTotalHours">0</span></div><div class="small" style="margin-top:8px">Bandmix: <span id="hoursBandmixBandmix">0.00</span></div></div></div><div class="footer-note" id="disclaimerText"></div></div></div>
+</section>
+<section class="grid-lower">
+  <div class="left-stack">
+    <div class="panel"><div class="inner"><div class="table-caption"><h2 class="section-title" style="margin:0">FIREWALLS</h2><div class="mini-note" id="fwSubtotalFoot"></div></div><div class="table-wrap"><table><thead><tr><th>Line</th><th class="num">Hours</th><th class="num">Band</th><th class="num">Rate</th><th class="num">Cost</th></tr></thead><tbody id="fwTbody"></tbody></table></div><div class="kpi-stack" id="fwSubtotalBlock" style="grid-template-columns:1fr; margin-top:14px"><div class="kpi-lite"><div class="small">Firewall Subtotal</div><div class="big" id="fwSubtotalBubble">€0</div></div></div></div></div>
+    <div class="panel"><div class="inner"><div class="table-caption"><h2 class="section-title" style="margin:0">RTR/SW SWAPOUT</h2><div class="mini-note" id="rtSubtotalFoot"></div></div><div class="table-wrap"><table><thead><tr><th>Line</th><th class="num">Hours</th><th class="num">Band</th><th class="num">Rate</th><th class="num">Cost</th></tr></thead><tbody id="rtTbody"></tbody></table></div><div class="kpi-stack" id="rtSubtotalBlock" style="grid-template-columns:1fr; margin-top:14px"><div class="kpi-lite"><div class="small">RTR/SW Subtotal</div><div class="big" id="rtSubtotalBubble">€0</div></div></div></div></div>
+  </div>
+  <div class="panel"><div class="inner"><div class="table-caption"><h2 class="section-title" style="margin:0">LOADBALANCERS</h2><div class="mini-note" id="lbSubtotalFoot"></div></div><div class="table-wrap"><table><thead><tr><th>Line</th><th class="num">Hours</th><th class="num">Band</th><th class="num">Rate</th><th class="num">Cost</th></tr></thead><tbody id="lbTbody"></tbody></table></div><div class="kpi-stack" id="lbSubtotalBlock" style="grid-template-columns:1fr; margin-top:14px"><div class="kpi-lite"><div class="small">Loadbalancers Subtotal</div><div class="big" id="lbSubtotalBubble">€0</div></div></div></div></div>
+</section>
+</main></div></div>
+<script>
+const CFG = {"defaults": {"clientName": "", "switches": 0, "multiPod": false, "multiSite": false, "fwClusters": 0, "fwPolicySize": "M", "vpnSize": "S", "fwManagerSystems": 0, "lbClusters": 0, "vipSize": "S", "swapoutCount": 0}, "rates": {"8": 62.9862861898911, "7": 55.08823330317132, "4": 31.504547872156095}, "switchHoursPerBand": {"8": 2.5, "7": 3.5, "4": 9.0}, "fwPolicyHours": {"S": {"8": 20, "7": 70, "4": 170, "label": "Size S (0-500)"}, "M": {"8": 20, "7": 110, "4": 210, "label": "Size M (500-1000)"}, "L": {"8": 20, "7": 160, "4": 250, "label": "Size L (1000+)"}}, "vpnHours": {"S": {"7": 20, "4": 60, "label": "VPNs Size S (0-20)"}, "M": {"7": 40, "4": 100, "label": "VPNs Size M (20-40)"}, "L": {"7": 60, "4": 150, "label": "VPNs Size L (40+)"}}, "lbPolicyHours": {"S": {"8": 20, "7": 70, "4": 170, "label": "Size S (0-100)"}, "M": {"8": 20, "7": 110, "4": 210, "label": "Size M (100-200)"}, "L": {"8": 20, "7": 160, "4": 250, "label": "Size L (200+)"}}, "fwManagerHoursPerSystem": {"7": 20, "4": 80, "label": "Managers (eg. Forti Manager/Analizer)"}, "swapoutHoursPerDevice": {"8": 0, "7": 4, "4": 10, "label": "Number of Router/Switches"}, "migrationWeeks": 12, "disclaimer": "Number of switches in the fabric is based on 48 (or less) port switches. If the switches have more ports then the number of switches should be doubled.", "expected_workbook_defaults": {"sdlanSubtotal": 53285.57764789403, "fwSubtotal": 41099.10494905631, "lbSubtotal": 20943.3503865727, "rtSubtotal": 1070.7968238684925, "totalCost": 116398.82980739154, "totalHours": 2708.0, "bandmix": 42.98331972207959}};
+const STORAGE_KEY = 'kyndryl_dc_network_estimations_v7';
+const fmtCurrency = new Intl.NumberFormat('en-ES', {style:'currency', currency:'EUR', maximumFractionDigits:2});
+const fmtNum = new Intl.NumberFormat('en-ES', {maximumFractionDigits:2});
+const $ = id => document.getElementById(id);
+if (new URLSearchParams(location.search).get('embed') === '1') document.body.classList.add('embed-mode');
+function tr(cells) { return `<tr>${cells.map(c => `<td class="${c.num ? 'num' : ''}">${c.value}</td>`).join('')}</tr>`; }
+function safeName(v) { return (v || '').trim() || 'Unnamed client'; }
+function filenameFriendly(v) { return safeName(v).replace(/[^a-z0-9]+/gi,'_').replace(/^_+|_+$/g,'') || 'client'; }
+function nowIso() { return new Date().toISOString(); }
+function loadSaved() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch(e) { return []; } }
+function saveSaved(items) { localStorage.setItem(STORAGE_KEY, JSON.stringify(items)); }
+function defaults() {
+  const d = CFG.defaults;
+  $('clientName').value = d.clientName;
+  $('switches').value = d.switches;
+  $('multiPod').checked = d.multiPod;
+  $('multiSite').checked = d.multiSite;
+  $('fwClusters').value = d.fwClusters;
+  $('fwPolicySize').value = d.fwPolicySize;
+  $('vpnSize').value = d.vpnSize;
+  $('fwManagerSystems').value = d.fwManagerSystems;
+  $('lbClusters').value = d.lbClusters;
+  $('vipSize').value = d.vipSize;
+  $('swapoutCount').value = d.swapoutCount;
+}
+function build() {
+  const clientName = $('clientName').value.trim();
+  const switches = Math.max(0, parseInt($('switches').value || '0', 10));
+  const multiPod = $('multiPod').checked, multiSite = $('multiSite').checked;
+  const fwClusters = Math.max(0, parseInt($('fwClusters').value || '0', 10));
+  const fwManagerSystems = Math.max(0, parseInt($('fwManagerSystems').value || '0', 10));
+  const lbClusters = Math.max(0, parseInt($('lbClusters').value || '0', 10));
+  const swapoutCount = Math.max(0, parseInt($('swapoutCount').value || '0', 10));
+  const r = CFG.rates;
+  const has = switches > 0;
+  const fp = CFG.fwPolicyHours[$('fwPolicySize').value];
+  const vpn = CFG.vpnHours[$('vpnSize').value];
+  const vip = CFG.lbPolicyHours[$('vipSize').value];
+  const coreRows = [
+    ['Fase 1: Analasys y Evaluacion', 5, has ? 100 : 0, 8],
+    ['Fase 2: Diseño y Documentacion', 5, has ? 100 : 0, 8],
+    ['Fase 3: Despliegue(Band 8)', 10, has ? 100 : 0, 8],
+    ['Fase 3: Despliegue(Band 7)', '—', has ? 200 : 0, 7],
+    ['Fase 3: Despliegue(Band 4)', '—', has ? 300 : 0, 4],
+    ['Fase 4: Migracion (Band 8)', CFG.migrationWeeks, switches * CFG.switchHoursPerBand['8'], 8],
+    ['Fase 4: Migracion (Band 7)', '—', switches * CFG.switchHoursPerBand['7'], 7],
+    ['Fase 4: Migracion (Band 4)', '—', switches * CFG.switchHoursPerBand['4'], 4],
+    ['Fase 5: Cierre', 1, has ? 40 : 0, 4],
+  ].map(x => ({label:x[0], weeks:x[1], hours:x[2], band:x[3], rate:r[String(x[3])], cost:x[2]*r[String(x[3])]}));
+  const addonRows = [
+    ['Coste Multi-Pod', '—', multiPod ? 40 : 0, 8],
+    ['Coste Multi-Site', '—', multiSite ? 80 : 0, 8],
+  ].map(x => ({label:x[0], weeks:x[1], hours:x[2], band:x[3], rate:r[String(x[3])], cost:x[2]*r[String(x[3])]}));
+  const fwRows = [
+    [fp.label + ' (Band 8)', fp['8'] * fwClusters, 8],
+    [fp.label + ' (Band 7)', fp['7'] * fwClusters, 7],
+    [fp.label + ' (Band 4)', fp['4'] * fwClusters, 4],
+    [vpn.label + ' (Band 7)', (vpn['7'] || 0) * fwClusters, 7],
+    [vpn.label + ' (Band 4)', (vpn['4'] || 0) * fwClusters, 4],
+    [CFG.fwManagerHoursPerSystem.label + ' (Band 7)', CFG.fwManagerHoursPerSystem['7'] * fwManagerSystems, 7],
+    [CFG.fwManagerHoursPerSystem.label + ' (Band 4)', CFG.fwManagerHoursPerSystem['4'] * fwManagerSystems, 4],
+  ].filter(x => x[1] > 0).map(x => ({label:x[0], hours:x[1], band:x[2], rate:r[String(x[2])], cost:x[1]*r[String(x[2])]}));
+  const lbRows = [
+    [vip.label + ' (Band 8)', vip['8'] * lbClusters, 8],
+    [vip.label + ' (Band 7)', vip['7'] * lbClusters, 7],
+    [vip.label + ' (Band 4)', vip['4'] * lbClusters, 4],
+  ].filter(x => x[1] > 0).map(x => ({label:x[0], hours:x[1], band:x[2], rate:r[String(x[2])], cost:x[1]*r[String(x[2])]}));
+  const rtRows = [
+    ['Number of Router/Switches (Band 8)', CFG.swapoutHoursPerDevice['8'] * swapoutCount, 8],
+    ['Number of Router/Switches (Band 7)', CFG.swapoutHoursPerDevice['7'] * swapoutCount, 7],
+    ['Number of Router/Switches (Band 4)', CFG.swapoutHoursPerDevice['4'] * swapoutCount, 4],
+  ].filter(x => x[1] > 0 || x[2] === 8).map(x => ({label:x[0], hours:x[1], band:x[2], rate:r[String(x[2])], cost:x[1]*r[String(x[2])]}));
+  const rawCore = coreRows.reduce((a,b) => a + b.cost, 0);
+  const addonsCost = addonRows.reduce((a,b) => a + b.cost, 0);
+  const sdlanSubtotal = rawCore + addonsCost;
+  const fwSubtotal = fwRows.reduce((a,b) => a + b.cost, 0);
+  const lbSubtotal = lbRows.reduce((a,b) => a + b.cost, 0);
+  const rtSubtotal = rtRows.reduce((a,b) => a + b.cost, 0);
+  const totalCost = sdlanSubtotal + fwSubtotal + lbSubtotal + rtSubtotal;
+  const hoursByBand = {8:0,7:0,4:0}; [...coreRows, ...addonRows, ...fwRows, ...lbRows, ...rtRows].forEach(x => hoursByBand[x.band] += x.hours);
+  const totalHours = hoursByBand[8] + hoursByBand[7] + hoursByBand[4];
+  return {clientName, switches, multiPod, multiSite, fwClusters, fwManagerSystems, lbClusters, swapoutCount, fwPolicySize:$('fwPolicySize').value, vpnSize:$('vpnSize').value, vipSize:$('vipSize').value, coreRows, addonRows, fwRows, lbRows, rtRows, sdlanSubtotal, fwSubtotal, lbSubtotal, rtSubtotal, totalCost, hoursByBand, totalHours, bandmix: totalHours ? totalCost/totalHours : 0};
+}
+function renderSaved(){const c=$('savedList');const items=loadSaved();if(!items.length){c.innerHTML='<div class="note">No saved estimations yet.</div>';return;}c.innerHTML=items.map((item,idx)=>`<div class="save-item"><div class="save-name">${safeName(item.clientName)}</div><div class="save-meta">Saved ${new Date(item.savedAt).toLocaleString()} • Total ${fmtCurrency.format(item.totalCost)}</div><div class="save-actions"><button class="small-btn load" data-action="load" data-idx="${idx}">Load</button><button class="small-btn delete" data-action="delete" data-idx="${idx}">Delete</button></div></div>`).join('');c.querySelectorAll('button[data-action]').forEach(btn=>btn.addEventListener('click',()=>{const idx=Number(btn.dataset.idx),action=btn.dataset.action,list=loadSaved();if(action==='delete'){list.splice(idx,1);saveSaved(list);renderSaved();}else{const item=list[idx];$('clientName').value=item.clientName||'';$('switches').value=item.switches;$('multiPod').checked=!!item.multiPod;$('multiSite').checked=!!item.multiSite;$('fwClusters').value=item.fwClusters;$('fwPolicySize').value=item.fwPolicySize;$('vpnSize').value=item.vpnSize;$('fwManagerSystems').value=item.fwManagerSystems;$('lbClusters').value=item.lbClusters;$('vipSize').value=item.vipSize;$('swapoutCount').value=item.swapoutCount;render();}}));}
+function saveCurrentScenario(){const m=build();const items=loadSaved();items.unshift({...m,savedAt:nowIso()});saveSaved(items.slice(0,50));renderSaved();}
+function render(){const m=build();$('clientDisplay').textContent='Client: '+(m.clientName||'—');$('totalCost').textContent=fmtCurrency.format(m.totalCost);$('sdlanSubtotalCard').textContent=fmtCurrency.format(m.sdlanSubtotal);$('fwSubtotalCard').textContent=fmtCurrency.format(m.fwSubtotal);$('lbSubtotalCard').textContent=fmtCurrency.format(m.lbSubtotal);$('rtSubtotalCard').textContent=fmtCurrency.format(m.rtSubtotal);$('hoursBandmixTotalHours').textContent=fmtNum.format(m.totalHours);$('hoursBandmixBandmix').textContent=fmtNum.format(m.bandmix);$('disclaimerText').textContent=CFG.disclaimer;$('coreTbody').innerHTML=[...m.coreRows,...m.addonRows].map(r=>tr([{value:r.label},{value:r.weeks,num:true},{value:fmtNum.format(r.hours),num:true},{value:fmtNum.format(r.band),num:true},{value:fmtCurrency.format(r.rate),num:true},{value:fmtCurrency.format(r.cost),num:true}])).join('');$('sdlanSubtotal').textContent=fmtCurrency.format(m.sdlanSubtotal);$('fwTbody').innerHTML=m.fwRows.map(r=>tr([{value:r.label},{value:fmtNum.format(r.hours),num:true},{value:fmtNum.format(r.band),num:true},{value:fmtCurrency.format(r.rate),num:true},{value:fmtCurrency.format(r.cost),num:true}])).join('');$('lbTbody').innerHTML=m.lbRows.map(r=>tr([{value:r.label},{value:fmtNum.format(r.hours),num:true},{value:fmtNum.format(r.band),num:true},{value:fmtCurrency.format(r.rate),num:true},{value:fmtCurrency.format(r.cost),num:true}])).join('');$('rtTbody').innerHTML=m.rtRows.map(r=>tr([{value:r.label},{value:fmtNum.format(r.hours),num:true},{value:fmtNum.format(r.band),num:true},{value:fmtCurrency.format(r.rate),num:true},{value:fmtCurrency.format(r.cost),num:true}])).join('');$('fwSubtotalFoot').textContent='Subtotal: '+fmtCurrency.format(m.fwSubtotal);$('lbSubtotalFoot').textContent='Subtotal: '+fmtCurrency.format(m.lbSubtotal);$('rtSubtotalFoot').textContent='Subtotal: '+fmtCurrency.format(m.rtSubtotal);$('fwSubtotalBubble').textContent=fmtCurrency.format(m.fwSubtotal);$('lbSubtotalBubble').textContent=fmtCurrency.format(m.lbSubtotal);$('rtSubtotalBubble').textContent=fmtCurrency.format(m.rtSubtotal);const maxBand=Math.max(m.hoursByBand[8],m.hoursByBand[7],m.hoursByBand[4],1);[['band8',8],['band7',7],['band4',4]].forEach(([id,b])=>{$(id+'Bar').style.width=((m.hoursByBand[b]/maxBand)*100)+'%';$(id+'Val').textContent=fmtNum.format(m.hoursByBand[b])+' h';});window.__currentModel=m;}
+function exportExcel(){const m=window.__currentModel||build();const client=safeName(m.clientName);const coreRows=[...m.coreRows,...m.addonRows].map(r=>`<tr><td>${r.label}</td><td>${r.weeks ?? ''}</td><td>${r.hours}</td><td>${r.band}</td><td>${r.rate}</td><td>${r.cost}</td></tr>`).join('');const svcRows=rows=>rows.map(r=>`<tr><td>${r.label}</td><td>${r.hours}</td><td>${r.band}</td><td>${r.rate}</td><td>${r.cost}</td></tr>`).join('');const workbook=`<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"></head><body><h2>Data Center Network Cost Calculator</h2><p><strong>Client:</strong> ${client}</p><p><strong>Total Cost:</strong> ${m.totalCost}</p><p><strong>Total Hours:</strong> ${m.totalHours}</p><p><strong>Bandmix:</strong> ${m.bandmix}</p><h3>SD-LAN FABRIC</h3><table border="1"><tr><th>Line</th><th>Weeks</th><th>Hours</th><th>Band</th><th>Rate</th><th>Cost</th></tr>${coreRows}</table><h3>FIREWALLS</h3><table border="1"><tr><th>Line</th><th>Hours</th><th>Band</th><th>Rate</th><th>Cost</th></tr>${svcRows(m.fwRows)}</table><h3>LOADBALANCERS</h3><table border="1"><tr><th>Line</th><th>Hours</th><th>Band</th><th>Rate</th><th>Cost</th></tr>${svcRows(m.lbRows)}</table><h3>RTR/SW SWAPOUT</h3><table border="1"><tr><th>Line</th><th>Hours</th><th>Band</th><th>Rate</th><th>Cost</th></tr>${svcRows(m.rtRows)}</table></body></html>`;const blob=new Blob([workbook],{type:'application/vnd.ms-excel'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`${filenameFriendly(client)}_DC_Network_Cost_Calculator.xls`;document.body.appendChild(a);a.click();a.remove();}
+function exportPdf(){window.print();}
+['clientName','switches','multiPod','multiSite','fwClusters','fwPolicySize','vpnSize','fwManagerSystems','lbClusters','vipSize','swapoutCount'].forEach(id=>{$(id).addEventListener('input',render);$(id).addEventListener('change',render);});$('resetBtn').addEventListener('click',()=>{defaults();render();});$('saveEstimateBtn').addEventListener('click',saveCurrentScenario);$('exportExcelBtn').addEventListener('click',exportExcel);$('exportPdfBtn').addEventListener('click',exportPdf);defaults();render();renderSaved();
+</script>
+</body>
+</html>

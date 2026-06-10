@@ -1,0 +1,611 @@
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>The Future of Data Center Firewalls - Point of View</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #07163f;
+        --muted: #52617f;
+        --line: #b8c8f6;
+        --line-strong: #2359ff;
+        --surface: #ffffff;
+        --surface-soft: #f4f7fd;
+        --panel: #f9fbff;
+        --blue: #1147c8;
+        --cyan: #0089d6;
+        --teal: #008c7d;
+        --green: #2f8a46;
+        --amber: #d98b00;
+        --coral: #e15b3c;
+        --violet: #7050d8;
+        --shadow: 0 22px 70px rgba(17, 47, 105, 0.16);
+        --radius: 8px;
+        --gap: clamp(14px, 1.6vw, 22px);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+      * { box-sizing: border-box; }
+      html { scroll-behavior: auto; overflow-anchor: none; }
+      body {
+        margin: 0; min-width: 320px; color: var(--ink);
+        background:
+          linear-gradient(90deg, rgba(17, 71, 200, 0.05) 1px, transparent 1px) 0 0 / 48px 48px,
+          linear-gradient(rgba(17, 71, 200, 0.04) 1px, transparent 1px) 0 0 / 48px 48px,
+          #f7f9fe;
+      }
+      button,input,textarea,select,label { font: inherit; }
+      .icon-defs { position:absolute; width:0; height:0; overflow:hidden; }
+      .topbar {
+        position: sticky; top: 0; z-index: 10; display:flex; align-items:flex-start; justify-content:space-between;
+        gap:24px; padding:18px clamp(18px,3vw,42px); border-bottom:1px solid rgba(35,89,255,.16);
+        background:rgba(249,251,255,.92); backdrop-filter:blur(18px);
+      }
+      .header-copy { min-width:0; }
+      .brand-row { display:flex; align-items:center; gap:14px; margin-bottom:10px; }
+      .kyndryl-logo { display:inline-flex; align-items:center; width:142px; min-width:142px; height:45px; }
+      .kyndryl-logo svg { display:block; width:100%; height:auto; }
+      .practice-tag {
+        display:inline-grid; min-height:34px; align-items:center; padding:0 12px; border:1px solid rgba(255,70,45,.24);
+        border-radius:8px; background:#fff6f3; color:#07163f; font-size:.88rem; font-weight:900;
+      }
+      .eyebrow { margin:0 0 4px; color:var(--cyan); font-size:.76rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; }
+      h1,h2,h3,p { margin-top:0; }
+      h1 { margin-bottom:5px; color:var(--blue); font-size:3.4rem; line-height:.95; letter-spacing:0; }
+      .subtitle { margin-bottom:0; color:var(--muted); font-size:1.12rem; }
+      .language-switch {
+        display:inline-flex; align-items:center; gap:10px; padding:6px 10px; border:1px solid rgba(35,89,255,.2); border-radius:8px; background:#fff; color:var(--muted); font-weight:800; font-size:.82rem;
+      }
+      .page-shell {
+        display:grid; grid-template-columns:minmax(0,1fr) minmax(360px,390px); gap:var(--gap); align-items:start;
+        width:min(1840px,100%); margin:0 auto; padding:clamp(18px,2.6vw,38px);
+      }
+      .map-area, .future-model-section, .principles-section {
+        border:1px solid rgba(35,89,255,.2); border-radius:var(--radius); background:linear-gradient(90deg, rgba(17,71,200,.07), transparent 52%), rgba(255,255,255,.9);
+      }
+      .map-area {
+        position:relative; grid-column:1; display:grid; grid-template-columns:minmax(0,1fr); min-width:0; gap:clamp(16px,2vw,24px);
+        align-items:start; padding:clamp(18px,2.2vw,30px); border:1px solid rgba(35,89,255,.22); border-radius:var(--radius);
+        background:linear-gradient(135deg, rgba(35,89,255,.1), transparent 38%), linear-gradient(90deg, rgba(0,140,125,.08), transparent 62%), rgba(255,255,255,.9);
+        box-shadow:var(--shadow);
+      }
+      .architecture-heading {
+        display:grid; grid-template-columns:minmax(240px,.44fr) minmax(0,.56fr); gap:var(--gap); align-items:end; padding-bottom:6px;
+      }
+      .architecture-heading .eyebrow, .future-model-heading .eyebrow, .principles-heading .eyebrow { grid-column:1 / -1; margin-bottom:-8px; }
+      .architecture-heading h2 { margin-bottom:0; color:var(--blue); font-size:2.1rem; line-height:1.04; }
+      .architecture-heading p:last-child, .future-model-heading p:last-child { margin-bottom:0; color:var(--muted); font-size:1rem; line-height:1.5; }
+      .map-grid { display:grid; gap:18px; min-width:0; }
+      .flow-panel,.landing-zone,.ops-band,.detail-panel,.benefits-card {
+        border:1px solid rgba(35,89,255,.22); border-radius:var(--radius); background:rgba(255,255,255,.86);
+      }
+      .detail-panel,.benefits-card,.future-model-section { box-shadow:var(--shadow); }
+      .flow-panel,.landing-zone,.ops-band { position:relative; min-width:0; padding:clamp(16px,1.8vw,24px); }
+      .global-panel,.hub-panel,.landing-zone {
+        border-width:2px; background-color:rgba(255,255,255,.94); box-shadow:0 20px 54px rgba(17,47,105,.12);
+      }
+      .global-panel .step,.hub-panel .step,.landing-zone .step { width:46px; min-width:46px; height:46px; border-color:rgba(35,89,255,.44); box-shadow:0 10px 22px rgba(35,89,255,.14); font-size:.9rem; }
+      .section-heading { display:flex; align-items:flex-start; gap:12px; margin-bottom:16px; }
+      .section-heading.compact { margin-bottom:14px; }
+      .section-heading h2 { margin-bottom:3px; color:var(--blue); font-size:1.22rem; line-height:1.18; text-transform:uppercase; }
+      .section-heading p { margin-bottom:0; color:var(--muted); font-size:.92rem; line-height:1.45; }
+      .step { display:inline-grid; width:40px; min-width:40px; height:40px; place-items:center; border:1px solid rgba(35,89,255,.34); border-radius:8px; background:#eff4ff; color:var(--blue); font-size:.82rem; font-weight:900; }
+      .global-nodes,.hub-nodes,.ops-grid,.decision-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(130px,1fr)); gap:10px; }
+      .node,.ops-card,.benefit,.roadmap-row,.principle-card,.decision-card,.service-rail label {
+        border:1px solid rgba(35,89,255,.22); border-radius:8px; background:#fff; min-width:0; cursor:pointer;
+        transition:transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
+      }
+      .node {
+        display:grid; grid-template-rows:42px minmax(34px,auto); justify-items:center; align-items:center; min-height:104px; padding:11px 9px; color:var(--blue); text-align:center;
+      }
+      .node svg,.ops-card svg,.benefit svg,.principles-grid svg,.service-rail svg,.decision-card svg,.future-model-section svg {
+        width:34px; height:34px; fill:none; stroke:currentColor; stroke-linecap:round; stroke-linejoin:round; stroke-width:1.8;
+      }
+      .node span { display:block; font-size:.78rem; font-weight:850; line-height:1.25; }
+      .node:hover,.ops-card:hover,.benefit:hover,.roadmap-row:hover,.principle-card:hover,.decision-card:hover,.service-rail label:hover,
+      .node:focus-visible,.ops-card:focus-visible,.benefit:focus-visible,.roadmap-row:focus-visible,.principle-card:focus-visible,.decision-card:focus-visible,.service-rail label:focus-visible {
+        transform: translateY(-2px); border-color: var(--line-strong); box-shadow: 0 16px 34px rgba(35,89,255,.13); outline:0;
+      }
+      .detail-state { display:none; }
+      .info-radio { position: fixed; width:1px; height:1px; opacity:0; pointer-events:none; }
+      .accent-node { color: var(--cyan); border-color: rgba(0,137,214,.34); }
+      .service-rail { display:grid; grid-template-columns:repeat(auto-fit, minmax(180px,1fr)); gap:8px; margin-top:12px; padding:8px; border:1px solid rgba(35,89,255,.28); border-radius:8px; background:#f7fbff; }
+      .service-rail label { display:flex; align-items:center; justify-content:center; gap:8px; min-height:34px; padding:8px 10px; color:var(--blue); font-size:.8rem; font-weight:800; text-align:center; line-height:1.18; }
+      .service-rail svg { width:22px; height:22px; }
+      .flow-arrow { position:relative; display:grid; min-height:44px; place-items:center; }
+      .flow-arrow::before { content:""; position:absolute; left:50%; top:0; bottom:0; width:2px; background:var(--line-strong); }
+      .flow-arrow::after { content:""; position:absolute; left:calc(50% - 5px); bottom:0; width:10px; height:10px; border-right:2px solid var(--line-strong); border-bottom:2px solid var(--line-strong); transform:rotate(45deg); }
+      .flow-arrow span { position:relative; z-index:1; max-width:min(88%,620px); padding:6px 12px; border:1px solid rgba(35,89,255,.22); border-radius:8px; background:#fff; color:var(--blue); font-size:.78rem; font-weight:900; line-height:1.2; text-align:center; }
+      .hub-panel { width:min(100%,960px); justify-self:center; border-color:rgba(0,140,125,.45); background:linear-gradient(90deg, rgba(0,140,125,.08), transparent 44%), rgba(255,255,255,.9); }
+      .landing-zone { border-color: rgba(112,80,216,.36); background: linear-gradient(90deg, rgba(112,80,216,.07), transparent 48%), rgba(255,255,255,.9); }
+      .landing-heading { width:min(100%,900px); margin-inline:auto; text-align:left; }
+      .zone-layout { display:grid; grid-template-columns:minmax(220px,.55fr) repeat(3, minmax(220px,1fr)); gap:12px; align-items:start; }
+      .cloud-card, .intro-card {
+        display:flex; flex-direction:column; gap:12px; min-width:0; min-height:0; padding:14px; border:1px solid rgba(35,89,255,.22); border-radius:8px; background:#fff;
+      }
+      .onprem-card { justify-content:center; border-color: rgba(112,80,216,.42); }
+      .cloud-title { display:grid; gap:12px; justify-items:center; color:var(--violet); text-align:center; }
+      .cloud-title svg { width:64px; height:64px; }
+      .cloud-title h3 { margin-bottom:6px; color:var(--ink); font-size:1rem; text-transform:uppercase; }
+      .cloud-title p { margin-bottom:0; color:var(--muted); font-size:.84rem; line-height:1.35; }
+      .feature-list { display:grid; gap:10px; margin-top:18px; }
+      .feature-list label, .feature-list span { display:block; padding:10px; border:1px solid rgba(112,80,216,.22); border-radius:8px; color:var(--violet); background:#f8f6ff; font-size:.82rem; font-weight:800; text-align:center; cursor:pointer; }
+      .aws-card { border-color: rgba(225,91,60,.38); }
+      .azure-card { border-color: rgba(17,71,200,.36); }
+      .gcp-card { border-color: rgba(0,140,125,.36); }
+      .cloud-brand { display:flex; align-items:flex-end; justify-content:space-between; gap:12px; min-height:58px; border-bottom:1px solid rgba(35,89,255,.12); padding-bottom:10px; }
+      .cloud-brand strong { color:var(--ink); font-size:.92rem; text-transform:uppercase; }
+      .cloud-brand span:last-child { color:var(--muted); font-size:.78rem; font-weight:850; text-align:right; text-transform:uppercase; }
+      .cloud-services { display:grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap:8px; }
+      .service-pill {
+        display:grid; grid-template-rows:30px minmax(34px,auto); place-items:center; min-height:92px; padding:9px 7px; color:var(--blue); font-size:.72rem; font-weight:850; line-height:1.2; text-align:center; border:1px solid rgba(35,89,255,.22); border-radius:8px; background:#fff; cursor:pointer;
+      }
+      .service-pill svg { width:28px; height:28px; fill:none; stroke:currentColor; stroke-width:1.8; }
+      .aws-card .service-pill { color: var(--coral); border-color: rgba(225,91,60,.24); }
+      .azure-card .service-pill { color: var(--blue); }
+      .gcp-card .service-pill { color: var(--teal); border-color: rgba(0,140,125,.24); }
+      .spoke-band { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; padding:12px 0; border-top:1px dashed rgba(35,89,255,.2); border-bottom:1px dashed rgba(35,89,255,.2); }
+      .spoke-band span { min-height:38px; display:grid; place-items:center; border-radius:8px; background:var(--surface-soft); color:var(--blue); font-size:.75rem; font-weight:900; }
+      .native-strip { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:6px; }
+      .native-strip span { min-height:66px; display:grid; grid-template-rows:25px minmax(0,auto); gap:6px; place-items:center; padding:8px 6px; border-radius:8px; background:#f8fbff; color:var(--muted); font-size:.68rem; font-weight:800; line-height:1.18; text-align:center; }
+      .native-strip svg { width:25px; height:25px; }
+      .ops-band { border-color: rgba(0,137,214,.36); background:linear-gradient(90deg, rgba(0,137,214,.07), transparent 42%), rgba(255,255,255,.9); }
+      .ops-grid { grid-template-columns: repeat(auto-fit, minmax(170px,1fr)); }
+      .ops-card { display:grid; grid-template-columns:38px minmax(0,1fr); align-items:center; gap:9px; min-height:78px; padding:10px; color:var(--blue); text-align:left; }
+      .ops-card span { min-width:0; font-size:.78rem; font-weight:900; line-height:1.2; }
+      .future-model-section { grid-column:1; margin-top:var(--gap); padding:clamp(16px,2vw,24px); background:linear-gradient(90deg, rgba(225,91,60,.07), transparent 46%), rgba(255,255,255,.9); }
+      .future-model-heading { display:grid; grid-template-columns:minmax(220px,.42fr) minmax(0,.58fr); gap:var(--gap); align-items:end; margin-bottom:14px; }
+      .future-model-heading .eyebrow { color: var(--coral); }
+      .future-model-heading h2 { margin-bottom:0; color:var(--blue); font-size:2rem; line-height:1.04; }
+      .project-roadmap { display:grid; gap:12px; padding:16px; border:1px solid rgba(225,91,60,.24); border-radius:8px; background:linear-gradient(135deg, rgba(7,22,63,.04), transparent 36%), #fff; }
+      .roadmap-scale,.roadmap-row { display:grid; grid-template-columns:minmax(168px,.27fr) minmax(0,1fr) minmax(136px,.2fr); gap:10px; align-items:center; }
+      .roadmap-scale { padding:0 10px; color:var(--muted); font-size:.7rem; font-weight:900; line-height:1.2; text-transform:uppercase; }
+      .roadmap-milestones { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:8px; text-align:center; }
+      .roadmap-row { min-height:90px; padding:10px; }
+      .roadmap-stage { display:grid; grid-template-columns:38px minmax(0,1fr); gap:10px; align-items:center; }
+      .roadmap-stage svg { width:36px; height:36px; color:var(--coral); }
+      .phase-build .roadmap-stage svg { color:var(--blue); }
+      .phase-run .roadmap-stage svg { color:var(--teal); }
+      .roadmap-stage strong,.roadmap-stage small,.roadmap-deliverable,.roadmap-footer strong,.roadmap-footer small { display:block; min-width:0; }
+      .roadmap-stage strong { margin-bottom:4px; color:var(--ink); font-size:1rem; line-height:1.12; text-transform:uppercase; }
+      .roadmap-stage small { color:var(--muted); font-size:.76rem; font-weight:800; line-height:1.25; }
+      .roadmap-track { position:relative; display:grid; grid-template-columns:repeat(12, minmax(0,1fr)); align-items:center; min-height:58px; padding:8px 10px; overflow:hidden; border:1px solid rgba(35,89,255,.16); border-radius:8px; background:repeating-linear-gradient(90deg, transparent 0, transparent calc(20% - 1px), rgba(35,89,255,.14) calc(20% - 1px), rgba(35,89,255,.14) 20%), #f7fbff; }
+      .roadmap-bar { position:relative; z-index:1; display:grid; min-height:34px; place-items:center; padding:7px 12px; border-radius:8px; color:#fff; font-size:.78rem; font-weight:900; line-height:1.16; text-align:center; box-shadow:0 12px 24px rgba(7,22,63,.16); }
+      .phase-plan .roadmap-bar { grid-column:1 / 5; background:linear-gradient(90deg, var(--coral), var(--amber)); }
+      .phase-build .roadmap-bar { grid-column:4 / 10; background:linear-gradient(90deg, var(--blue), var(--cyan)); }
+      .phase-run .roadmap-bar { grid-column:9 / 13; background:linear-gradient(90deg, var(--teal), var(--green)); }
+      .roadmap-checkpoint { position:absolute; top:8px; bottom:8px; width:2px; border-radius:999px; background:rgba(7,22,63,.28); }
+      .phase-plan .roadmap-checkpoint { left:calc(33.333% - 1px); }
+      .phase-build .roadmap-checkpoint { left:calc(75% - 1px); }
+      .phase-run .roadmap-checkpoint { left:calc(91.666% - 1px); }
+      .roadmap-deliverable { min-height:58px; padding:10px 12px; border:1px solid rgba(35,89,255,.16); border-radius:8px; background:#f9fbff; color:var(--ink); font-size:.78rem; font-weight:900; line-height:1.18; text-align:center; }
+      .roadmap-footer { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px; }
+      .roadmap-footer span { min-height:58px; padding:10px; border:1px solid rgba(225,91,60,.18); border-radius:8px; background:#fff8f6; }
+      .roadmap-footer strong { margin-bottom:4px; color:var(--coral); font-size:.72rem; line-height:1.1; text-transform:uppercase; }
+      .roadmap-footer small { color:var(--muted); font-size:.74rem; font-weight:800; line-height:1.24; }
+      .right-rail { position:sticky; top:132px; z-index:20; grid-column:2; grid-row:1 / span 4; align-self:start; min-width:0; width:100%; }
+      .detail-panel { min-height:520px; max-height:calc(100vh - 158px); padding:24px; overflow:auto; background:#07163f; color:#fff; box-shadow:0 28px 86px rgba(7,22,63,.28); }
+      .detail-panel p:first-child { margin-bottom:7px; color:#8bd5ff; font-size:.75rem; font-weight:900; letter-spacing:.08em; text-transform:uppercase; }
+      .detail-panel h2 { margin-bottom:14px; font-size:1.82rem; line-height:1.05; }
+      .detail-panel p:last-child { margin-bottom:0; color:#dce8ff; font-size:1.08rem; line-height:1.58; }
+      .benefits-card { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; padding:16px; }
+      .benefits-card h2 { grid-column:1 / -1; margin-bottom:12px; color:var(--blue); font-size:1.05rem; text-transform:uppercase; }
+      .benefits-section { grid-column:1; margin-top:var(--gap); }
+      .benefit { display:grid; grid-template-columns:44px minmax(0,1fr); gap:12px; align-items:center; width:100%; min-height:74px; padding:10px; color:var(--blue); text-align:left; }
+      .benefit:nth-of-type(2n) { color:var(--teal); } .benefit:nth-of-type(3n) { color:var(--amber); }
+      .benefit strong,.benefit small { display:block; }
+      .benefit strong { margin-bottom:3px; color:var(--ink); font-size:.9rem; line-height:1.18; }
+      .benefit small { color:var(--muted); font-size:.75rem; line-height:1.25; }
+      .principles-section { grid-column:1; margin-top:var(--gap); padding:clamp(16px,2vw,24px); }
+      .principles-heading { display:grid; grid-template-columns:minmax(240px,.45fr) minmax(0,.55fr); gap:var(--gap); align-items:end; margin-bottom:16px; }
+      .principles-heading h2 { margin-bottom:10px; color:var(--blue); font-size:2.25rem; line-height:1.04; }
+      .principles-heading p:last-child { margin-bottom:0; color:var(--muted); font-size:1rem; line-height:1.56; }
+      .principles-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; }
+      .principle-card { display:grid; align-content:center; min-height:128px; padding:14px; }
+      .principles-grid svg { width:34px; height:34px; margin-bottom:16px; color:var(--blue); }
+      .principles-grid .principle-card:nth-child(2n) svg { color:var(--teal); }
+      .principles-grid .principle-card:nth-child(3n) svg { color:var(--amber); }
+      .principles-grid h3 { margin-bottom:0; color:var(--ink); font-size:.96rem; line-height:1.16; }
+      .decision-section { grid-column:1; margin-top:var(--gap); }
+      .decision-card { min-height:110px; padding:14px; color:var(--blue); }
+      .decision-card h3 { margin: 10px 0 6px; font-size: 1rem; color: var(--ink); }
+      .decision-card p { margin: 0; color: var(--muted); font-size: .84rem; line-height:1.4; }
+      .decision-card svg { width: 32px; height: 32px; }
+      .footer-note { grid-column:1; margin-top: var(--gap); padding: 12px 16px; border:1px dashed rgba(35,89,255,.25); border-radius:8px; background:#fbfcff; color:var(--muted); font-size:.9rem; line-height:1.5; }
+
+      #info-intro:checked ~ main .detail-intro,
+      #info-hybridmesh:checked ~ main .detail-hybridmesh,
+      #info-zts:checked ~ main .detail-zts,
+      #info-eastwest:checked ~ main .detail-eastwest,
+      #info-ai-detection:checked ~ main .detail-ai-detection,
+      #info-asic:checked ~ main .detail-asic,
+      #info-llm:checked ~ main .detail-llm,
+      #info-convergence:checked ~ main .detail-convergence,
+      #info-ebpf:checked ~ main .detail-ebpf,
+      #info-sustainability:checked ~ main .detail-sustainability,
+      #info-visibility:checked ~ main .detail-visibility,
+      #info-plan:checked ~ main .detail-plan,
+      #info-build:checked ~ main .detail-build,
+      #info-run:checked ~ main .detail-run,
+      #info-benefit-posture:checked ~ main .detail-benefit-posture,
+      #info-benefit-performance:checked ~ main .detail-benefit-performance,
+      #info-benefit-efficiency:checked ~ main .detail-benefit-efficiency,
+      #info-benefit-cloud:checked ~ main .detail-benefit-cloud,
+      #info-benefit-ops:checked ~ main .detail-benefit-ops,
+      #info-principle-fabric:checked ~ main .detail-principle-fabric,
+      #info-principle-identity:checked ~ main .detail-principle-identity,
+      #info-principle-kernel:checked ~ main .detail-principle-kernel,
+      #info-principle-ai:checked ~ main .detail-principle-ai,
+      #info-principle-energy:checked ~ main .detail-principle-energy,
+      #info-principle-telemetry:checked ~ main .detail-principle-telemetry,
+      #info-principle-pipeline:checked ~ main .detail-principle-pipeline,
+      #info-principle-open:checked ~ main .detail-principle-open,
+      #info-decision-workload:checked ~ main .detail-decision-workload,
+      #info-decision-concern:checked ~ main .detail-decision-concern,
+      #info-decision-vendors:checked ~ main .detail-decision-vendors,
+      #info-decision-architecture:checked ~ main .detail-decision-architecture {
+        display:block;
+      }
+
+      #info-hybridmesh:checked ~ main [for="info-hybridmesh"],
+      #info-zts:checked ~ main [for="info-zts"],
+      #info-eastwest:checked ~ main [for="info-eastwest"],
+      #info-ai-detection:checked ~ main [for="info-ai-detection"],
+      #info-asic:checked ~ main [for="info-asic"],
+      #info-llm:checked ~ main [for="info-llm"],
+      #info-convergence:checked ~ main [for="info-convergence"],
+      #info-ebpf:checked ~ main [for="info-ebpf"],
+      #info-sustainability:checked ~ main [for="info-sustainability"],
+      #info-visibility:checked ~ main [for="info-visibility"],
+      #info-plan:checked ~ main [for="info-plan"],
+      #info-build:checked ~ main [for="info-build"],
+      #info-run:checked ~ main [for="info-run"],
+      #info-benefit-posture:checked ~ main [for="info-benefit-posture"],
+      #info-benefit-performance:checked ~ main [for="info-benefit-performance"],
+      #info-benefit-efficiency:checked ~ main [for="info-benefit-efficiency"],
+      #info-benefit-cloud:checked ~ main [for="info-benefit-cloud"],
+      #info-benefit-ops:checked ~ main [for="info-benefit-ops"],
+      #info-principle-fabric:checked ~ main [for="info-principle-fabric"],
+      #info-principle-identity:checked ~ main [for="info-principle-identity"],
+      #info-principle-kernel:checked ~ main [for="info-principle-kernel"],
+      #info-principle-ai:checked ~ main [for="info-principle-ai"],
+      #info-principle-energy:checked ~ main [for="info-principle-energy"],
+      #info-principle-telemetry:checked ~ main [for="info-principle-telemetry"],
+      #info-principle-pipeline:checked ~ main [for="info-principle-pipeline"],
+      #info-principle-open:checked ~ main [for="info-principle-open"],
+      #info-decision-workload:checked ~ main [for="info-decision-workload"],
+      #info-decision-concern:checked ~ main [for="info-decision-concern"],
+      #info-decision-vendors:checked ~ main [for="info-decision-vendors"],
+      #info-decision-architecture:checked ~ main [for="info-decision-architecture"] {
+        border-color:var(--line-strong); background:#eef4ff; box-shadow:0 16px 34px rgba(35,89,255,.17);
+      }
+
+      @media (max-width: 1380px) {
+        .topbar { align-items:flex-start; flex-direction:column; }
+        .benefits-card { grid-template-columns:repeat(2,minmax(0,1fr)); gap:9px; }
+        .architecture-heading,.future-model-heading,.principles-heading { grid-template-columns:1fr; }
+        .principles-grid { grid-template-columns:repeat(3,minmax(0,1fr)); }
+      }
+      @media (max-width: 1180px) {
+        .page-shell { grid-template-columns:minmax(0,1fr) minmax(300px,330px); }
+        .detail-panel { min-height:460px; max-height:calc(100vh - 144px); padding:18px; }
+        .zone-layout { grid-template-columns:repeat(2,minmax(0,1fr)); }
+        .ops-grid,.principles-grid,.decision-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+      }
+      @media (max-width: 980px) {
+        .page-shell { display:flex; flex-direction:column; }
+        .right-rail { position:static; order:2; width:100%; max-width:none; margin-top:var(--gap); }
+        .map-area { order:1; }
+        .future-model-section { order:3; }
+        .benefits-section { order:4; }
+        .principles-section { order:5; }
+        .decision-section { order:6; }
+        .detail-panel { min-height:0; max-height:none; overflow:visible; }
+      }
+      @media (max-width: 760px) {
+        .topbar{ padding:15px; }
+        .brand-row{ flex-wrap:wrap; gap:10px; }
+        .kyndryl-logo{ width:124px; min-width:124px; }
+        .practice-tag{ min-height:30px; font-size:.8rem; }
+        h1 { font-size:2.2rem; }
+        .subtitle { font-size:1rem; }
+        .architecture-heading h2,.future-model-heading h2,.principles-heading h2 { font-size:1.62rem; }
+        .page-shell{ padding:14px; } .map-area{ padding:14px; }
+        .global-nodes,.hub-nodes,.service-rail,.cloud-services,.native-strip,.ops-grid,.benefits-card,.roadmap-footer,.principles-grid,.decision-grid{ grid-template-columns:1fr; }
+        .project-roadmap { padding:12px; }
+        .roadmap-scale { display:none; }
+        .roadmap-row { grid-template-columns:1fr; min-height:0; }
+        .roadmap-track { min-height:54px; }
+        .roadmap-bar { padding:7px 8px; font-size:.72rem; }
+        .roadmap-deliverable { min-height:0; text-align:left; }
+        .zone-layout { grid-template-columns:1fr; }
+        .node { grid-template-columns:42px minmax(0,1fr); grid-template-rows:auto; justify-items:start; min-height:70px; text-align:left; }
+        .service-rail label { justify-content:flex-start; }
+        .cloud-card { min-height:auto; }
+        .cloud-brand { align-items:center; }
+        .spoke-band { grid-template-columns:1fr; }
+      }
+    </style>
+  </head>
+  <body>
+    <svg class="icon-defs" aria-hidden="true" focusable="false">
+      <symbol id="icon-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /><path d="M3.6 9h16.8M3.6 15h16.8M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18" /></symbol>
+      <symbol id="icon-shield" viewBox="0 0 24 24"><path d="M12 3l7 3v5.5c0 4.7-2.8 7.8-7 9.5-4.2-1.7-7-4.8-7-9.5V6l7-3z" /><path d="M8.4 12.2l2.1 2.1 5-5" /></symbol>
+      <symbol id="icon-cloud" viewBox="0 0 24 24"><path d="M7.2 18h9.3a4.4 4.4 0 0 0 .4-8.8 6 6 0 0 0-11.5 1.9A3.6 3.6 0 0 0 7.2 18z" /></symbol>
+      <symbol id="icon-network" viewBox="0 0 24 24"><circle cx="12" cy="5" r="2.5" /><circle cx="5" cy="18" r="2.5" /><circle cx="19" cy="18" r="2.5" /><path d="M10.7 7.1l-4.4 8.7M13.3 7.1l4.4 8.7M7.4 18h9.2" /></symbol>
+      <symbol id="icon-route" viewBox="0 0 24 24"><path d="M5 18c5 0 2-12 7-12h7" /><path d="M15.5 2.8L19 6l-3.5 3.2" /><circle cx="5" cy="18" r="2.5" /></symbol>
+      <symbol id="icon-eye" viewBox="0 0 24 24"><path d="M3 12s3.2-6 9-6 9 6 9 6-3.2 6-9 6-9-6-9-6z" /><circle cx="12" cy="12" r="2.8" /></symbol>
+      <symbol id="icon-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2" /><path d="M12 2.8v3M12 18.2v3M4.3 5.2l2.1 2.1M17.6 16.7l2.1 2.1M2.8 12h3M18.2 12h3M4.3 18.8l2.1-2.1M17.6 7.3l2.1-2.1" /></symbol>
+      <symbol id="icon-lock" viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="10" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3M12 14v2.8" /></symbol>
+      <symbol id="icon-chip" viewBox="0 0 24 24"><rect x="7" y="7" width="10" height="10" rx="1.5"/><path d="M9 1v4M15 1v4M9 19v4M15 19v4M1 9h4M1 15h4M19 9h4M19 15h4"/></symbol>
+      <symbol id="icon-leaf" viewBox="0 0 24 24"><path d="M19 5c-6 0-10 4-10 10v4" /><path d="M5 19c6 0 14-2 14-14" /></symbol>
+      <symbol id="icon-grid" viewBox="0 0 24 24"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z" /></symbol>
+      <symbol id="icon-server" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="6" rx="1.5"/><rect x="4" y="14" width="16" height="6" rx="1.5"/><path d="M8 7h.01M8 17h.01M12 7h6M12 17h6"/></symbol>
+      <symbol id="icon-branch" viewBox="0 0 24 24"><circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="12" cy="18" r="2.5"/><path d="M8.2 7.3l2.6 8M15.8 7.3l-2.6 8"/></symbol>
+      <symbol id="icon-alert" viewBox="0 0 24 24"><path d="M12 3l9 16H3L12 3z"/><path d="M12 9v4.5M12 17h.01"/></symbol>
+      <symbol id="icon-layers" viewBox="0 0 24 24"><path d="M12 4l8 4-8 4-8-4 8-4z"/><path d="M4 12l8 4 8-4"/><path d="M4 16l8 4 8-4"/></symbol>
+    </svg>
+
+    <input class="info-radio" type="radio" name="info-panel" id="info-intro" checked />
+    <input class="info-radio" type="radio" name="info-panel" id="info-hybridmesh" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-zts" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-eastwest" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-ai-detection" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-asic" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-llm" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-convergence" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-ebpf" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-sustainability" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-visibility" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-plan" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-build" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-run" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-benefit-posture" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-benefit-performance" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-benefit-efficiency" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-benefit-cloud" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-benefit-ops" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-principle-fabric" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-principle-identity" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-principle-kernel" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-principle-ai" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-principle-energy" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-principle-telemetry" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-principle-pipeline" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-principle-open" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-decision-workload" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-decision-concern" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-decision-vendors" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-decision-architecture" />
+
+    <header class="topbar">
+      <div class="header-copy">
+        <div class="brand-row" aria-label="Kyndryl Network and Edge">
+          <span class="kyndryl-logo" aria-label="Kyndryl">
+            <svg viewBox="0 0 125.74 40" xmlns="http://www.w3.org/2000/svg"><path d="M120,0V30h-3.518V0ZM48.854,9.537a5.575,5.575,0,0,0-5.9,4.993h-.172V10H39.26V30h3.519V17.544c0-3.368,1.793-4.911,4.8-4.911,3.442,0,4.981,1.706,4.981,5.09V30h3.518V17.264C56.074,12.489,53.374,9.537,48.854,9.537ZM27.323,29.462h-.115L21.1,10H17.454l6.465,20h3.237l-3.3,10H27.37l9.684-30H33.409Zm77.222,0h-.115L98.322,10H94.675l6.465,20h3.237l-3.3,10h3.511l9.684-30h-3.646ZM7.325,20l8.684-10H11.73l-8.1,9.652H3.519V0H0V30H3.519V20.185H6.862L13.624,30H17.7l-7-10Zm79.021-5.468h-.171V10H82.656V30h3.519V17.508c0-3.368,1.91-4.6,5.184-4.6a9.471,9.471,0,0,1,2.181.234v-3.4a5.152,5.152,0,0,0-1.669-.212A5.4,5.4,0,0,0,86.346,14.532ZM74.617,0h3.518V30H74.617V25.47h-.17c-.337,2.791-2.478,4.993-6.536,4.993-4.951,0-8.469-3.928-8.469-10.463S62.959,9.537,67.911,9.537c4.058,0,6.2,2.2,6.536,4.993h.17Zm0,17.358c0-3.368-2.542-4.726-5.695-4.726-3.324,0-5.81,2.068-5.81,7.368s2.486,7.368,5.81,7.368c3.153,0,5.695-1.358,5.695-4.726V17.358Zm46.956,10.529v.237h.639V30h.3V28.125h.639v-.237Zm3.52,0-.525,2.084h-.006l-.5-2.084h-.579L123.422,30h.283l.063-2.084h.006L124.293,30h.528l.551-2.084h.006L125.44,30h.3l-.069-2.112h-.577Z" fill="#ff462d" /></svg>
+          </span>
+          <span class="practice-tag">Network and Edge</span>
+        </div>
+        <h1>The Future of Data Center Firewalls</h1>
+        <p class="subtitle">From perimeter appliances to distributed, AI-native enforcement fabrics for hybrid, high-performance data centers.</p>
+      </div>
+      <div class="language-switch">POV HTML • Kyndryl-style</div>
+    </header>
+
+    <main class="page-shell">
+      <section class="map-area" aria-label="Interactive infographic">
+        <div class="architecture-heading">
+          <p class="eyebrow">Reference architecture</p>
+          <h2>Future-state firewall architecture for AI workloads, zero trust segmentation, multi-cloud control and energy-aware scale</h2>
+          <p>The perspective is organized in four layers: architectural shift, AI/security acceleration, cloud-native convergence and operating model modernization.</p>
+        </div>
+        <div class="map-grid">
+          <article class="flow-panel global-panel">
+            <div class="section-heading"><span class="step">01</span><div><h2>Architectural shift</h2><p>Firewalls are moving beyond the perimeter into a hybrid mesh of physical, virtual and cloud-native enforcement points placed close to workloads and traffic transitions.</p></div></div>
+            <div class="global-nodes">
+              <label class="node" for="info-hybridmesh"><svg><use href="#icon-globe" /></svg><span>Hybrid mesh</span></label>
+              <label class="node" for="info-zts"><svg><use href="#icon-layers" /></svg><span>Zero trust segmentation</span></label>
+              <label class="node" for="info-eastwest"><svg><use href="#icon-network" /></svg><span>East-west inspection</span></label>
+              <label class="node accent-node" for="info-benefit-cloud"><svg><use href="#icon-cloud" /></svg><span>Multi-cloud consistency</span></label>
+              <label class="node accent-node" for="info-visibility"><svg><use href="#icon-eye" /></svg><span>Unified visibility</span></label>
+              <label class="node accent-node" for="info-benefit-posture"><svg><use href="#icon-shield" /></svg><span>Adaptive posture</span></label>
+            </div>
+            <div class="service-rail">
+              <label for="info-hybridmesh"><svg><use href="#icon-server" /></svg>Physical + virtual + cloud-native</label>
+              <label for="info-zts"><svg><use href="#icon-lock" /></svg>Identity-centric policy</label>
+              <label for="info-eastwest"><svg><use href="#icon-branch" /></svg>Contain lateral movement</label>
+              <label for="info-convergence"><svg><use href="#icon-grid" /></svg>Fabric-integrated enforcement</label>
+            </div>
+          </article>
+
+          <div class="flow-arrow"><span>From perimeter security to workload-aware control</span></div>
+
+          <article class="flow-panel hub-panel">
+            <div class="section-heading compact"><span class="step">02</span><div><h2>AI-driven protection</h2><p>Modern firewall platforms increasingly combine machine learning, hardware acceleration and application-aware controls to protect GPU clusters and LLM-connected services without collapsing performance.</p></div></div>
+            <div class="hub-nodes">
+              <label class="node" for="info-ai-detection"><svg><use href="#icon-alert" /></svg><span>AI threat detection</span></label>
+              <label class="node" for="info-asic"><svg><use href="#icon-chip" /></svg><span>ASIC / hyperscale throughput</span></label>
+              <label class="node" for="info-llm"><svg><use href="#icon-route" /></svg><span>LLM guardrails</span></label>
+              <label class="node" for="info-benefit-performance"><svg><use href="#icon-server" /></svg><span>Protect GPU fabrics</span></label>
+            </div>
+          </article>
+
+          <div class="flow-arrow"><span>From higher threat velocity to automated response</span></div>
+
+          <section class="landing-zone">
+            <div class="section-heading landing-heading"><span class="step">03</span><div><h2>Convergence of networking and security</h2><p>The future firewall is not an isolated box. It increasingly works with switching fabrics, policy engines and kernel-level telemetry to steer traffic, enforce segmentation and inspect cloud-native workloads with less friction.</p></div></div>
+            <div class="zone-layout">
+              <article class="onprem-card intro-card">
+                <div class="cloud-title"><svg><use href="#icon-eye" /></svg><div><h3>Control plane</h3><p>Centralized policy, telemetry and orchestration to make distributed enforcement points behave like one system.</p></div></div>
+                <div class="feature-list">
+                  <label for="info-convergence">Integrated management</label>
+                  <label for="info-visibility">Shared telemetry</label>
+                  <label for="info-zts">Identity-aware policy</label>
+                  <label for="info-benefit-ops">Operational simplification</label>
+                </div>
+              </article>
+
+              <article class="cloud-card aws-card">
+                <div class="cloud-brand"><strong>Distributed enforcement</strong><span>Hybrid DC</span></div>
+                <div class="cloud-services">
+                  <label class="service-pill" for="info-hybridmesh"><svg><use href="#icon-server" /></svg>Appliance</label>
+                  <label class="service-pill" for="info-hybridmesh"><svg><use href="#icon-cloud" /></svg>Virtual</label>
+                  <label class="service-pill" for="info-hybridmesh"><svg><use href="#icon-grid" /></svg>Cloud-native</label>
+                </div>
+                <div class="spoke-band"><span>Campus/DC</span><span>Private cloud</span><span>Public cloud</span></div>
+                <div class="native-strip">
+                  <span><svg><use href="#icon-shield" /></svg>Zone policy</span>
+                  <span><svg><use href="#icon-lock" /></svg>Microseg</span>
+                  <span><svg><use href="#icon-eye" /></svg>Telemetry</span>
+                  <span><svg><use href="#icon-route" /></svg>Steering</span>
+                </div>
+              </article>
+
+              <article class="cloud-card azure-card">
+                <div class="cloud-brand"><strong>Cloud-native security</strong><span>Kubernetes / APIs</span></div>
+                <div class="cloud-services">
+                  <label class="service-pill" for="info-ebpf"><svg><use href="#icon-chip" /></svg>eBPF</label>
+                  <label class="service-pill" for="info-zts"><svg><use href="#icon-lock" /></svg>Identity policy</label>
+                  <label class="service-pill" for="info-visibility"><svg><use href="#icon-eye" /></svg>Runtime signals</label>
+                </div>
+                <div class="spoke-band"><span>Pods</span><span>Services</span><span>Nodes</span></div>
+                <div class="native-strip">
+                  <span><svg><use href="#icon-network" /></svg>L3-L7</span>
+                  <span><svg><use href="#icon-eye" /></svg>Observe</span>
+                  <span><svg><use href="#icon-lock" /></svg>Encrypt</span>
+                  <span><svg><use href="#icon-alert" /></svg>Detect</span>
+                </div>
+              </article>
+
+              <article class="cloud-card gcp-card">
+                <div class="cloud-brand"><strong>Efficiency & resilience</strong><span>AI scale</span></div>
+                <div class="cloud-services">
+                  <label class="service-pill" for="info-asic"><svg><use href="#icon-chip" /></svg>Throughput</label>
+                  <label class="service-pill" for="info-sustainability"><svg><use href="#icon-leaf" /></svg>Gbps/W</label>
+                  <label class="service-pill" for="info-ai-detection"><svg><use href="#icon-alert" /></svg>Adaptive defense</label>
+                </div>
+                <div class="spoke-band"><span>Inspect</span><span>Scale</span><span>Contain</span></div>
+                <div class="native-strip">
+                  <span><svg><use href="#icon-chip" /></svg>ASICs</span>
+                  <span><svg><use href="#icon-leaf" /></svg>Power-aware</span>
+                  <span><svg><use href="#icon-server" /></svg>GPU-safe</span>
+                  <span><svg><use href="#icon-shield" /></svg>HA</span>
+                </div>
+              </article>
+            </div>
+          </section>
+
+          <article class="ops-band">
+            <div class="section-heading compact"><span class="step">04</span><div><h2>Cross-cutting capabilities</h2><p>To operate firewalls as a security fabric, teams need observability, policy-as-code, lifecycle automation, and an architecture roadmap from design to day-2 operations.</p></div></div>
+            <div class="ops-grid">
+              <label class="ops-card" for="info-visibility"><svg><use href="#icon-eye" /></svg><span>Telemetry & visibility</span></label>
+              <label class="ops-card" for="info-convergence"><svg><use href="#icon-grid" /></svg><span>Fabric integration</span></label>
+              <label class="ops-card" for="info-sustainability"><svg><use href="#icon-leaf" /></svg><span>Energy efficiency</span></label>
+              <label class="ops-card" for="info-build"><svg><use href="#icon-gear" /></svg><span>Policy automation</span></label>
+              <label class="ops-card" for="info-run"><svg><use href="#icon-shield" /></svg><span>Continuous optimization</span></label>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="future-model-section">
+        <div class="future-model-heading">
+          <p class="eyebrow">Execution model</p>
+          <h2>Plan, Build and Run</h2>
+          <p>Framework to move from current-state perimeter security toward a future-state distributed firewall fabric with measurable security, performance and sustainability outcomes.</p>
+        </div>
+        <div class="project-roadmap">
+          <div class="roadmap-scale" aria-hidden="true"><span>Phase</span><span class="roadmap-milestones"><span>Start</span><span>Assess</span><span>Design</span><span>Pilot</span><span>Operate</span></span><span>Outcome</span></div>
+          <label class="roadmap-row phase-plan" for="info-plan"><span class="roadmap-stage"><svg><use href="#icon-route" /></svg><span><strong>Plan</strong><small>Map workloads, flows and trust zones</small></span></span><span class="roadmap-track"><span class="roadmap-bar">Find east-west blind spots, platforms and performance constraints</span><span class="roadmap-checkpoint" aria-hidden="true"></span></span><span class="roadmap-deliverable">Reference architecture + target controls</span></label>
+          <label class="roadmap-row phase-build" for="info-build"><span class="roadmap-stage"><svg><use href="#icon-gear" /></svg><span><strong>Build</strong><small>Deploy policies, segmentation and integrations</small></span></span><span class="roadmap-track"><span class="roadmap-bar">Pilot hybrid mesh, cloud-native controls and AI-aware inspection</span><span class="roadmap-checkpoint" aria-hidden="true"></span></span><span class="roadmap-deliverable">Validated design + automation patterns</span></label>
+          <label class="roadmap-row phase-run" for="info-run"><span class="roadmap-stage"><svg><use href="#icon-eye" /></svg><span><strong>Run</strong><small>Operate, tune and measure</small></span></span><span class="roadmap-track"><span class="roadmap-bar">Optimize policy accuracy, throughput, energy profile and blast-radius reduction</span><span class="roadmap-checkpoint" aria-hidden="true"></span></span><span class="roadmap-deliverable">KPIs + continuous improvement backlog</span></label>
+          <div class="roadmap-footer"><span><strong>M0</strong><small>Current-state baseline</small></span><span><strong>M1</strong><small>Target segmentation model</small></span><span><strong>M2</strong><small>Pilot and validation</small></span><span><strong>M3</strong><small>Operationalized security fabric</small></span></div>
+        </div>
+      </section>
+
+      <aside class="right-rail">
+        <article class="detail-panel" aria-live="polite">
+          <div class="detail-state detail-intro"><p>Explore the architecture</p><h2>Click the tiles to learn more</h2><p>Select any trend, capability, benefit or decision area to explore how future data center firewalls are evolving from perimeter boxes into a distributed security fabric for AI-era infrastructure.</p></div>
+          <div class="detail-state detail-hybridmesh"><p>Architectural shift</p><h2>Hybrid mesh & distributed architectures</h2><p>The emerging model is a unified firewall system spanning hardware appliances, virtual firewalls and cloud-native controls. This makes policy portable across on-premises, private cloud and public cloud, instead of forcing teams to rely on a single edge choke point.</p></div>
+          <div class="detail-state detail-zts"><p>Architectural shift</p><h2>Zero Trust Segmentation</h2><p>Future-state firewalls help enforce policy closer to individual services and workloads. That reduces lateral movement, supports identity-based controls and aligns more naturally with hybrid and multi-cloud architectures.</p></div>
+          <div class="detail-state detail-eastwest"><p>Architectural shift</p><h2>East-west inspection</h2><p>As applications become more distributed, a growing share of risk sits inside the data center. Firewalls increasingly need to inspect server-to-server traffic and inter-service flows, not just north-south traffic through the perimeter.</p></div>
+          <div class="detail-state detail-ai-detection"><p>AI-native defense</p><h2>AI-driven threat detection</h2><p>Modern platforms increasingly use machine learning and behavioral analytics to identify evasive or signature-less threats faster, including attacks that move quickly across internal infrastructure.</p></div>
+          <div class="detail-state detail-asic"><p>AI-native defense</p><h2>ASIC and hardware acceleration</h2><p>To protect GPU clusters and high-density AI fabrics, next-generation firewall architectures rely more on custom silicon and hyperscale throughput designs that minimize latency and reduce the security-performance tradeoff.</p></div>
+          <div class="detail-state detail-llm"><p>AI-native defense</p><h2>LLM security and guardrails</h2><p>As organizations deploy LLM-enabled applications, firewalls and adjacent controls increasingly need to inspect model traffic, reduce prompt-injection exposure, and limit data leakage between users, tools, APIs and models.</p></div>
+          <div class="detail-state detail-convergence"><p>Convergence</p><h2>Networking and security integration</h2><p>The firewall increasingly integrates with switching fabrics and orchestration systems to apply policy more consistently, steer traffic more intelligently and automate segmentation at the fabric layer.</p></div>
+          <div class="detail-state detail-ebpf"><p>Cloud-native security</p><h2>eBPF and kernel-level controls</h2><p>eBPF-based platforms can enforce identity-aware networking, observability and security directly in the Linux kernel, making them highly relevant for Kubernetes and cloud-native runtime protection where traditional appliance-only models are insufficient.</p></div>
+          <div class="detail-state detail-sustainability"><p>Efficiency</p><h2>Power and cooling efficiency</h2><p>AI data centers are increasingly power constrained, so firewall platforms are under pressure to deliver more protected throughput per watt and fit into broader facility efficiency goals alongside networking and compute infrastructure.</p></div>
+          <div class="detail-state detail-visibility"><p>Operations</p><h2>Unified telemetry and visibility</h2><p>Distributed firewalls only work if teams can see policy hits, east-west flows, encrypted traffic posture and workload behavior from one operational viewpoint. Shared telemetry is becoming as important as the inspection engine itself.</p></div>
+          <div class="detail-state detail-plan"><p>Execution model</p><h2>Plan</h2><p>Start by classifying workloads, mapping flows and identifying where security blind spots, performance bottlenecks and inconsistent policy domains exist today. This is where zero trust segmentation objectives and design guardrails are set.</p></div>
+          <div class="detail-state detail-build"><p>Execution model</p><h2>Build</h2><p>Deploy policy tiers, segmentation boundaries, enforcement nodes and integration points incrementally. A pragmatic build phase validates throughput, latency, operational workflows, failover and policy portability before broad rollout.</p></div>
+          <div class="detail-state detail-run"><p>Execution model</p><h2>Run</h2><p>Operate the environment using telemetry-led tuning, policy lifecycle governance and KPI review. The future-state firewall becomes an evolving control fabric, not a one-time installation.</p></div>
+          <div class="detail-state detail-benefit-posture"><p>Benefit</p><h2>Adaptive security posture</h2><p>Distributed enforcement reduces the dependency on one perimeter line of defense and makes posture more resilient to hybrid architectures, AI workloads and lateral movement.</p></div>
+          <div class="detail-state detail-benefit-performance"><p>Benefit</p><h2>Performance aligned to AI workloads</h2><p>Modern firewall strategies place more emphasis on preserving east-west throughput for clustered compute and minimizing the amount of security-induced latency added to critical traffic paths.</p></div>
+          <div class="detail-state detail-benefit-efficiency"><p>Benefit</p><h2>Better efficiency and sustainability</h2><p>Power-optimized designs matter more in AI-era data centers. Security controls increasingly need to justify not just efficacy but also their footprint in watts, rack units and cooling demand.</p></div>
+          <div class="detail-state detail-benefit-cloud"><p>Benefit</p><h2>Consistent multi-cloud policy</h2><p>A hybrid mesh model improves the chance of applying similar segmentation intent across data centers, private cloud and public cloud, even when enforcement mechanisms differ underneath.</p></div>
+          <div class="detail-state detail-benefit-ops"><p>Benefit</p><h2>Simpler day-2 operations</h2><p>When policy, telemetry and segmentation logic are unified, SecOps and NetOps can reduce manual drift, emergency exceptions and duplicated rule management across many security domains.</p></div>
+          <div class="detail-state detail-principle-fabric"><p>Design principle</p><h2>Think in fabrics, not boxes</h2><p>The future firewall is best designed as an enforcement fabric distributed across the environment, with the right checkpoints placed where risk and traffic density actually sit.</p></div>
+          <div class="detail-state detail-principle-identity"><p>Design principle</p><h2>Use identity and workload context</h2><p>Granular policy works better when it follows services, applications and identities rather than depending only on IPs, VLANs or coarse perimeter constructs.</p></div>
+          <div class="detail-state detail-principle-kernel"><p>Design principle</p><h2>Use kernel-native controls where cloud-native demands it</h2><p>Containers and Kubernetes often require security primitives that operate closer to workloads than a traditional hardware edge can reach. eBPF and related approaches are increasingly relevant in that layer.</p></div>
+          <div class="detail-state detail-principle-ai"><p>Design principle</p><h2>Secure AI traffic differently</h2><p>Model APIs, prompt channels, inference services and GPU fabrics create distinct risk and performance profiles. Treating them like generic web traffic is usually too blunt.</p></div>
+          <div class="detail-state detail-principle-energy"><p>Design principle</p><h2>Include energy in platform selection</h2><p>Protected gigabits per watt, rack density and thermal impact are becoming legitimate architectural criteria in high-density AI environments.</p></div>
+          <div class="detail-state detail-principle-telemetry"><p>Design principle</p><h2>Telemetry is part of the control plane</h2><p>Visibility should not be treated as secondary. It powers anomaly detection, policy validation, capacity planning and measurable blast-radius reduction.</p></div>
+          <div class="detail-state detail-principle-pipeline"><p>Design principle</p><h2>Automate policy lifecycle</h2><p>Rule quality, policy drift and exception handling get harder as architectures get more distributed. Treating policy as code improves change quality and auditability.</p></div>
+          <div class="detail-state detail-principle-open"><p>Design principle</p><h2>Prefer interoperable design patterns</h2><p>Because the future firewall spans multiple enforcement types, designs that support open integration and policy portability generally age better than highly isolated silos.</p></div>
+          <div class="detail-state detail-decision-workload"><p>Decision guide</p><h2>Where are your workloads?</h2><p>The right firewall architecture depends heavily on whether workloads sit mainly on-premises, in one public cloud, or across a hybrid mesh. The more distributed the estate, the stronger the case for fabric-oriented policy.</p></div>
+          <div class="detail-state detail-decision-concern"><p>Decision guide</p><h2>What is the primary concern?</h2><p>Is the priority AI workload protection, zero trust segmentation, east-west visibility, multi-cloud consistency, regulatory control, or infrastructure efficiency? Different priorities shift the design emphasis.</p></div>
+          <div class="detail-state detail-decision-vendors"><p>Decision guide</p><h2>Vendor strategy</h2><p>Some organizations prioritize integration with a switching fabric, some prioritize cloud-native runtime enforcement, and others prioritize ultra-high-throughput hardware. Match the platform family to the dominant operational need.</p></div>
+          <div class="detail-state detail-decision-architecture"><p>Decision guide</p><h2>Architecture recommendation path</h2><p>Use an assessment-led approach: current-state barriers, target segmentation model, enforcement placement, telemetry architecture, automation approach, and phased migration plan.</p></div>
+        </article>
+      </aside>
+
+      <section class="benefits-section">
+        <article class="benefits-card">
+          <h2>Key benefits</h2>
+          <label class="benefit" for="info-benefit-posture"><svg><use href="#icon-shield" /></svg><span><strong>Adaptive Posture</strong><small>Security moves closer to workloads.</small></span></label>
+          <label class="benefit" for="info-benefit-performance"><svg><use href="#icon-chip" /></svg><span><strong>AI-Aligned Performance</strong><small>Less bottlenecking for GPU fabrics.</small></span></label>
+          <label class="benefit" for="info-benefit-efficiency"><svg><use href="#icon-leaf" /></svg><span><strong>Efficiency</strong><small>Better security-per-watt economics.</small></span></label>
+          <label class="benefit" for="info-benefit-cloud"><svg><use href="#icon-cloud" /></svg><span><strong>Hybrid Consistency</strong><small>One policy intent across many domains.</small></span></label>
+          <label class="benefit" for="info-benefit-ops"><svg><use href="#icon-grid" /></svg><span><strong>Simpler Operations</strong><small>Lower policy drift and tool sprawl.</small></span></label>
+          <label class="benefit" for="info-zts"><svg><use href="#icon-lock" /></svg><span><strong>Reduced Lateral Movement</strong><small>Microsegmentation and trust boundaries.</small></span></label>
+          <label class="benefit" for="info-visibility"><svg><use href="#icon-eye" /></svg><span><strong>End-to-End Visibility</strong><small>Telemetry across east-west and cloud traffic.</small></span></label>
+          <label class="benefit" for="info-llm"><svg><use href="#icon-route" /></svg><span><strong>LLM-Aware Protection</strong><small>Guardrails for model and API flows.</small></span></label>
+        </article>
+      </section>
+
+      <section class="principles-section">
+        <div class="principles-heading">
+          <p class="eyebrow">Design principles</p>
+          <h2>A distributed, workload-aware and operationally integrated firewall architecture</h2>
+          <p>The most sustainable designs combine zero-trust thinking, cloud-native controls, performance-aware inspection and lifecycle automation rather than relying on a single perimeter paradigm.</p>
+        </div>
+        <div class="principles-grid">
+          <label class="principle-card" for="info-principle-fabric"><svg><use href="#icon-layers" /></svg><h3>Security fabric thinking</h3></label>
+          <label class="principle-card" for="info-principle-identity"><svg><use href="#icon-lock" /></svg><h3>Identity & workload context</h3></label>
+          <label class="principle-card" for="info-principle-kernel"><svg><use href="#icon-chip" /></svg><h3>Kernel-native enforcement</h3></label>
+          <label class="principle-card" for="info-principle-ai"><svg><use href="#icon-route" /></svg><h3>AI-specific traffic controls</h3></label>
+          <label class="principle-card" for="info-principle-energy"><svg><use href="#icon-leaf" /></svg><h3>Energy-aware design</h3></label>
+          <label class="principle-card" for="info-principle-telemetry"><svg><use href="#icon-eye" /></svg><h3>Telemetry as control plane</h3></label>
+          <label class="principle-card" for="info-principle-pipeline"><svg><use href="#icon-gear" /></svg><h3>Policy as code</h3></label>
+          <label class="principle-card" for="info-principle-open"><svg><use href="#icon-grid" /></svg><h3>Interoperable architecture</h3></label>
+        </div>
+      </section>
+
+      <section class="decision-section">
+        <article class="benefits-card">
+          <h2>Decision guide</h2>
+          <div class="decision-grid">
+            <label class="decision-card" for="info-decision-workload"><svg><use href="#icon-cloud" /></svg><h3>Workload location</h3><p>On-premises, public cloud, or hybrid mesh?</p></label>
+            <label class="decision-card" for="info-decision-concern"><svg><use href="#icon-alert" /></svg><h3>Primary concern</h3><p>AI protection, zero trust, multi-cloud control, or efficiency?</p></label>
+            <label class="decision-card" for="info-decision-vendors"><svg><use href="#icon-grid" /></svg><h3>Vendor posture</h3><p>Fabric integration, kernel-native, or hyperscale appliance bias?</p></label>
+            <label class="decision-card" for="info-decision-architecture"><svg><use href="#icon-route" /></svg><h3>Recommended path</h3><p>Assessment, target model, pilot, and controlled rollout.</p></label>
+          </div>
+        </article>
+      </section>
+
+      <div class="footer-note">Representative examples mentioned in the written summary can be tailored later into specific vendor options (for example, integrated fabric security, cloud-native eBPF controls, or ASIC-accelerated AI data center firewalls) depending on your preferred architecture and vendor stack.</div>
+    </main>
+  </body>
+</html>
