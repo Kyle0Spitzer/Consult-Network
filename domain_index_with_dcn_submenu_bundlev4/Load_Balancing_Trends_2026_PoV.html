@@ -1,0 +1,785 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Load Balancing Trends 2026 - Point of View</title>
+    <style>
+:root {
+  color-scheme: light;
+  --ink: #07163f;
+  --muted: #52617f;
+  --line: #b8c8f6;
+  --line-strong: #2359ff;
+  --surface: #ffffff;
+  --surface-soft: #f4f7fd;
+  --panel: #f9fbff;
+  --blue: #1147c8;
+  --cyan: #0089d6;
+  --teal: #008c7d;
+  --green: #2f8a46;
+  --amber: #d98b00;
+  --coral: #e15b3c;
+  --violet: #7050d8;
+  --shadow: 0 22px 70px rgba(17, 47, 105, 0.16);
+  --radius: 8px;
+  --gap: clamp(14px, 1.6vw, 22px);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: auto; overflow-anchor: none; }
+body {
+  margin: 0;
+  min-width: 320px;
+  color: var(--ink);
+  background:
+    linear-gradient(90deg, rgba(17, 71, 200, 0.05) 1px, transparent 1px) 0 0 / 48px 48px,
+    linear-gradient(rgba(17, 71, 200, 0.04) 1px, transparent 1px) 0 0 / 48px 48px,
+    #f7f9fe;
+}
+button, input, textarea, select, label { font: inherit; }
+button { color: inherit; }
+.info-radio, .language-radio {
+  position: fixed; width: 1px; height: 1px; opacity: 0; pointer-events: none;
+}
+.icon-defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+.language-view { display: none; }
+#lang-es:checked ~ .language-es,
+#lang-en:checked ~ .language-en { display: block; }
+.language-switch {
+  display: inline-flex; align-items: center; gap: 4px; min-width: max-content;
+  padding: 4px; border: 1px solid rgba(35, 89, 255, 0.2); border-radius: 8px; background: #fff;
+}
+.lang-option {
+  display: grid; min-width: 44px; min-height: 32px; place-items: center; border-radius: 6px;
+  color: var(--muted); font-size: 0.78rem; font-weight: 900; cursor: pointer;
+  transition: background 180ms ease, color 180ms ease, box-shadow 180ms ease;
+}
+.lang-option:hover, .lang-option:focus-visible { color: var(--blue); background: #eef4ff; outline: 0; }
+#lang-es:checked ~ .language-view [for="lang-es"],
+#lang-en:checked ~ .language-view [for="lang-en"] {
+  color: #fff; background: var(--blue); box-shadow: 0 8px 18px rgba(35, 89, 255, 0.22);
+}
+.topbar {
+  position: sticky; top: 0; z-index: 10; display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 24px; padding: 18px clamp(18px, 3vw, 42px); border-bottom: 1px solid rgba(35, 89, 255, 0.16);
+  background: rgba(249, 251, 255, 0.92); backdrop-filter: blur(18px);
+}
+.header-copy { min-width: 0; }
+.brand-row { display: flex; align-items: center; gap: 14px; margin-bottom: 10px; }
+.kyndryl-logo { display: inline-flex; align-items: center; width: 142px; min-width: 142px; height: 45px; }
+.kyndryl-logo svg { display: block; width: 100%; height: auto; }
+.practice-tag {
+  display: inline-grid; min-height: 34px; align-items: center; padding: 0 12px;
+  border: 1px solid rgba(255, 70, 45, 0.24); border-radius: 8px; background: #fff6f3;
+  color: #07163f; font-size: 0.88rem; font-weight: 900;
+}
+.eyebrow {
+  margin: 0 0 4px; color: var(--cyan); font-size: 0.76rem; font-weight: 800;
+  letter-spacing: 0.08em; text-transform: uppercase;
+}
+h1, h2, h3, p { margin-top: 0; }
+h1 { margin-bottom: 5px; color: var(--blue); font-size: 3.7rem; line-height: 0.95; letter-spacing: 0; }
+.subtitle { margin-bottom: 0; color: var(--muted); font-size: 1.12rem; max-width: 1000px; }
+.page-shell {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(350px, 380px); gap: var(--gap); align-items: start;
+  width: min(1840px, 100%); margin: 0 auto; padding: clamp(18px, 2.6vw, 38px);
+}
+.map-area, .framework-section, .benefits-section, .principles-section {
+  border: 1px solid rgba(35, 89, 255, 0.2); border-radius: var(--radius);
+  background: linear-gradient(90deg, rgba(17, 71, 200, 0.07), transparent 52%), rgba(255, 255, 255, 0.9);
+}
+.map-area {
+  position: relative; grid-column: 1; display: grid; gap: clamp(16px, 2vw, 24px); align-items: start;
+  padding: clamp(18px, 2.2vw, 30px); border: 1px solid rgba(35, 89, 255, 0.22);
+  background: linear-gradient(135deg, rgba(35, 89, 255, 0.1), transparent 38%), linear-gradient(90deg, rgba(0, 140, 125, 0.08), transparent 62%), rgba(255, 255, 255, 0.9);
+  box-shadow: var(--shadow);
+}
+.architecture-heading, .framework-heading, .principles-heading {
+  display: grid; grid-template-columns: minmax(240px, 0.44fr) minmax(0, 0.56fr); gap: var(--gap); align-items: end;
+}
+.architecture-heading .eyebrow, .framework-heading .eyebrow, .principles-heading .eyebrow {
+  grid-column: 1 / -1; margin-bottom: -8px;
+}
+.architecture-heading h2, .framework-heading h2, .principles-heading h2 {
+  margin-bottom: 0; color: var(--blue); font-size: 2.1rem; line-height: 1.04; letter-spacing: 0;
+}
+.architecture-heading p:last-child, .framework-heading p:last-child, .principles-heading p:last-child {
+  margin-bottom: 0; color: var(--muted); font-size: 1rem; line-height: 1.5;
+}
+.flow-panel, .ops-band, .detail-panel, .benefits-card, .framework-card, .principle-card {
+  border: 1px solid rgba(35, 89, 255, 0.22); border-radius: var(--radius); background: rgba(255, 255, 255, 0.86);
+}
+.flow-panel, .ops-band { position: relative; min-width: 0; padding: clamp(16px, 1.8vw, 24px); }
+.flow-panel, .framework-card, .benefits-card, .principles-section, .framework-section, .detail-panel { box-shadow: var(--shadow); }
+.global-panel, .impact-panel, .ops-band {
+  border-width: 2px; background-color: rgba(255, 255, 255, 0.94); box-shadow: 0 20px 54px rgba(17, 47, 105, 0.12);
+}
+.global-panel { border-color: rgba(35, 89, 255, 0.44); background: linear-gradient(90deg, rgba(17, 71, 200, 0.06), transparent 42%), rgba(255, 255, 255, 0.88); }
+.impact-panel { border-color: rgba(0, 140, 125, 0.45); background: linear-gradient(90deg, rgba(0, 140, 125, 0.08), transparent 44%), rgba(255, 255, 255, 0.9); }
+.ops-band { border-color: rgba(0, 137, 214, 0.36); background: linear-gradient(90deg, rgba(0, 137, 214, 0.07), transparent 42%), rgba(255, 255, 255, 0.9); }
+.section-heading { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 16px; }
+.section-heading.compact { margin-bottom: 14px; }
+.section-heading h2 { margin-bottom: 3px; color: var(--blue); font-size: 1.22rem; line-height: 1.18; text-transform: uppercase; }
+.section-heading p { margin-bottom: 0; color: var(--muted); font-size: 0.92rem; line-height: 1.45; }
+.step {
+  display: inline-grid; width: 40px; min-width: 40px; height: 40px; place-items: center;
+  border: 1px solid rgba(35, 89, 255, 0.34); border-radius: 8px; background: #eff4ff; color: var(--blue);
+  font-size: 0.82rem; font-weight: 900;
+}
+.global-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.impact-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.ops-grid, .benefits-card, .principles-grid {
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px;
+}
+.trend-card, .impact-card, .ops-card, .benefit, .principle-card, .framework-mini {
+  border: 1px solid rgba(35, 89, 255, 0.22); border-radius: 8px; background: #fff; min-width: 0; cursor: pointer;
+  transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
+}
+.trend-card, .impact-card, .framework-mini {
+  display: grid; gap: 12px; min-height: 154px; padding: 14px; align-content: start;
+}
+.trend-card:hover, .trend-card:focus-visible,
+.impact-card:hover, .impact-card:focus-visible,
+.ops-card:hover, .ops-card:focus-visible,
+.benefit:hover, .benefit:focus-visible,
+.principle-card:hover, .principle-card:focus-visible,
+.framework-mini:hover, .framework-mini:focus-visible {
+  transform: translateY(-2px); border-color: var(--line-strong); box-shadow: 0 16px 34px rgba(35, 89, 255, 0.13); outline: 0;
+}
+.trend-card svg, .impact-card svg, .ops-card svg, .benefit svg, .principle-card svg, .framework-mini svg {
+  width: 34px; height: 34px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.8;
+}
+.trend-card small, .impact-card small, .framework-mini small {
+  display: inline-flex; align-items: center; width: max-content; min-height: 26px; padding: 0 8px;
+  border-radius: 999px; background: #eef4ff; color: var(--blue); font-size: 0.72rem; font-weight: 900; letter-spacing: .02em;
+}
+.trend-card strong, .impact-card strong, .framework-mini strong, .benefit strong, .principle-card h3 {
+  display: block; color: var(--ink); font-size: 0.96rem; line-height: 1.18;
+}
+.trend-card span:last-child, .impact-card span:last-child, .framework-mini span:last-child {
+  color: var(--muted); font-size: 0.8rem; line-height: 1.35;
+}
+.impact-card { min-height: 132px; }
+.ops-card, .benefit {
+  display: grid; grid-template-columns: 38px minmax(0, 1fr); align-items: center; gap: 9px; min-height: 78px; padding: 10px; color: var(--blue); text-align: left;
+}
+.ops-card span, .benefit small { color: var(--muted); font-size: 0.78rem; line-height: 1.2; }
+.benefit strong { margin-bottom: 3px; font-size: 0.9rem; }
+.framework-section, .benefits-section, .principles-section {
+  grid-column: 1; padding: clamp(16px, 2vw, 24px); margin-top: var(--gap);
+}
+.framework-grid {
+  display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr); gap: 12px;
+}
+.framework-card {
+  display: grid; gap: 14px; padding: 16px; background: linear-gradient(135deg, rgba(7, 22, 63, 0.04), transparent 36%), #fff;
+}
+.framework-card h3 { margin-bottom: 0; color: var(--blue); font-size: 1.12rem; }
+.framework-card p { margin-bottom: 0; color: var(--muted); line-height: 1.5; }
+.framework-list { display: grid; gap: 10px; }
+.framework-mini { min-height: 120px; }
+.principles-grid { margin-top: 10px; }
+.principle-card { display: grid; align-content: center; min-height: 128px; padding: 14px; }
+.principle-card h3 { margin-bottom: 0; }
+.right-rail {
+  position: sticky; top: 132px; z-index: 20; grid-column: 2; grid-row: 1 / span 4; align-self: start; min-width: 0; width: 100%;
+}
+.detail-panel {
+  min-height: 520px; max-height: calc(100vh - 158px); padding: 24px; overflow: auto; background: #07163f; color: #fff;
+  box-shadow: 0 28px 86px rgba(7, 22, 63, 0.28);
+}
+.detail-panel p:first-child { margin-bottom: 7px; color: #8bd5ff; font-size: 0.75rem; font-weight: 900; letter-spacing: 0.08em; text-transform: uppercase; }
+.detail-panel h2 { margin-bottom: 14px; font-size: 1.82rem; line-height: 1.05; }
+.detail-panel p:last-child, .detail-panel li { color: #dce8ff; font-size: 1.02rem; line-height: 1.58; }
+.detail-panel ul { margin: 0; padding-left: 20px; }
+.detail-state { display: none; }
+.footer-note {
+  margin-top: 10px; padding-top: 12px; border-top: 1px solid rgba(141, 195, 255, 0.22);
+  color: #9fc3ff; font-size: 0.84rem; line-height: 1.45;
+}
+#info-intro:checked ~ .language-view main .detail-intro,
+#info-ai:checked ~ .language-view main .detail-ai,
+#info-edge:checked ~ .language-view main .detail-edge,
+#info-multicloud:checked ~ .language-view main .detail-multicloud,
+#info-security:checked ~ .language-view main .detail-security,
+#info-service-mesh:checked ~ .language-view main .detail-service-mesh,
+#info-sustainability:checked ~ .language-view main .detail-sustainability,
+#info-lbaac:checked ~ .language-view main .detail-lbaac,
+#info-adc:checked ~ .language-view main .detail-adc,
+#info-resilience:checked ~ .language-view main .detail-resilience,
+#info-ux:checked ~ .language-view main .detail-ux,
+#info-ops:checked ~ .language-view main .detail-ops,
+#info-governance:checked ~ .language-view main .detail-governance,
+#info-assess:checked ~ .language-view main .detail-assess,
+#info-modernize:checked ~ .language-view main .detail-modernize,
+#info-automate:checked ~ .language-view main .detail-automate,
+#info-diversify:checked ~ .language-view main .detail-diversify,
+#info-talent:checked ~ .language-view main .detail-talent,
+#info-performance:checked ~ .language-view main .detail-performance,
+#info-visibility:checked ~ .language-view main .detail-visibility,
+#info-platform:checked ~ .language-view main .detail-platform,
+#info-energy:checked ~ .language-view main .detail-energy,
+#info-principle-proactive:checked ~ .language-view main .detail-principle-proactive,
+#info-principle-distributed:checked ~ .language-view main .detail-principle-distributed,
+#info-principle-secure:checked ~ .language-view main .detail-principle-secure,
+#info-principle-automated:checked ~ .language-view main .detail-principle-automated,
+#info-principle-portable:checked ~ .language-view main .detail-principle-portable,
+#info-principle-observable:checked ~ .language-view main .detail-principle-observable,
+#info-principle-efficient:checked ~ .language-view main .detail-principle-efficient,
+#info-principle-api:checked ~ .language-view main .detail-principle-api { display: block; }
+#info-ai:checked ~ .language-view main [for="info-ai"],
+#info-edge:checked ~ .language-view main [for="info-edge"],
+#info-multicloud:checked ~ .language-view main [for="info-multicloud"],
+#info-security:checked ~ .language-view main [for="info-security"],
+#info-service-mesh:checked ~ .language-view main [for="info-service-mesh"],
+#info-sustainability:checked ~ .language-view main [for="info-sustainability"],
+#info-lbaac:checked ~ .language-view main [for="info-lbaac"],
+#info-adc:checked ~ .language-view main [for="info-adc"],
+#info-resilience:checked ~ .language-view main [for="info-resilience"],
+#info-ux:checked ~ .language-view main [for="info-ux"],
+#info-ops:checked ~ .language-view main [for="info-ops"],
+#info-governance:checked ~ .language-view main [for="info-governance"],
+#info-assess:checked ~ .language-view main [for="info-assess"],
+#info-modernize:checked ~ .language-view main [for="info-modernize"],
+#info-automate:checked ~ .language-view main [for="info-automate"],
+#info-diversify:checked ~ .language-view main [for="info-diversify"],
+#info-talent:checked ~ .language-view main [for="info-talent"],
+#info-performance:checked ~ .language-view main [for="info-performance"],
+#info-visibility:checked ~ .language-view main [for="info-visibility"],
+#info-platform:checked ~ .language-view main [for="info-platform"],
+#info-energy:checked ~ .language-view main [for="info-energy"],
+#info-principle-proactive:checked ~ .language-view main [for="info-principle-proactive"],
+#info-principle-distributed:checked ~ .language-view main [for="info-principle-distributed"],
+#info-principle-secure:checked ~ .language-view main [for="info-principle-secure"],
+#info-principle-automated:checked ~ .language-view main [for="info-principle-automated"],
+#info-principle-portable:checked ~ .language-view main [for="info-principle-portable"],
+#info-principle-observable:checked ~ .language-view main [for="info-principle-observable"],
+#info-principle-efficient:checked ~ .language-view main [for="info-principle-efficient"],
+#info-principle-api:checked ~ .language-view main [for="info-principle-api"] {
+  border-color: var(--line-strong); background: #eef4ff; box-shadow: 0 16px 34px rgba(35, 89, 255, 0.17);
+}
+@media (max-width: 1380px) {
+  .topbar { align-items: flex-start; flex-direction: column; }
+  .architecture-heading, .framework-heading, .principles-heading { grid-template-columns: 1fr; }
+  .global-grid, .ops-grid, .benefits-card, .principles-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 1180px) {
+  .page-shell { grid-template-columns: minmax(0, 1fr) minmax(300px, 330px); }
+  .detail-panel { min-height: 460px; max-height: calc(100vh - 144px); padding: 18px; }
+  .detail-panel h2 { font-size: 1.42rem; margin-bottom: 9px; }
+  .global-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .impact-grid, .framework-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 980px) {
+  .page-shell { display: flex; flex-direction: column; }
+  .right-rail { position: static; order: 2; width: 100%; max-width: none; margin-top: var(--gap); }
+  .map-area { order: 1; }
+  .framework-section { order: 3; }
+  .benefits-section { order: 4; }
+  .principles-section { order: 5; }
+  .detail-panel { min-height: 0; max-height: none; overflow: visible; }
+}
+@media (max-width: 760px) {
+  body { background: #f7f9fe; }
+  .topbar { padding: 15px; }
+  .brand-row { flex-wrap: wrap; gap: 10px; }
+  .kyndryl-logo { width: 124px; min-width: 124px; }
+  .practice-tag { min-height: 30px; font-size: 0.8rem; }
+  h1 { font-size: 2.25rem; }
+  .subtitle { font-size: 1rem; }
+  .architecture-heading h2, .framework-heading h2, .principles-heading h2 { font-size: 1.62rem; }
+  .page-shell { padding: 14px; }
+  .map-area, .framework-section, .benefits-section, .principles-section { padding: 14px; }
+  .global-grid, .impact-grid, .ops-grid, .benefits-card, .principles-grid { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; }
+}
+    </style>
+  </head>
+  <body>
+    <input class="language-radio" type="radio" name="language" id="lang-es" />
+    <input class="language-radio" type="radio" name="language" id="lang-en" checked />
+
+    <svg class="icon-defs" aria-hidden="true" focusable="false">
+      <symbol id="icon-spark" viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3z"/><path d="M19 3l.8 2.2L22 6l-2.2.8L19 9l-.8-2.2L16 6l2.2-.8L19 3z"/><path d="M5 15l.8 2.2L8 18l-2.2.8L5 21l-.8-2.2L2 18l2.2-.8L5 15z"/></symbol>
+      <symbol id="icon-edge" viewBox="0 0 24 24"><path d="M4 12h6M14 12h6M12 4v6M12 14v6"/><circle cx="12" cy="12" r="3"/><circle cx="4" cy="12" r="2"/><circle cx="20" cy="12" r="2"/><circle cx="12" cy="4" r="2"/><circle cx="12" cy="20" r="2"/></symbol>
+      <symbol id="icon-cloud" viewBox="0 0 24 24"><path d="M7.2 18h9.3a4.4 4.4 0 0 0 .4-8.8 6 6 0 0 0-11.5 1.9A3.6 3.6 0 0 0 7.2 18z"/></symbol>
+      <symbol id="icon-shield" viewBox="0 0 24 24"><path d="M12 3l7 3v5.5c0 4.7-2.8 7.8-7 9.5-4.2-1.7-7-4.8-7-9.5V6l7-3z"/><path d="M8.4 12.2l2.1 2.1 5-5"/></symbol>
+      <symbol id="icon-mesh" viewBox="0 0 24 24"><circle cx="6" cy="12" r="2.5"/><circle cx="12" cy="6" r="2.5"/><circle cx="18" cy="12" r="2.5"/><circle cx="12" cy="18" r="2.5"/><path d="M7.8 10.4l2.5-2.8M13.7 7.6l2.5 2.8M16.2 13.6l-2.5 2.8M10.3 16.4l-2.5-2.8"/></symbol>
+      <symbol id="icon-leaf" viewBox="0 0 24 24"><path d="M18 4c-4.5.3-7.4 1.9-9.2 4.8S6.1 15.2 6 20c4.8-.1 8.3-1 11.2-2.8S21.7 10.5 22 6c-2.1 1-4 2.4-5.8 4.2"/></symbol>
+      <symbol id="icon-code" viewBox="0 0 24 24"><path d="M8 8l-4 4 4 4M16 8l4 4-4 4M14 4l-4 16"/></symbol>
+      <symbol id="icon-stack" viewBox="0 0 24 24"><path d="M12 4l8 4-8 4-8-4 8-4zM4 12l8 4 8-4M4 16l8 4 8-4"/></symbol>
+      <symbol id="icon-route" viewBox="0 0 24 24"><path d="M5 18c5 0 2-12 7-12h7"/><path d="M15.5 2.8L19 6l-3.5 3.2"/><circle cx="5" cy="18" r="2.5"/></symbol>
+      <symbol id="icon-rocket" viewBox="0 0 24 24"><path d="M13 4c3.7.4 6.2 2.9 7 7l-6 6-5-5 4-8z"/><path d="M8.5 12.5L5 13.7l1.2-3.5M11.5 15.5L10.3 19l3.5-1.2M14.5 8.5h.1"/></symbol>
+      <symbol id="icon-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.8v3M12 18.2v3M4.3 5.2l2.1 2.1M17.6 16.7l2.1 2.1M2.8 12h3M18.2 12h3M4.3 18.8l2.1-2.1M17.6 7.3l2.1-2.1"/></symbol>
+      <symbol id="icon-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3.6 9h16.8M3.6 15h16.8M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></symbol>
+      <symbol id="icon-eye" viewBox="0 0 24 24"><path d="M3 12s3.2-6 9-6 9 6 9 6-3.2 6-9 6-9-6-9-6z"/><circle cx="12" cy="12" r="2.8"/></symbol>
+      <symbol id="icon-api" viewBox="0 0 24 24"><path d="M7 7h10v10H7z"/><path d="M12 2v5M12 17v5M2 12h5M17 12h5M5 5l3 3M16 16l3 3M19 5l-3 3M8 16l-3 3"/></symbol>
+    </svg>
+
+    <input class="info-radio" type="radio" name="info-panel" id="info-intro" checked />
+    <input class="info-radio" type="radio" name="info-panel" id="info-ai" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-edge" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-multicloud" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-security" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-service-mesh" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-sustainability" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-lbaac" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-adc" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-resilience" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-ux" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-ops" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-governance" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-assess" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-modernize" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-automate" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-diversify" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-talent" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-performance" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-visibility" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-platform" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-energy" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-principle-proactive" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-principle-distributed" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-principle-secure" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-principle-automated" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-principle-portable" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-principle-observable" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-principle-efficient" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-principle-api" />
+
+    <div class="language-view language-en" lang="en">
+      <header class="topbar">
+        <div class="header-copy">
+          <div class="brand-row" aria-label="Kyndryl Network and Edge">
+            <span class="kyndryl-logo" aria-label="Kyndryl">
+              <svg viewBox="0 0 125.74 40" role="img" aria-labelledby="kyndryl-title-en" xmlns="http://www.w3.org/2000/svg"><title id="kyndryl-title-en">Kyndryl</title><path d="M120,0V30h-3.518V0ZM48.854,9.537a5.575,5.575,0,0,0-5.9,4.993h-.172V10H39.26V30h3.519V17.544c0-3.368,1.793-4.911,4.8-4.911,3.442,0,4.981,1.706,4.981,5.09V30h3.518V17.264C56.074,12.489,53.374,9.537,48.854,9.537ZM27.323,29.462h-.115L21.1,10H17.454l6.465,20h3.237l-3.3,10H27.37l9.684-30H33.409Zm77.222,0h-.115L98.322,10H94.675l6.465,20h3.237l-3.3,10h3.511l9.684-30h-3.646ZM7.325,20l8.684-10H11.73l-8.1,9.652H3.519V0H0V30H3.519V20.185H6.862L13.624,30H17.7l-7-10Zm79.021-5.468h-.171V10H82.656V30h3.519V17.508c0-3.368,1.91-4.6,5.184-4.6a9.471,9.471,0,0,1,2.181.234v-3.4a5.152,5.152,0,0,0-1.669-.212A5.4,5.4,0,0,0,86.346,14.532ZM74.617,0h3.518V30H74.617V25.47h-.17c-.337,2.791-2.478,4.993-6.536,4.993-4.951,0-8.469-3.928-8.469-10.463S62.959,9.537,67.911,9.537c4.058,0,6.2,2.2,6.536,4.993h.17Zm0,17.358c0-3.368-2.542-4.726-5.695-4.726-3.324,0-5.81,2.068-5.81,7.368s2.486,7.368,5.81,7.368c3.153,0,5.695-1.358,5.695-4.726V17.358Zm46.956,10.529v.237h.639V30h.3V28.125h.639v-.237Zm3.52,0-.525,2.084h-.006l-.5-2.084h-.579L123.422,30h.283l.063-2.084h.006L124.293,30h.528l.551-2.084h.006L125.44,30h.3l-.069-2.112h-.577Z" fill="#ff462d"/></svg>
+            </span>
+            <span class="practice-tag">Network and Edge</span>
+          </div>
+          <h1>Load Balancing Trends 2026 - Point of View</h1>
+          <p class="subtitle">A strategic view of how AI, edge distribution, multi-cloud routing, security, automation and platform convergence are reshaping load balancing in 2026.</p>
+        </div>
+        <div class="language-switch" aria-label="Language selector">
+          <label class="lang-option" for="lang-es">ES</label>
+          <label class="lang-option" for="lang-en">EN</label>
+        </div>
+      </header>
+      <main class="page-shell">
+        <section class="map-area" aria-label="Interactive load balancing trends overview">
+          <div class="architecture-heading">
+            <p class="eyebrow">Trend landscape</p>
+            <h2>Eight shifts are moving load balancing from traffic distribution to an intelligent application delivery control plane</h2>
+            <p>Click any card to explore what is changing, why it matters, and what enterprise teams should prepare for across architecture, operations and governance.</p>
+          </div>
+
+          <article class="flow-panel global-panel">
+            <div class="section-heading">
+              <span class="step">01</span>
+              <div>
+                <h2>Technology trends shaping 2026</h2>
+                <p>The next wave emphasizes predictive behavior, distributed traffic decisions, platform-native integration, stronger built-in protection, and programmable delivery policy.</p>
+              </div>
+            </div>
+            <div class="global-grid">
+              <label class="trend-card" for="info-ai">
+                <svg><use href="#icon-spark" /></svg>
+                <small>Trend 1</small>
+                <span><strong>AI-driven load balancing</strong></span>
+                <span>Move from reactive scaling to predictive traffic steering and anomaly-aware routing.</span>
+              </label>
+              <label class="trend-card" for="info-edge">
+                <svg><use href="#icon-edge" /></svg>
+                <small>Trend 2</small>
+                <span><strong>Edge and distributed balancing</strong></span>
+                <span>Push decisions closer to users and devices to cut latency for real-time workloads.</span>
+              </label>
+              <label class="trend-card" for="info-multicloud">
+                <svg><use href="#icon-cloud" /></svg>
+                <small>Trend 3</small>
+                <span><strong>Hybrid and multi-cloud GSLB</strong></span>
+                <span>Route users toward the healthiest and most suitable region, cloud or site.</span>
+              </label>
+              <label class="trend-card" for="info-security">
+                <svg><use href="#icon-shield" /></svg>
+                <small>Trend 4</small>
+                <span><strong>Security-first balancing</strong></span>
+                <span>Combine traffic distribution with WAF, DDoS defense, bot mitigation and API protection.</span>
+              </label>
+              <label class="trend-card" for="info-service-mesh">
+                <svg><use href="#icon-mesh" /></svg>
+                <small>Trend 5</small>
+                <span><strong>Service mesh integration</strong></span>
+                <span>Support microservices traffic policy, canary control and east-west visibility.</span>
+              </label>
+              <label class="trend-card" for="info-sustainability">
+                <svg><use href="#icon-leaf" /></svg>
+                <small>Trend 6</small>
+                <span><strong>Energy-aware delivery</strong></span>
+                <span>Optimize utilization and reduce waste as efficiency becomes a board-level priority.</span>
+              </label>
+              <label class="trend-card" for="info-lbaac">
+                <svg><use href="#icon-code" /></svg>
+                <small>Trend 7</small>
+                <span><strong>Load Balancing as Code</strong></span>
+                <span>Treat policy, listeners and routing behavior as versioned, testable configuration.</span>
+              </label>
+              <label class="trend-card" for="info-adc">
+                <svg><use href="#icon-stack" /></svg>
+                <small>Trend 8</small>
+                <span><strong>ADC platform convergence</strong></span>
+                <span>Unify balancing, security, analytics and API control within a common layer.</span>
+              </label>
+            </div>
+          </article>
+
+          <article class="flow-panel impact-panel">
+            <div class="section-heading compact">
+              <span class="step">02</span>
+              <div>
+                <h2>Enterprise impact map</h2>
+                <p>These changes affect resilience, user experience, operating models and governance choices—not just the data path.</p>
+              </div>
+            </div>
+            <div class="impact-grid">
+              <label class="impact-card" for="info-resilience">
+                <svg><use href="#icon-route" /></svg>
+                <small>Outcome</small>
+                <span><strong>Business continuity</strong></span>
+                <span>Health-aware global routing and proactive capacity moves reduce the blast radius of outages and demand spikes.</span>
+              </label>
+              <label class="impact-card" for="info-ux">
+                <svg><use href="#icon-rocket" /></svg>
+                <small>Outcome</small>
+                <span><strong>User experience</strong></span>
+                <span>Lower latency, fewer disruptions and better regional affinity improve digital service responsiveness.</span>
+              </label>
+              <label class="impact-card" for="info-ops">
+                <svg><use href="#icon-gear" /></svg>
+                <small>Outcome</small>
+                <span><strong>Operational simplification</strong></span>
+                <span>Automation and reusable configuration patterns reduce manual changes and inconsistency.</span>
+              </label>
+              <label class="impact-card" for="info-governance">
+                <svg><use href="#icon-eye" /></svg>
+                <small>Outcome</small>
+                <span><strong>Control and visibility</strong></span>
+                <span>Shared telemetry, analytics and policy models enable stronger cross-domain governance.</span>
+              </label>
+            </div>
+          </article>
+
+          <article class="ops-band">
+            <div class="section-heading compact">
+              <span class="step">03</span>
+              <div>
+                <h2>Preparation priorities for enterprise teams</h2>
+                <p>Modernization should connect technology selection with skills, automation, cloud operating model and vendor strategy.</p>
+              </div>
+            </div>
+            <div class="ops-grid">
+              <label class="ops-card" for="info-assess"><svg><use href="#icon-eye" /></svg><span><strong>Assess current fit</strong><br/>Review scalability, AI readiness and cloud compatibility.</span></label>
+              <label class="ops-card" for="info-modernize"><svg><use href="#icon-cloud" /></svg><span><strong>Modernize architecture</strong><br/>Align to hybrid and multi-cloud traffic patterns and GSLB needs.</span></label>
+              <label class="ops-card" for="info-automate"><svg><use href="#icon-code" /></svg><span><strong>Automate policy delivery</strong><br/>Adopt APIs and version-controlled configuration pipelines.</span></label>
+              <label class="ops-card" for="info-diversify"><svg><use href="#icon-globe" /></svg><span><strong>Diversify dependencies</strong><br/>Avoid tight lock-in and design for operational portability.</span></label>
+            </div>
+          </article>
+        </section>
+
+        <section class="framework-section" aria-label="Execution framework">
+          <div class="framework-heading">
+            <p class="eyebrow">Execution framework</p>
+            <h2>From trend awareness to delivery roadmap</h2>
+            <p>A practical adoption path combines technical assessment, platform design, automation, organizational readiness and measurable outcomes.</p>
+          </div>
+          <div class="framework-grid">
+            <article class="framework-card">
+              <h3>Recommended transformation path</h3>
+              <div class="framework-list">
+                <label class="framework-mini" for="info-assess">
+                  <svg><use href="#icon-eye" /></svg>
+                  <small>Step 1</small>
+                  <span><strong>Assess</strong></span>
+                  <span>Inventory current load balancers, policy sprawl, cloud locations, security controls and observability gaps.</span>
+                </label>
+                <label class="framework-mini" for="info-modernize">
+                  <svg><use href="#icon-cloud" /></svg>
+                  <small>Step 2</small>
+                  <span><strong>Redesign</strong></span>
+                  <span>Map services to edge, regional and cloud-native balancing patterns based on latency, resilience and compliance needs.</span>
+                </label>
+                <label class="framework-mini" for="info-automate">
+                  <svg><use href="#icon-code" /></svg>
+                  <small>Step 3</small>
+                  <span><strong>Automate</strong></span>
+                  <span>Model listeners, pools, health checks, certificates and traffic policy as code integrated into CI/CD.</span>
+                </label>
+                <label class="framework-mini" for="info-talent">
+                  <svg><use href="#icon-gear" /></svg>
+                  <small>Step 4</small>
+                  <span><strong>Upskill</strong></span>
+                  <span>Build skills in cloud-native networking, service mesh, API security and policy automation.</span>
+                </label>
+              </div>
+            </article>
+            <article class="framework-card">
+              <h3>KPIs to track</h3>
+              <div class="framework-list">
+                <label class="framework-mini" for="info-performance">
+                  <svg><use href="#icon-rocket" /></svg>
+                  <small>KPI</small>
+                  <span><strong>Performance</strong></span>
+                  <span>Latency, response time, balancing accuracy and regional failover time.</span>
+                </label>
+                <label class="framework-mini" for="info-visibility">
+                  <svg><use href="#icon-eye" /></svg>
+                  <small>KPI</small>
+                  <span><strong>Visibility</strong></span>
+                  <span>Policy drift, health-check quality, anomaly coverage and actionable telemetry.</span>
+                </label>
+                <label class="framework-mini" for="info-platform">
+                  <svg><use href="#icon-stack" /></svg>
+                  <small>KPI</small>
+                  <span><strong>Platform efficiency</strong></span>
+                  <span>Deployment lead time, change failure rate and percentage of policy under automation.</span>
+                </label>
+                <label class="framework-mini" for="info-energy">
+                  <svg><use href="#icon-leaf" /></svg>
+                  <small>KPI</small>
+                  <span><strong>Energy impact</strong></span>
+                  <span>Server utilization, idle footprint and efficiency gains from improved traffic placement.</span>
+                </label>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <aside class="right-rail" aria-label="Selected detail">
+          <article class="detail-panel" aria-live="polite">
+            <div class="detail-state detail-intro">
+              <p>Explore the POV</p>
+              <h2>Click any card to open the explanation</h2>
+              <p>This page translates the 2026 load balancing trends into an executive-ready point of view with enterprise implications and actionable preparation themes.</p>
+              <div class="footer-note">Source used as the content basis: the EdgeNEXUS article on 2026 load balancing trends, transformed into this Kyndryl-style POV page.</div>
+            </div>
+            <div class="detail-state detail-ai"><p>Trend 1</p><h2>AI-driven load balancing</h2><p>Load balancing is shifting from threshold-based reaction to predictive decision-making. That means using historical traffic patterns and anomaly detection to anticipate surges, pre-position capacity and route around emerging bottlenecks before users feel the impact.</p><ul><li>Best fit: retail peaks, digital events, API-heavy platforms and bursty customer channels.</li><li>Design implication: balancing policy should ingest telemetry, not just static weights.</li><li>Operational implication: SRE and network teams need model validation, explainability and override controls.</li></ul></div>
+            <div class="detail-state detail-edge"><p>Trend 2</p><h2>Edge and distributed balancing</h2><p>As processing moves closer to users and devices, balancing decisions also become distributed. Edge-aware load balancing reduces round-trip delay and improves consistency for real-time services such as industrial systems, telemedicine, media delivery and other latency-sensitive applications.</p><ul><li>Best fit: 5G, IoT, video, logistics, smart sites and interactive apps.</li><li>Design implication: local decision points must coordinate with regional and central policies.</li><li>Operational implication: observability must span core, cloud and edge tiers.</li></ul></div>
+            <div class="detail-state detail-multicloud"><p>Trend 3</p><h2>Hybrid and multi-cloud GSLB</h2><p>Global server load balancing becomes the traffic control layer that spans public cloud, private cloud and data-center estates. Routing decisions increasingly consider health, latency, locality, resiliency posture and provider availability rather than using a fixed active-passive model.</p><ul><li>Best fit: multinational platforms, regulated estates and provider-diverse landing zones.</li><li>Design implication: DNS, health checks and user affinity must align with actual service topology.</li><li>Operational implication: teams need failure-domain awareness beyond a single cloud.</li></ul></div>
+            <div class="detail-state detail-security"><p>Trend 4</p><h2>Security-first balancing</h2><p>Load balancers are becoming enforcement points, not only distribution points. Modern solutions increasingly bundle WAF, DDoS mitigation, bot defense and API-aware inspection so malicious traffic is filtered earlier and application teams inherit a stronger security baseline by default.</p><ul><li>Best fit: internet-facing apps, APIs, digital channels and distributed workloads.</li><li>Design implication: traffic policy and threat policy should be designed together.</li><li>Operational implication: SecOps and NetOps workflows converge around a shared edge policy model.</li></ul></div>
+            <div class="detail-state detail-service-mesh"><p>Trend 5</p><h2>Service mesh and cloud-native integration</h2><p>In microservices environments, balancing is no longer only north-south. East-west traffic shaping inside Kubernetes and service mesh frameworks adds richer control for canary rollout, circuit breaking, retry policy and service-to-service visibility.</p><ul><li>Best fit: container platforms, platform engineering teams and modern DevOps estates.</li><li>Design implication: teams need a consistent model across ingress, mesh and API gateway layers.</li><li>Operational implication: application delivery becomes part of platform engineering, not just network engineering.</li></ul></div>
+            <div class="detail-state detail-sustainability"><p>Trend 6</p><h2>Energy-aware traffic placement</h2><p>Energy cost and sustainability goals are starting to influence traffic engineering. Better workload placement and reduced overprovisioning can improve overall server utilization, lower idle resource waste and support broader efficiency goals without compromising resilience.</p><ul><li>Best fit: large estates with variable demand or high idle spend.</li><li>Design implication: balancing metrics should include cost and efficiency signals where possible.</li><li>Operational implication: FinOps, infra teams and platform owners need a shared efficiency dashboard.</li></ul></div>
+            <div class="detail-state detail-lbaac"><p>Trend 7</p><h2>Load Balancing as Code</h2><p>Listeners, pools, persistence rules, certificates and health logic are increasingly managed like software artifacts. Treating load balancing policy as code enables peer review, rollback, testing and more repeatable deployments across regions and clouds.</p><ul><li>Best fit: organizations standardizing DevOps and change governance.</li><li>Design implication: platform patterns should expose reusable modules rather than one-off manual configs.</li><li>Operational implication: version control becomes a key control point for delivery risk.</li></ul></div>
+            <div class="detail-state detail-adc"><p>Trend 8</p><h2>ADC platform convergence</h2><p>Traditional ADC capabilities are converging into broader application delivery platforms that combine balancing, security, analytics and API management. This helps reduce tool fragmentation and gives teams a more unified control point for digital service delivery.</p><ul><li>Best fit: enterprises rationalizing overlapping edge, application and security products.</li><li>Design implication: choose platforms that align with operating model and ecosystem openness.</li><li>Operational implication: central governance gets easier, but portability must be preserved.</li></ul></div>
+            <div class="detail-state detail-resilience"><p>Outcome</p><h2>Business continuity</h2><p>More predictive, distributed and health-aware load balancing improves service continuity during outages, flash crowds and regional impairments. The strategic value is not just uptime—it is reducing disruption at moments of highest business sensitivity.</p></div>
+            <div class="detail-state detail-ux"><p>Outcome</p><h2>User experience</h2><p>Routing traffic to the nearest viable path and removing degraded targets earlier improves response times and consistency. In customer-facing channels, this directly supports conversion, trust and ongoing engagement.</p></div>
+            <div class="detail-state detail-ops"><p>Outcome</p><h2>Operational simplification</h2><p>Automation, common patterns and integrated delivery platforms reduce manual interventions and configuration drift. Enterprises can move from device-specific administration to productized policies with clearer ownership and faster turnaround.</p></div>
+            <div class="detail-state detail-governance"><p>Outcome</p><h2>Control and visibility</h2><p>As balancing spans clouds, APIs, microservices and security controls, organizations need shared telemetry, common policy intent and stronger governance over changes. Visibility should cover user path, service health, automation state and exception handling.</p></div>
+            <div class="detail-state detail-assess"><p>Preparation</p><h2>Assess current fit</h2><p>Start with a baseline: where balancing sits today, what platforms exist, how policies are managed, what observability coverage is available, and where cloud, security or automation gaps are constraining scale.</p></div>
+            <div class="detail-state detail-modernize"><p>Preparation</p><h2>Modernize architecture</h2><p>Map workloads to the right balancing model—global, regional, edge, in-cluster or API-focused. Architecture should reflect user geography, resiliency needs, compliance boundaries and where traffic decisions need to be made.</p></div>
+            <div class="detail-state detail-automate"><p>Preparation</p><h2>Automate policy delivery</h2><p>Adopt API-driven and version-controlled delivery so balancing changes become repeatable, testable and auditable. This creates the foundation for standardized landing-zone patterns and faster rollout of new digital services.</p></div>
+            <div class="detail-state detail-diversify"><p>Preparation</p><h2>Diversify vendors and dependencies</h2><p>Portability matters when balancing spans multiple clouds and edge locations. Evaluate ecosystem openness, interoperability and the ability to avoid creating a new control-plane lock-in while simplifying operations.</p></div>
+            <div class="detail-state detail-talent"><p>Preparation</p><h2>Upskill teams</h2><p>Skills need to expand beyond classic load balancer administration into cloud-native networking, service mesh, API security, observability engineering and automation pipelines. Modern application delivery is multidisciplinary by design.</p></div>
+            <div class="detail-state detail-performance"><p>KPI</p><h2>Performance metrics</h2><p>Track regional latency, application response, failover times, balancing efficiency and the time required to remove unhealthy targets from service. These metrics indicate whether the design works in live conditions rather than only in steady state.</p></div>
+            <div class="detail-state detail-visibility"><p>KPI</p><h2>Visibility metrics</h2><p>Measure policy drift, health-check fidelity, anomaly detection coverage and the quality of telemetry shared across network, security, SRE and platform teams. Visibility maturity often determines how quickly teams can recover.</p></div>
+            <div class="detail-state detail-platform"><p>KPI</p><h2>Platform efficiency</h2><p>Use lead time for changes, automation coverage, standard-pattern adoption and change failure rate to evaluate whether the operating model is scaling. These metrics expose where manual effort still dominates.</p></div>
+            <div class="detail-state detail-energy"><p>KPI</p><h2>Energy impact</h2><p>Evaluate server utilization, overprovisioning reduction and the efficiency gains created by better traffic placement. While not the only business objective, energy-aware delivery increasingly supports both cost and sustainability outcomes.</p></div>
+            <div class="detail-state detail-principle-proactive"><p>Strategic principle</p><h2>Proactive by design</h2><p>The future state is predictive, not purely reactive. Load balancing should anticipate service conditions through telemetry, analytics and policy automation rather than waiting for threshold alarms alone.</p></div>
+            <div class="detail-state detail-principle-distributed"><p>Strategic principle</p><h2>Distributed decision points</h2><p>Traffic control should happen at the right tier—global, regional, edge or in-cluster—depending on the outcome required. A single centralized mechanism will not fit every user path.</p></div>
+            <div class="detail-state detail-principle-secure"><p>Strategic principle</p><h2>Secure by default</h2><p>Security services should be part of the delivery path rather than a disconnected add-on. This creates more consistent protection and avoids fragmentation between application policy and traffic policy.</p></div>
+            <div class="detail-state detail-principle-automated"><p>Strategic principle</p><h2>Automated and programmable</h2><p>Policy must be expressed in reusable code and delivered through controlled pipelines. This is what enables repeatability across applications, regions and cloud environments.</p></div>
+            <div class="detail-state detail-principle-portable"><p>Strategic principle</p><h2>Portable across environments</h2><p>Architecture choices should preserve enough abstraction to avoid lock-in while still taking advantage of native platform strengths. Portability is especially important for hybrid and multi-cloud operations.</p></div>
+            <div class="detail-state detail-principle-observable"><p>Strategic principle</p><h2>Observable end to end</h2><p>Decision quality depends on visibility across user experience, service health, infrastructure state and security posture. Load balancing without broad telemetry becomes blind automation.</p></div>
+            <div class="detail-state detail-principle-efficient"><p>Strategic principle</p><h2>Efficiency matters</h2><p>Better traffic placement should also improve how infrastructure is consumed. Over time, efficiency becomes both a financial and sustainability differentiator.</p></div>
+            <div class="detail-state detail-principle-api"><p>Strategic principle</p><h2>API-first control plane</h2><p>Application delivery increasingly behaves like a policy platform exposed through APIs, pipelines and service catalogs. That is what makes it consumable at enterprise scale.</p></div>
+          </article>
+        </aside>
+
+        <section class="benefits-section" aria-label="What changes by 2026">
+          <div class="framework-heading">
+            <p class="eyebrow">What changes by 2026</p>
+            <h2>Key takeaways for executives and platform owners</h2>
+            <p>The strategic shift is from isolated appliances to an intelligent layer that coordinates performance, resilience, security and operating efficiency.</p>
+          </div>
+          <article class="benefits-card">
+            <label class="benefit" for="info-performance"><svg><use href="#icon-rocket" /></svg><span><strong>Faster digital experiences</strong><small>Lower latency through better traffic placement.</small></span></label>
+            <label class="benefit" for="info-resilience"><svg><use href="#icon-route" /></svg><span><strong>Stronger resilience</strong><small>Better continuity during bursts and outages.</small></span></label>
+            <label class="benefit" for="info-security"><svg><use href="#icon-shield" /></svg><span><strong>Security embedded in the path</strong><small>Protection becomes part of delivery policy.</small></span></label>
+            <label class="benefit" for="info-automate"><svg><use href="#icon-code" /></svg><span><strong>Automation at scale</strong><small>Policy becomes testable, reusable and auditable.</small></span></label>
+            <label class="benefit" for="info-visibility"><svg><use href="#icon-eye" /></svg><span><strong>Shared observability</strong><small>Operations gain richer cross-domain insight.</small></span></label>
+            <label class="benefit" for="info-platform"><svg><use href="#icon-stack" /></svg><span><strong>Platform simplification</strong><small>Converged ADC capabilities reduce fragmentation.</small></span></label>
+            <label class="benefit" for="info-diversify"><svg><use href="#icon-globe" /></svg><span><strong>Multi-cloud flexibility</strong><small>Traffic strategy supports provider diversity.</small></span></label>
+            <label class="benefit" for="info-energy"><svg><use href="#icon-leaf" /></svg><span><strong>Efficiency outcomes</strong><small>Utilization and energy awareness improve over time.</small></span></label>
+          </article>
+        </section>
+
+        <section class="principles-section" aria-label="Strategic design principles">
+          <div class="principles-heading">
+            <p class="eyebrow">Strategic design principles</p>
+            <h2>Design the application delivery layer as software, not as a set of isolated boxes</h2>
+            <p>The winning posture combines proactive control, distributed policy placement, security integration, automation and observability while preserving portability across clouds and operating models.</p>
+          </div>
+          <div class="principles-grid">
+            <label class="principle-card" for="info-principle-proactive"><svg><use href="#icon-spark" /></svg><h3>Proactive by design</h3></label>
+            <label class="principle-card" for="info-principle-distributed"><svg><use href="#icon-edge" /></svg><h3>Distributed decision points</h3></label>
+            <label class="principle-card" for="info-principle-secure"><svg><use href="#icon-shield" /></svg><h3>Secure by default</h3></label>
+            <label class="principle-card" for="info-principle-automated"><svg><use href="#icon-code" /></svg><h3>Automated and programmable</h3></label>
+            <label class="principle-card" for="info-principle-portable"><svg><use href="#icon-cloud" /></svg><h3>Portable across environments</h3></label>
+            <label class="principle-card" for="info-principle-observable"><svg><use href="#icon-eye" /></svg><h3>Observable end to end</h3></label>
+            <label class="principle-card" for="info-principle-efficient"><svg><use href="#icon-leaf" /></svg><h3>Efficiency matters</h3></label>
+            <label class="principle-card" for="info-principle-api"><svg><use href="#icon-api" /></svg><h3>API-first control plane</h3></label>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div class="language-view language-es" lang="es">
+      <header class="topbar">
+        <div class="header-copy">
+          <div class="brand-row" aria-label="Kyndryl Network and Edge">
+            <span class="kyndryl-logo" aria-label="Kyndryl">
+              <svg viewBox="0 0 125.74 40" role="img" aria-labelledby="kyndryl-title-es" xmlns="http://www.w3.org/2000/svg"><title id="kyndryl-title-es">Kyndryl</title><path d="M120,0V30h-3.518V0ZM48.854,9.537a5.575,5.575,0,0,0-5.9,4.993h-.172V10H39.26V30h3.519V17.544c0-3.368,1.793-4.911,4.8-4.911,3.442,0,4.981,1.706,4.981,5.09V30h3.518V17.264C56.074,12.489,53.374,9.537,48.854,9.537ZM27.323,29.462h-.115L21.1,10H17.454l6.465,20h3.237l-3.3,10H27.37l9.684-30H33.409Zm77.222,0h-.115L98.322,10H94.675l6.465,20h3.237l-3.3,10h3.511l9.684-30h-3.646ZM7.325,20l8.684-10H11.73l-8.1,9.652H3.519V0H0V30H3.519V20.185H6.862L13.624,30H17.7l-7-10Zm79.021-5.468h-.171V10H82.656V30h3.519V17.508c0-3.368,1.91-4.6,5.184-4.6a9.471,9.471,0,0,1,2.181.234v-3.4a5.152,5.152,0,0,0-1.669-.212A5.4,5.4,0,0,0,86.346,14.532ZM74.617,0h3.518V30H74.617V25.47h-.17c-.337,2.791-2.478,4.993-6.536,4.993-4.951,0-8.469-3.928-8.469-10.463S62.959,9.537,67.911,9.537c4.058,0,6.2,2.2,6.536,4.993h.17Zm0,17.358c0-3.368-2.542-4.726-5.695-4.726-3.324,0-5.81,2.068-5.81,7.368s2.486,7.368,5.81,7.368c3.153,0,5.695-1.358,5.695-4.726V17.358Zm46.956,10.529v.237h.639V30h.3V28.125h.639v-.237Zm3.52,0-.525,2.084h-.006l-.5-2.084h-.579L123.422,30h.283l.063-2.084h.006L124.293,30h.528l.551-2.084h.006L125.44,30h.3l-.069-2.112h-.577Z" fill="#ff462d"/></svg>
+            </span>
+            <span class="practice-tag">Network and Edge</span>
+          </div>
+          <h1>Tendencias de Load Balancing 2026 - Point of View</h1>
+          <p class="subtitle">Una visión estratégica de cómo la IA, el edge, el enrutamiento multi-cloud, la seguridad, la automatización y la convergencia de plataformas están redefiniendo el load balancing en 2026.</p>
+        </div>
+        <div class="language-switch" aria-label="Selector de idioma">
+          <label class="lang-option" for="lang-es">ES</label>
+          <label class="lang-option" for="lang-en">EN</label>
+        </div>
+      </header>
+      <main class="page-shell">
+        <section class="map-area" aria-label="Visión interactiva de tendencias de load balancing">
+          <div class="architecture-heading">
+            <p class="eyebrow">Panorama de tendencias</p>
+            <h2>Ocho cambios están moviendo el load balancing desde la simple distribución de tráfico hacia un plano de control inteligente de entrega de aplicaciones</h2>
+            <p>Haz clic en cualquier tarjeta para ver qué está cambiando, por qué importa y qué deberían preparar los equipos de arquitectura, operaciones y gobierno.</p>
+          </div>
+          <article class="flow-panel global-panel">
+            <div class="section-heading">
+              <span class="step">01</span>
+              <div>
+                <h2>Tendencias tecnológicas que marcan 2026</h2>
+                <p>La próxima ola pone el foco en comportamiento predictivo, decisiones distribuidas, integración cloud-native, protección embebida y políticas programables de entrega.</p>
+              </div>
+            </div>
+            <div class="global-grid">
+              <label class="trend-card" for="info-ai"><svg><use href="#icon-spark" /></svg><small>Tendencia 1</small><span><strong>Load balancing impulsado por IA</strong></span><span>Pasar de escalar de forma reactiva a enrutar tráfico de forma predictiva y consciente de anomalías.</span></label>
+              <label class="trend-card" for="info-edge"><svg><use href="#icon-edge" /></svg><small>Tendencia 2</small><span><strong>Balanceo distribuido en edge</strong></span><span>Llevar decisiones más cerca del usuario y del dispositivo para reducir latencia en cargas en tiempo real.</span></label>
+              <label class="trend-card" for="info-multicloud"><svg><use href="#icon-cloud" /></svg><small>Tendencia 3</small><span><strong>GSLB híbrido y multi-cloud</strong></span><span>Enviar usuarios hacia la región, cloud o site más saludable y adecuada.</span></label>
+              <label class="trend-card" for="info-security"><svg><use href="#icon-shield" /></svg><small>Tendencia 4</small><span><strong>Balanceo con seguridad embebida</strong></span><span>Combinar distribución de tráfico con WAF, DDoS, mitigación de bots y protección de APIs.</span></label>
+              <label class="trend-card" for="info-service-mesh"><svg><use href="#icon-mesh" /></svg><small>Tendencia 5</small><span><strong>Integración con service mesh</strong></span><span>Dar soporte a políticas de microservicios, canarios y visibilidad este-oeste.</span></label>
+              <label class="trend-card" for="info-sustainability"><svg><use href="#icon-leaf" /></svg><small>Tendencia 6</small><span><strong>Entrega energéticamente eficiente</strong></span><span>Optimizar utilización y reducir desperdicio como prioridad creciente del negocio.</span></label>
+              <label class="trend-card" for="info-lbaac"><svg><use href="#icon-code" /></svg><small>Tendencia 7</small><span><strong>Load Balancing as Code</strong></span><span>Tratar listeners, pools y políticas como configuración versionada, testeable y desplegable.</span></label>
+              <label class="trend-card" for="info-adc"><svg><use href="#icon-stack" /></svg><small>Tendencia 8</small><span><strong>Convergencia de plataformas ADC</strong></span><span>Unificar balanceo, seguridad, analítica y control de APIs en una misma capa.</span></label>
+            </div>
+          </article>
+          <article class="flow-panel impact-panel">
+            <div class="section-heading compact"><span class="step">02</span><div><h2>Mapa de impacto empresarial</h2><p>Estos cambios afectan resiliencia, experiencia de usuario, modelo operativo y decisiones de gobierno, no solo el data path.</p></div></div>
+            <div class="impact-grid">
+              <label class="impact-card" for="info-resilience"><svg><use href="#icon-route" /></svg><small>Impacto</small><span><strong>Continuidad de negocio</strong></span><span>El enrutamiento global por salud y la capacidad proactiva reducen el impacto de caídas y picos de demanda.</span></label>
+              <label class="impact-card" for="info-ux"><svg><use href="#icon-rocket" /></svg><small>Impacto</small><span><strong>Experiencia digital</strong></span><span>Menor latencia, menos interrupciones y mejor afinidad regional elevan la calidad percibida del servicio.</span></label>
+              <label class="impact-card" for="info-ops"><svg><use href="#icon-gear" /></svg><small>Impacto</small><span><strong>Simplificación operativa</strong></span><span>La automatización y los patrones reutilizables reducen cambios manuales e inconsistencias.</span></label>
+              <label class="impact-card" for="info-governance"><svg><use href="#icon-eye" /></svg><small>Impacto</small><span><strong>Control y visibilidad</strong></span><span>La telemetría compartida y la analítica permiten un gobierno más sólido entre dominios.</span></label>
+            </div>
+          </article>
+          <article class="ops-band">
+            <div class="section-heading compact"><span class="step">03</span><div><h2>Prioridades de preparación</h2><p>La modernización debe conectar la selección tecnológica con capacidades internas, automatización, estrategia cloud y proveedores.</p></div></div>
+            <div class="ops-grid">
+              <label class="ops-card" for="info-assess"><svg><use href="#icon-eye" /></svg><span><strong>Evaluar la situación actual</strong><br/>Revisar escalabilidad, madurez de IA y compatibilidad cloud.</span></label>
+              <label class="ops-card" for="info-modernize"><svg><use href="#icon-cloud" /></svg><span><strong>Modernizar la arquitectura</strong><br/>Alinear diseño con patrones híbridos, multi-cloud y GSLB.</span></label>
+              <label class="ops-card" for="info-automate"><svg><use href="#icon-code" /></svg><span><strong>Automatizar políticas</strong><br/>Adoptar APIs y pipelines con configuración versionada.</span></label>
+              <label class="ops-card" for="info-diversify"><svg><use href="#icon-globe" /></svg><span><strong>Diversificar dependencias</strong><br/>Evitar lock-in excesivo y preservar portabilidad operativa.</span></label>
+            </div>
+          </article>
+        </section>
+        <section class="framework-section" aria-label="Marco de ejecución">
+          <div class="framework-heading"><p class="eyebrow">Marco de ejecución</p><h2>De conocer la tendencia a ejecutar un roadmap</h2><p>Un camino práctico de adopción combina assessment técnico, diseño de plataforma, automatización, preparación organizativa y resultados medibles.</p></div>
+          <div class="framework-grid">
+            <article class="framework-card">
+              <h3>Ruta recomendada de transformación</h3>
+              <div class="framework-list">
+                <label class="framework-mini" for="info-assess"><svg><use href="#icon-eye" /></svg><small>Paso 1</small><span><strong>Evaluar</strong></span><span>Inventariar load balancers actuales, dispersión de políticas, ubicaciones cloud, controles de seguridad y gaps de observabilidad.</span></label>
+                <label class="framework-mini" for="info-modernize"><svg><use href="#icon-cloud" /></svg><small>Paso 2</small><span><strong>Rediseñar</strong></span><span>Asignar servicios a patrones globales, regionales, edge o cloud-native según latencia, resiliencia y compliance.</span></label>
+                <label class="framework-mini" for="info-automate"><svg><use href="#icon-code" /></svg><small>Paso 3</small><span><strong>Automatizar</strong></span><span>Modelar listeners, pools, health checks, certificados y políticas de tráfico como código integrado en CI/CD.</span></label>
+                <label class="framework-mini" for="info-talent"><svg><use href="#icon-gear" /></svg><small>Paso 4</small><span><strong>Desarrollar capacidades</strong></span><span>Impulsar habilidades en networking cloud-native, service mesh, seguridad API y automatización.</span></label>
+              </div>
+            </article>
+            <article class="framework-card">
+              <h3>KPIs a seguir</h3>
+              <div class="framework-list">
+                <label class="framework-mini" for="info-performance"><svg><use href="#icon-rocket" /></svg><small>KPI</small><span><strong>Rendimiento</strong></span><span>Latencia, tiempos de respuesta, precisión del balanceo y tiempo de failover regional.</span></label>
+                <label class="framework-mini" for="info-visibility"><svg><use href="#icon-eye" /></svg><small>KPI</small><span><strong>Visibilidad</strong></span><span>Policy drift, calidad de health checks, cobertura de anomalías y telemetría accionable.</span></label>
+                <label class="framework-mini" for="info-platform"><svg><use href="#icon-stack" /></svg><small>KPI</small><span><strong>Eficiencia de plataforma</strong></span><span>Lead time de despliegue, change failure rate y porcentaje de política bajo automatización.</span></label>
+                <label class="framework-mini" for="info-energy"><svg><use href="#icon-leaf" /></svg><small>KPI</small><span><strong>Impacto energético</strong></span><span>Utilización de servidores, huella en idle y mejora de eficiencia por mejor placement del tráfico.</span></label>
+              </div>
+            </article>
+          </div>
+        </section>
+        <aside class="right-rail" aria-label="Detalle seleccionado">
+          <article class="detail-panel" aria-live="polite">
+            <div class="detail-state detail-intro"><p>Explora el POV</p><h2>Haz clic en cualquier tarjeta para abrir la explicación</h2><p>Esta página transforma las tendencias de load balancing de 2026 en un point of view de estilo Kyndryl con implicaciones empresariales y líneas de preparación accionables.</p><div class="footer-note">Fuente utilizada como base de contenido: el artículo de EdgeNEXUS sobre tendencias de load balancing 2026, transformado en esta página tipo POV.</div></div>
+            <div class="detail-state detail-ai"><p>Tendencia 1</p><h2>Load balancing impulsado por IA</h2><p>El balanceo evoluciona desde reaccionar a umbrales hacia decidir de forma predictiva. Esto implica usar históricos de tráfico y detección de anomalías para anticipar picos, preposicionar capacidad y evitar cuellos de botella antes de que impacten al usuario.</p></div>
+            <div class="detail-state detail-edge"><p>Tendencia 2</p><h2>Balanceo distribuido en edge</h2><p>A medida que el procesamiento se acerca al usuario y al dispositivo, también lo hacen las decisiones de balanceo. El edge reduce latencia y mejora consistencia para servicios en tiempo real como industria, telemedicina, media y otros entornos sensibles al retraso.</p></div>
+            <div class="detail-state detail-multicloud"><p>Tendencia 3</p><h2>GSLB híbrido y multi-cloud</h2><p>El GSLB se convierte en la capa de control de tráfico que atraviesa cloud pública, privada y data centers. Las decisiones ya no son solo activo/pasivo: consideran salud, latencia, ubicación, resiliencia y disponibilidad del proveedor.</p></div>
+            <div class="detail-state detail-security"><p>Tendencia 4</p><h2>Balanceo con seguridad embebida</h2><p>Los load balancers dejan de ser solo puntos de distribución y se convierten también en puntos de control. Cada vez más integran WAF, mitigación DDoS, defensa frente a bots e inspección de APIs para filtrar tráfico malicioso antes de llegar a la aplicación.</p></div>
+            <div class="detail-state detail-service-mesh"><p>Tendencia 5</p><h2>Integración con service mesh</h2><p>En entornos de microservicios el balanceo ya no es solo norte-sur. El tráfico este-oeste dentro de Kubernetes y service mesh aporta control de canarios, circuit breaking, retries y visibilidad mucho más fina.</p></div>
+            <div class="detail-state detail-sustainability"><p>Tendencia 6</p><h2>Entrega orientada a eficiencia energética</h2><p>El coste energético y los objetivos de sostenibilidad empiezan a influir en la ingeniería de tráfico. Un mejor placement y menos sobreaprovisionamiento mejoran la utilización global y reducen desperdicio sin comprometer resiliencia.</p></div>
+            <div class="detail-state detail-lbaac"><p>Tendencia 7</p><h2>Load Balancing as Code</h2><p>Listeners, pools, reglas de persistencia, certificados y lógica de salud se gestionan cada vez más como artefactos software. Esto facilita revisión, rollback, testing y despliegues repetibles entre regiones y clouds.</p></div>
+            <div class="detail-state detail-adc"><p>Tendencia 8</p><h2>Convergencia de plataformas ADC</h2><p>Las capacidades tradicionales de ADC convergen hacia plataformas más amplias que combinan balanceo, seguridad, analítica y gestión de APIs. Esto reduce fragmentación y ofrece un punto de control más unificado para la entrega de servicios digitales.</p></div>
+            <div class="detail-state detail-resilience"><p>Impacto</p><h2>Continuidad de negocio</h2><p>Un load balancing más predictivo, distribuido y orientado por salud mejora la continuidad durante caídas, flash crowds e incidentes regionales. El valor estratégico no es solo disponibilidad, sino reducir disrupción en momentos críticos del negocio.</p></div>
+            <div class="detail-state detail-ux"><p>Impacto</p><h2>Experiencia digital</h2><p>Enviar tráfico por la ruta más adecuada y retirar antes los destinos degradados mejora tiempos de respuesta y consistencia. En canales digitales esto impacta directamente en conversión, confianza y engagement.</p></div>
+            <div class="detail-state detail-ops"><p>Impacto</p><h2>Simplificación operativa</h2><p>La automatización, los patrones comunes y las plataformas convergentes reducen intervenciones manuales y configuration drift. La organización puede pasar de administración dispositivo a dispositivo a políticas productizadas con ownership más claro.</p></div>
+            <div class="detail-state detail-governance"><p>Impacto</p><h2>Control y visibilidad</h2><p>Cuando el balanceo se extiende por clouds, APIs, microservicios y seguridad, la empresa necesita telemetría compartida, intención común de política y gobierno más fuerte sobre cambios y excepciones.</p></div>
+            <div class="detail-state detail-assess"><p>Preparación</p><h2>Evaluar la situación actual</h2><p>Empieza por una línea base: dónde está hoy el balanceo, qué plataformas existen, cómo se gestionan políticas, qué cobertura de observabilidad hay y qué gaps de cloud, seguridad o automatización limitan la escala.</p></div>
+            <div class="detail-state detail-modernize"><p>Preparación</p><h2>Modernizar la arquitectura</h2><p>Mapea workloads al modelo correcto de balanceo—global, regional, edge, in-cluster o centrado en API—según geografía de usuarios, resiliencia, compliance y punto óptimo de decisión de tráfico.</p></div>
+            <div class="detail-state detail-automate"><p>Preparación</p><h2>Automatizar la entrega de políticas</h2><p>Adopta un delivery API-driven y versionado para que los cambios sean repetibles, testeables y auditables. Esa es la base para patrones estandarizados y despliegues más rápidos de nuevos servicios digitales.</p></div>
+            <div class="detail-state detail-diversify"><p>Preparación</p><h2>Diversificar proveedores y dependencias</h2><p>La portabilidad importa cuando el balanceo abarca múltiples clouds y ubicaciones edge. Conviene evaluar apertura del ecosistema, interoperabilidad y capacidad real para evitar un nuevo lock-in del plano de control.</p></div>
+            <div class="detail-state detail-talent"><p>Preparación</p><h2>Desarrollar capacidades en el equipo</h2><p>Las habilidades deben ir más allá de la administración clásica del load balancer e incluir networking cloud-native, service mesh, seguridad API, observabilidad y automatización. La entrega moderna de aplicaciones es multidisciplinar.</p></div>
+            <div class="detail-state detail-performance"><p>KPI</p><h2>Métricas de rendimiento</h2><p>Seguimiento de latencia regional, respuesta de la aplicación, tiempos de failover, eficiencia del balanceo y tiempo para sacar de servicio destinos no saludables. Esas métricas indican si el diseño funciona en condiciones reales.</p></div>
+            <div class="detail-state detail-visibility"><p>KPI</p><h2>Métricas de visibilidad</h2><p>Mide policy drift, fidelidad de health checks, cobertura de anomalías y calidad de la telemetría compartida entre red, seguridad, SRE y plataforma. La madurez de visibilidad suele marcar la velocidad de recuperación.</p></div>
+            <div class="detail-state detail-platform"><p>KPI</p><h2>Eficiencia de plataforma</h2><p>Usa lead time de cambios, cobertura de automatización, adopción de patrones estándar y change failure rate para evaluar si el modelo operativo realmente escala.</p></div>
+            <div class="detail-state detail-energy"><p>KPI</p><h2>Impacto energético</h2><p>Evalúa utilización de servidores, reducción de sobreaprovisionamiento y mejoras de eficiencia derivadas de una mejor ubicación del tráfico. Además del ahorro, esto soporta objetivos de sostenibilidad.</p></div>
+            <div class="detail-state detail-principle-proactive"><p>Principio estratégico</p><h2>Diseño proactivo</h2><p>El estado objetivo es predictivo, no solo reactivo. El load balancing debe anticipar condiciones del servicio con telemetría, analítica y automatización de políticas.</p></div>
+            <div class="detail-state detail-principle-distributed"><p>Principio estratégico</p><h2>Puntos de decisión distribuidos</h2><p>El control de tráfico debe ejecutarse en la capa adecuada—global, regional, edge o in-cluster—según el resultado que se busque. Un único mecanismo centralizado no sirve para todos los journeys.</p></div>
+            <div class="detail-state detail-principle-secure"><p>Principio estratégico</p><h2>Seguro por defecto</h2><p>Los servicios de seguridad deben formar parte del delivery path y no ser un add-on desconectado. Esto da protección más consistente y evita fragmentación entre política de aplicación y política de tráfico.</p></div>
+            <div class="detail-state detail-principle-automated"><p>Principio estratégico</p><h2>Automatizado y programable</h2><p>La política debe expresarse como código reutilizable y desplegarse por pipelines controlados. Eso habilita repetibilidad entre aplicaciones, regiones y entornos cloud.</p></div>
+            <div class="detail-state detail-principle-portable"><p>Principio estratégico</p><h2>Portabilidad entre entornos</h2><p>Las decisiones de arquitectura deben preservar suficiente abstracción para evitar lock-in sin renunciar a las fortalezas nativas de cada plataforma.</p></div>
+            <div class="detail-state detail-principle-observable"><p>Principio estratégico</p><h2>Observabilidad end to end</h2><p>La calidad de decisión depende de visibilidad sobre experiencia del usuario, salud del servicio, estado de infraestructura y postura de seguridad. El load balancing sin telemetría extensa es automatización ciega.</p></div>
+            <div class="detail-state detail-principle-efficient"><p>Principio estratégico</p><h2>La eficiencia importa</h2><p>Un mejor placement del tráfico también debe mejorar el consumo de infraestructura. Con el tiempo, la eficiencia será un diferenciador financiero y de sostenibilidad.</p></div>
+            <div class="detail-state detail-principle-api"><p>Principio estratégico</p><h2>Plano de control API-first</h2><p>La entrega de aplicaciones se comporta cada vez más como una plataforma de políticas expuesta por APIs, pipelines y catálogos de servicio. Eso es lo que la hace consumible a escala empresarial.</p></div>
+          </article>
+        </aside>
+        <section class="benefits-section" aria-label="Qué cambia en 2026">
+          <div class="framework-heading"><p class="eyebrow">Qué cambia en 2026</p><h2>Mensajes clave para comité y owners de plataforma</h2><p>El cambio estratégico es pasar de appliances aislados a una capa inteligente que coordina rendimiento, resiliencia, seguridad y eficiencia operativa.</p></div>
+          <article class="benefits-card">
+            <label class="benefit" for="info-performance"><svg><use href="#icon-rocket" /></svg><span><strong>Experiencias digitales más rápidas</strong><small>Menor latencia gracias a mejor placement.</small></span></label>
+            <label class="benefit" for="info-resilience"><svg><use href="#icon-route" /></svg><span><strong>Mayor resiliencia</strong><small>Más continuidad durante picos y caídas.</small></span></label>
+            <label class="benefit" for="info-security"><svg><use href="#icon-shield" /></svg><span><strong>Seguridad embebida en el path</strong><small>La protección pasa a ser parte de la política.</small></span></label>
+            <label class="benefit" for="info-automate"><svg><use href="#icon-code" /></svg><span><strong>Automatización a escala</strong><small>La política se vuelve testeable y auditable.</small></span></label>
+            <label class="benefit" for="info-visibility"><svg><use href="#icon-eye" /></svg><span><strong>Observabilidad compartida</strong><small>Más visibilidad entre dominios operativos.</small></span></label>
+            <label class="benefit" for="info-platform"><svg><use href="#icon-stack" /></svg><span><strong>Simplificación de plataforma</strong><small>La convergencia ADC reduce fragmentación.</small></span></label>
+            <label class="benefit" for="info-diversify"><svg><use href="#icon-globe" /></svg><span><strong>Flexibilidad multi-cloud</strong><small>La estrategia de tráfico soporta diversidad de proveedores.</small></span></label>
+            <label class="benefit" for="info-energy"><svg><use href="#icon-leaf" /></svg><span><strong>Resultados de eficiencia</strong><small>Mejora de utilización y sensibilidad energética.</small></span></label>
+          </article>
+        </section>
+        <section class="principles-section" aria-label="Principios estratégicos de diseño">
+          <div class="principles-heading"><p class="eyebrow">Principios estratégicos</p><h2>Diseña la capa de entrega de aplicaciones como software, no como un conjunto de cajas aisladas</h2><p>La postura ganadora combina control proactivo, decisiones distribuidas, seguridad integrada, automatización y observabilidad, preservando al mismo tiempo portabilidad entre clouds y modelos operativos.</p></div>
+          <div class="principles-grid">
+            <label class="principle-card" for="info-principle-proactive"><svg><use href="#icon-spark" /></svg><h3>Diseño proactivo</h3></label>
+            <label class="principle-card" for="info-principle-distributed"><svg><use href="#icon-edge" /></svg><h3>Decisión distribuida</h3></label>
+            <label class="principle-card" for="info-principle-secure"><svg><use href="#icon-shield" /></svg><h3>Seguro por defecto</h3></label>
+            <label class="principle-card" for="info-principle-automated"><svg><use href="#icon-code" /></svg><h3>Automatizado y programable</h3></label>
+            <label class="principle-card" for="info-principle-portable"><svg><use href="#icon-cloud" /></svg><h3>Portable entre entornos</h3></label>
+            <label class="principle-card" for="info-principle-observable"><svg><use href="#icon-eye" /></svg><h3>Observable end to end</h3></label>
+            <label class="principle-card" for="info-principle-efficient"><svg><use href="#icon-leaf" /></svg><h3>La eficiencia importa</h3></label>
+            <label class="principle-card" for="info-principle-api"><svg><use href="#icon-api" /></svg><h3>Plano de control API-first</h3></label>
+          </div>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>

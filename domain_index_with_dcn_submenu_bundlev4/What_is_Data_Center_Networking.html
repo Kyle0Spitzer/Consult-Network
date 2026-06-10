@@ -1,0 +1,981 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Data Center Networking - Overview</title>
+    <style>
+:root {
+  color-scheme: light;
+  --ink: #07163f;
+  --muted: #52617f;
+  --line: #b8c8f6;
+  --line-strong: #2359ff;
+  --surface: #ffffff;
+  --surface-soft: #f4f7fd;
+  --panel: #f9fbff;
+  --blue: #1147c8;
+  --cyan: #0089d6;
+  --teal: #008c7d;
+  --green: #2f8a46;
+  --amber: #d98b00;
+  --coral: #e15b3c;
+  --violet: #7050d8;
+  --shadow: 0 22px 70px rgba(17, 47, 105, 0.16);
+  --radius: 8px;
+  --gap: clamp(14px, 1.6vw, 22px);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: auto; overflow-anchor: none; }
+body {
+  margin: 0;
+  min-width: 320px;
+  color: var(--ink);
+  background:
+    linear-gradient(90deg, rgba(17, 71, 200, 0.05) 1px, transparent 1px) 0 0 / 48px 48px,
+    linear-gradient(rgba(17, 71, 200, 0.04) 1px, transparent 1px) 0 0 / 48px 48px,
+    #f7f9fe;
+}
+button, input, textarea, select, label { font: inherit; }
+button { color: inherit; }
+.info-radio, .language-radio {
+  position: fixed;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+.icon-defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+.language-view { display: none; }
+#lang-es:checked ~ .language-es,
+#lang-en:checked ~ .language-en { display: block; }
+.language-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-width: max-content;
+  padding: 4px;
+  border: 1px solid rgba(35, 89, 255, 0.2);
+  border-radius: 8px;
+  background: #fff;
+}
+.lang-option {
+  display: grid;
+  min-width: 44px;
+  min-height: 32px;
+  place-items: center;
+  border-radius: 6px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 900;
+  cursor: pointer;
+  transition: background 180ms ease, color 180ms ease, box-shadow 180ms ease;
+}
+.lang-option:hover, .lang-option:focus-visible {
+  color: var(--blue);
+  background: #eef4ff;
+  outline: 0;
+}
+#lang-es:checked ~ .language-view [for="lang-es"],
+#lang-en:checked ~ .language-view [for="lang-en"] {
+  color: #fff;
+  background: var(--blue);
+  box-shadow: 0 8px 18px rgba(35, 89, 255, 0.22);
+}
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 18px clamp(18px, 3vw, 42px);
+  border-bottom: 1px solid rgba(35, 89, 255, 0.16);
+  background: rgba(249, 251, 255, 0.92);
+  backdrop-filter: blur(18px);
+}
+.header-copy { min-width: 0; }
+.brand-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 10px;
+}
+.kyndryl-logo {
+  display: inline-flex;
+  align-items: center;
+  width: 142px;
+  min-width: 142px;
+  height: 45px;
+}
+.kyndryl-logo svg { display: block; width: 100%; height: auto; }
+.practice-tag {
+  display: inline-grid;
+  min-height: 34px;
+  align-items: center;
+  padding: 0 12px;
+  border: 1px solid rgba(255, 70, 45, 0.24);
+  border-radius: 8px;
+  background: #fff6f3;
+  color: #07163f;
+  font-size: 0.88rem;
+  font-weight: 900;
+}
+.eyebrow {
+  margin: 0 0 4px;
+  color: var(--cyan);
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+h1, h2, h3, p { margin-top: 0; }
+h1 {
+  margin-bottom: 5px;
+  color: var(--blue);
+  font-size: 3.7rem;
+  line-height: 0.95;
+  letter-spacing: 0;
+}
+.subtitle {
+  margin-bottom: 0;
+  color: var(--muted);
+  font-size: 1.12rem;
+}
+.page-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(350px, 390px);
+  gap: var(--gap);
+  align-items: start;
+  width: min(1840px, 100%);
+  margin: 0 auto;
+  padding: clamp(18px, 2.6vw, 38px);
+}
+.map-area, .secondary-section {
+  border: 1px solid rgba(35, 89, 255, 0.22);
+  border-radius: var(--radius);
+  background:
+    linear-gradient(135deg, rgba(35, 89, 255, 0.1), transparent 38%),
+    linear-gradient(90deg, rgba(0, 140, 125, 0.08), transparent 62%),
+    rgba(255, 255, 255, 0.9);
+  box-shadow: var(--shadow);
+}
+.map-area {
+  position: relative;
+  grid-column: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
+  gap: clamp(16px, 2vw, 24px);
+  align-items: start;
+  padding: clamp(18px, 2.2vw, 30px);
+}
+.architecture-heading {
+  display: grid;
+  grid-template-columns: minmax(240px, 0.42fr) minmax(0, 0.58fr);
+  gap: var(--gap);
+  align-items: end;
+  padding-bottom: 6px;
+}
+.architecture-heading .eyebrow {
+  grid-column: 1 / -1;
+  margin-bottom: -8px;
+}
+.architecture-heading h2, .secondary-heading h2 {
+  margin-bottom: 0;
+  color: var(--blue);
+  font-size: 2.1rem;
+  line-height: 1.04;
+  letter-spacing: 0;
+}
+.architecture-heading p:last-child, .secondary-heading p:last-child {
+  margin-bottom: 0;
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+.map-grid {
+  display: grid;
+  gap: 18px;
+  min-width: 0;
+}
+.flow-panel, .signal-band, .benefits-card, .detail-panel, .secondary-section {
+  border: 1px solid rgba(35, 89, 255, 0.22);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.88);
+}
+.flow-panel, .signal-band {
+  position: relative;
+  min-width: 0;
+  scroll-margin-top: 130px;
+  padding: clamp(16px, 1.8vw, 24px);
+}
+.flow-panel {
+  border-width: 2px;
+  background-color: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 20px 54px rgba(17, 47, 105, 0.12);
+}
+.flow-panel .step {
+  width: 46px;
+  min-width: 46px;
+  height: 46px;
+  border-color: rgba(35, 89, 255, 0.44);
+  box-shadow: 0 10px 22px rgba(35, 89, 255, 0.14);
+  font-size: 0.9rem;
+}
+.panel-define {
+  border-color: rgba(35, 89, 255, 0.44);
+  background: linear-gradient(90deg, rgba(17, 71, 200, 0.06), transparent 42%), rgba(255, 255, 255, 0.88);
+}
+.panel-components {
+  border-color: rgba(0, 140, 125, 0.44);
+  background: linear-gradient(90deg, rgba(0, 140, 125, 0.08), transparent 44%), rgba(255, 255, 255, 0.9);
+}
+.panel-patterns {
+  border-color: rgba(112, 80, 216, 0.36);
+  background: linear-gradient(90deg, rgba(112, 80, 216, 0.07), transparent 48%), rgba(255, 255, 255, 0.9);
+}
+.panel-trends {
+  border-color: rgba(225, 91, 60, 0.36);
+  background: linear-gradient(90deg, rgba(225, 91, 60, 0.07), transparent 46%), rgba(255, 255, 255, 0.9);
+}
+.section-heading {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.section-heading h2 {
+  margin-bottom: 3px;
+  color: var(--blue);
+  font-size: 1.22rem;
+  line-height: 1.18;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+.section-heading p {
+  margin-bottom: 0;
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+.step {
+  display: inline-grid;
+  width: 40px;
+  min-width: 40px;
+  height: 40px;
+  place-items: center;
+  border: 1px solid rgba(35, 89, 255, 0.34);
+  border-radius: 8px;
+  background: #eff4ff;
+  color: var(--blue);
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+.node-grid, .mini-grid, .benefits-card, .principles-grid {
+  display: grid;
+  gap: 10px;
+}
+.node-grid { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+.mini-grid { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+.node, .mini-card, .benefit, .principle-card, .signal-pill {
+  border: 1px solid rgba(35, 89, 255, 0.22);
+  border-radius: 8px;
+  background: #fff;
+  min-width: 0;
+  cursor: pointer;
+  transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
+}
+.node:hover, .node:focus-visible,
+.mini-card:hover, .mini-card:focus-visible,
+.benefit:hover, .benefit:focus-visible,
+.principle-card:hover, .principle-card:focus-visible,
+.signal-pill:hover, .signal-pill:focus-visible {
+  transform: translateY(-2px);
+  border-color: var(--line-strong);
+  box-shadow: 0 16px 34px rgba(35, 89, 255, 0.13);
+  outline: 0;
+}
+.node {
+  display: grid;
+  grid-template-rows: 42px minmax(34px, auto);
+  justify-items: center;
+  align-items: center;
+  min-height: 112px;
+  padding: 11px 9px;
+  color: var(--blue);
+  text-align: center;
+}
+.mini-card {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  min-height: 78px;
+  padding: 12px;
+  color: var(--blue);
+  text-align: left;
+}
+.signal-band {
+  border-color: rgba(0,137,214,0.36);
+  background: linear-gradient(90deg, rgba(0,137,214,0.07), transparent 42%), rgba(255,255,255,0.9);
+}
+.signal-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0,1fr));
+  gap: 8px;
+}
+.signal-pill {
+  min-height: 38px;
+  display: grid;
+  place-items: center;
+  padding: 10px;
+  color: var(--blue);
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-align: center;
+}
+.node svg, .mini-card svg, .benefit svg, .principle-card svg, .signal-pill svg {
+  width: 34px;
+  height: 34px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+.node span {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 850;
+  line-height: 1.26;
+}
+.mini-card span, .mini-card strong, .benefit strong, .benefit small {
+  display: block;
+}
+.mini-card strong {
+  margin-bottom: 3px;
+  color: var(--ink);
+  font-size: 0.9rem;
+  line-height: 1.16;
+}
+.mini-card span:last-child {
+  color: var(--muted);
+  font-size: 0.76rem;
+  line-height: 1.24;
+}
+.benefits-section, .principles-section { grid-column: 1; margin-top: var(--gap); }
+.benefits-card {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  padding: 16px;
+  box-shadow: var(--shadow);
+}
+.benefits-card h2 {
+  grid-column: 1 / -1;
+  margin-bottom: 12px;
+  color: var(--blue);
+  font-size: 1.05rem;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+.benefit {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+  width: 100%;
+  min-height: 74px;
+  padding: 10px;
+  color: var(--blue);
+  text-align: left;
+}
+.benefit:nth-of-type(2n) { color: var(--teal); }
+.benefit:nth-of-type(3n) { color: var(--amber); }
+.benefit strong {
+  margin-bottom: 3px;
+  color: var(--ink);
+  font-size: 0.9rem;
+  line-height: 1.18;
+}
+.benefit small {
+  color: var(--muted);
+  font-size: 0.75rem;
+  line-height: 1.25;
+}
+.secondary-section {
+  grid-column: 1;
+  margin-top: var(--gap);
+  padding: clamp(16px, 2vw, 24px);
+  background: linear-gradient(90deg, rgba(225, 91, 60, 0.07), transparent 46%), rgba(255, 255, 255, 0.9);
+}
+.secondary-heading {
+  display: grid;
+  grid-template-columns: minmax(240px, 0.45fr) minmax(0, 0.55fr);
+  gap: var(--gap);
+  align-items: end;
+  margin-bottom: 16px;
+}
+.secondary-heading .eyebrow {
+  grid-column: 1 / -1;
+  margin-bottom: -8px;
+  color: var(--coral);
+}
+.principles-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.principle-card {
+  display: grid;
+  align-content: center;
+  min-height: 124px;
+  padding: 14px;
+}
+.principle-card h3 {
+  margin-bottom: 0;
+  color: var(--ink);
+  font-size: 0.96rem;
+  line-height: 1.16;
+}
+.principle-card:nth-child(2n) svg { color: var(--teal); }
+.principle-card:nth-child(3n) svg { color: var(--amber); }
+.right-rail {
+  position: sticky;
+  top: 132px;
+  z-index: 20;
+  grid-column: 2;
+  grid-row: 1 / span 4;
+  align-self: start;
+  min-width: 0;
+  width: 100%;
+}
+.detail-panel {
+  min-height: 540px;
+  max-height: calc(100vh - 158px);
+  padding: 24px;
+  overflow: auto;
+  background: #07163f;
+  color: #fff;
+  box-shadow: 0 28px 86px rgba(7, 22, 63, 0.28);
+}
+.detail-panel p:first-child {
+  margin-bottom: 7px;
+  color: #8bd5ff;
+  font-size: 0.75rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.detail-panel h2 {
+  margin-bottom: 14px;
+  font-size: 1.82rem;
+  line-height: 1.05;
+  letter-spacing: 0;
+}
+.detail-panel p:last-child {
+  margin-bottom: 0;
+  color: #dce8ff;
+  font-size: 1.04rem;
+  line-height: 1.58;
+}
+.detail-state { display: none; }
+#info-intro:checked ~ .language-view main .detail-intro,
+#info-definition:checked ~ .language-view main .detail-definition,
+#info-switching:checked ~ .language-view main .detail-switching,
+#info-routing:checked ~ .language-view main .detail-routing,
+#info-ddi:checked ~ .language-view main .detail-ddi,
+#info-firewalls:checked ~ .language-view main .detail-firewalls,
+#info-loadbalancers:checked ~ .language-view main .detail-loadbalancers,
+#info-fabric:checked ~ .language-view main .detail-fabric,
+#info-virtualization:checked ~ .language-view main .detail-virtualization,
+#info-northsouth:checked ~ .language-view main .detail-northsouth,
+#info-eastwest:checked ~ .language-view main .detail-eastwest,
+#info-ai-traffic:checked ~ .language-view main .detail-ai-traffic,
+#info-ai-gpu:checked ~ .language-view main .detail-ai-gpu,
+#info-security:checked ~ .language-view main .detail-security,
+#info-automation:checked ~ .language-view main .detail-automation,
+#info-observability:checked ~ .language-view main .detail-observability,
+#info-scale:checked ~ .language-view main .detail-scale,
+#info-latency:checked ~ .language-view main .detail-latency,
+#info-resilience:checked ~ .language-view main .detail-resilience,
+#info-visibility:checked ~ .language-view main .detail-visibility,
+#info-principle-fabric:checked ~ .language-view main .detail-principle-fabric,
+#info-principle-zero-trust:checked ~ .language-view main .detail-principle-zero-trust,
+#info-principle-automation:checked ~ .language-view main .detail-principle-automation,
+#info-principle-modular:checked ~ .language-view main .detail-principle-modular {
+  display: block;
+}
+#info-definition:checked ~ .language-view main [for="info-definition"],
+#info-switching:checked ~ .language-view main [for="info-switching"],
+#info-routing:checked ~ .language-view main [for="info-routing"],
+#info-ddi:checked ~ .language-view main [for="info-ddi"],
+#info-firewalls:checked ~ .language-view main [for="info-firewalls"],
+#info-loadbalancers:checked ~ .language-view main [for="info-loadbalancers"],
+#info-fabric:checked ~ .language-view main [for="info-fabric"],
+#info-virtualization:checked ~ .language-view main [for="info-virtualization"],
+#info-northsouth:checked ~ .language-view main [for="info-northsouth"],
+#info-eastwest:checked ~ .language-view main [for="info-eastwest"],
+#info-ai-traffic:checked ~ .language-view main [for="info-ai-traffic"],
+#info-ai-gpu:checked ~ .language-view main [for="info-ai-gpu"],
+#info-security:checked ~ .language-view main [for="info-security"],
+#info-automation:checked ~ .language-view main [for="info-automation"],
+#info-observability:checked ~ .language-view main [for="info-observability"],
+#info-scale:checked ~ .language-view main [for="info-scale"],
+#info-latency:checked ~ .language-view main [for="info-latency"],
+#info-resilience:checked ~ .language-view main [for="info-resilience"],
+#info-visibility:checked ~ .language-view main [for="info-visibility"],
+#info-principle-fabric:checked ~ .language-view main [for="info-principle-fabric"],
+#info-principle-zero-trust:checked ~ .language-view main [for="info-principle-zero-trust"],
+#info-principle-automation:checked ~ .language-view main [for="info-principle-automation"],
+#info-principle-modular:checked ~ .language-view main [for="info-principle-modular"] {
+  border-color: var(--line-strong);
+  background: #eef4ff;
+  box-shadow: 0 16px 34px rgba(35, 89, 255, 0.17);
+}
+@media (max-width: 1380px) {
+  .topbar { align-items: flex-start; flex-direction: column; }
+  .benefits-card { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .architecture-heading, .secondary-heading { grid-template-columns: 1fr; }
+  .principles-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 1180px) {
+  .page-shell { grid-template-columns: minmax(0, 1fr) minmax(300px, 330px); }
+  .detail-panel { min-height: 460px; max-height: calc(100vh - 144px); padding: 18px; }
+  .detail-panel h2 { font-size: 1.42rem; margin-bottom: 9px; }
+  .detail-panel p:last-child { font-size: 0.96rem; line-height: 1.5; }
+}
+@media (max-width: 980px) {
+  .page-shell { display: flex; flex-direction: column; }
+  .right-rail {
+    position: static;
+    order: 2;
+    z-index: auto;
+    width: 100%;
+    max-width: none;
+    margin-top: var(--gap);
+  }
+  .map-area { order: 1; }
+  .secondary-section { order: 3; }
+  .benefits-section { order: 4; }
+  .principles-section { order: 5; }
+  .detail-panel { min-height: 0; max-height: none; overflow: visible; }
+}
+@media (max-width: 760px) {
+  body { background: #f7f9fe; }
+  .topbar { padding: 15px; }
+  .brand-row { flex-wrap: wrap; gap: 10px; }
+  .kyndryl-logo { width: 124px; min-width: 124px; }
+  .practice-tag { min-height: 30px; font-size: 0.8rem; }
+  h1 { font-size: 2.25rem; }
+  .subtitle { font-size: 1rem; }
+  .architecture-heading h2, .secondary-heading h2 { font-size: 1.62rem; }
+  .page-shell { padding: 14px; }
+  .map-area { padding: 14px; }
+  .node-grid, .mini-grid, .benefits-card, .principles-grid, .signal-row { grid-template-columns: 1fr; }
+  .node {
+    grid-template-columns: 42px minmax(0, 1fr);
+    grid-template-rows: auto;
+    justify-items: start;
+    min-height: 70px;
+    text-align: left;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; }
+}
+    </style>
+  </head>
+  <body>
+    <input class="language-radio" type="radio" name="language" id="lang-es" />
+    <input class="language-radio" type="radio" name="language" id="lang-en" checked />
+
+    <svg class="icon-defs" aria-hidden="true" focusable="false">
+      <symbol id="icon-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /><path d="M3.6 9h16.8M3.6 15h16.8M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18" /></symbol>
+      <symbol id="icon-shield" viewBox="0 0 24 24"><path d="M12 3l7 3v5.5c0 4.7-2.8 7.8-7 9.5-4.2-1.7-7-4.8-7-9.5V6l7-3z" /><path d="M8.4 12.2l2.1 2.1 5-5" /></symbol>
+      <symbol id="icon-cloud" viewBox="0 0 24 24"><path d="M7.2 18h9.3a4.4 4.4 0 0 0 .4-8.8 6 6 0 0 0-11.5 1.9A3.6 3.6 0 0 0 7.2 18z" /></symbol>
+      <symbol id="icon-network" viewBox="0 0 24 24"><circle cx="12" cy="5" r="2.5" /><circle cx="5" cy="18" r="2.5" /><circle cx="19" cy="18" r="2.5" /><path d="M10.7 7.1l-4.4 8.7M13.3 7.1l4.4 8.7M7.4 18h9.2" /></symbol>
+      <symbol id="icon-route" viewBox="0 0 24 24"><path d="M5 18c5 0 2-12 7-12h7" /><path d="M15.5 2.8L19 6l-3.5 3.2" /><circle cx="5" cy="18" r="2.5" /></symbol>
+      <symbol id="icon-server" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="6" rx="1.8" /><rect x="4" y="14" width="16" height="6" rx="1.8" /><path d="M8 7h.01M8 17h.01M12 7h5M12 17h5" /></symbol>
+      <symbol id="icon-lock" viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="10" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3M12 14v2.8" /></symbol>
+      <symbol id="icon-eye" viewBox="0 0 24 24"><path d="M3 12s3.2-6 9-6 9 6 9 6-3.2 6-9 6-9-6-9-6z" /><circle cx="12" cy="12" r="2.8" /></symbol>
+      <symbol id="icon-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2" /><path d="M12 2.8v3M12 18.2v3M4.3 5.2l2.1 2.1M17.6 16.7l2.1 2.1M2.8 12h3M18.2 12h3M4.3 18.8l2.1-2.1M17.6 7.3l2.1-2.1" /></symbol>
+      <symbol id="icon-scale" viewBox="0 0 24 24"><path d="M12 3v18M5 8h14M7 8l-3 6h6L7 8zM17 8l-3 6h6l-3-6z" /></symbol>
+      <symbol id="icon-grid" viewBox="0 0 24 24"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z" /></symbol>
+      <symbol id="icon-rocket" viewBox="0 0 24 24"><path d="M13 4c3.7.4 6.2 2.9 7 7l-6 6-5-5 4-8z" /><path d="M8.5 12.5L5 13.7l1.2-3.5M11.5 15.5L10.3 19l3.5-1.2M14.5 8.5h.1" /></symbol>
+      <symbol id="icon-building" viewBox="0 0 24 24"><path d="M5 21V5h8v16M13 9h6v12" /><path d="M8 8h2M8 12h2M8 16h2M16 12h1.5M16 16h1.5M3 21h18" /></symbol>
+    </svg>
+
+    <input class="info-radio" type="radio" name="info-panel" id="info-intro" checked />
+    <input class="info-radio" type="radio" name="info-panel" id="info-definition" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-switching" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-routing" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-ddi" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-firewalls" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-loadbalancers" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-fabric" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-virtualization" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-northsouth" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-eastwest" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-ai-traffic" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-ai-gpu" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-security" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-automation" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-observability" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-scale" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-latency" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-resilience" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-visibility" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-principle-fabric" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-principle-zero-trust" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-principle-automation" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-principle-modular" />
+
+    <!-- ENGLISH -->
+    <div class="language-view language-en" lang="en">
+      <header class="topbar">
+        <div class="header-copy">
+          <div class="brand-row" aria-label="Kyndryl Network and Edge">
+            <span class="kyndryl-logo" aria-label="Kyndryl">
+              <svg viewBox="0 0 125.74 40" role="img" aria-labelledby="kyndryl-title-en" xmlns="http://www.w3.org/2000/svg">
+                <title id="kyndryl-title-en">Kyndryl</title>
+                <path d="M120,0V30h-3.518V0ZM48.854,9.537a5.575,5.575,0,0,0-5.9,4.993h-.172V10H39.26V30h3.519V17.544c0-3.368,1.793-4.911,4.8-4.911,3.442,0,4.981,1.706,4.981,5.09V30h3.518V17.264C56.074,12.489,53.374,9.537,48.854,9.537ZM27.323,29.462h-.115L21.1,10H17.454l6.465,20h3.237l-3.3,10H27.37l9.684-30H33.409Zm77.222,0h-.115L98.322,10H94.675l6.465,20h3.237l-3.3,10h3.511l9.684-30h-3.646ZM7.325,20l8.684-10H11.73l-8.1,9.652H3.519V0H0V30H3.519V20.185H6.862L13.624,30H17.7l-7-10Zm79.021-5.468h-.171V10H82.656V30h3.519V17.508c0-3.368,1.91-4.6,5.184-4.6a9.471,9.471,0,0,1,2.181.234v-3.4a5.152,5.152,0,0,0-1.669-.212A5.4,5.4,0,0,0,86.346,14.532ZM74.617,0h3.518V30H74.617V25.47h-.17c-.337,2.791-2.478,4.993-6.536,4.993-4.951,0-8.469-3.928-8.469-10.463S62.959,9.537,67.911,9.537c4.058,0,6.2,2.2,6.536,4.993h.17Zm0,17.358c0-3.368-2.542-4.726-5.695-4.726-3.324,0-5.81,2.068-5.81,7.368s2.486,7.368,5.81,7.368c3.153,0,5.695-1.358,5.695-4.726V17.358Zm46.956,10.529v.237h.639V30h.3V28.125h.639v-.237Zm3.52,0-.525,2.084h-.006l-.5-2.084h-.579L123.422,30h.283l.063-2.084h.006L124.293,30h.528l.551-2.084h.006L125.44,30h.3l-.069-2.112h-.577Z" fill="#ff462d" />
+              </svg>
+            </span>
+            <span class="practice-tag">Network and Edge</span>
+          </div>
+          <h1>What Is Data Center Networking?</h1>
+          <p class="subtitle">The digital backbone that connects compute, storage, security and applications inside modern data centers.</p>
+        </div>
+        <div class="language-switch" aria-label="Language selector">
+          <label class="lang-option" for="lang-es">ES</label>
+          <label class="lang-option" for="lang-en">EN</label>
+        </div>
+      </header>
+
+      <main class="page-shell">
+        <section class="map-area" aria-label="Interactive data center networking overview">
+          <div class="architecture-heading">
+            <p class="eyebrow">Overview</p>
+            <h2>Data center networking brings together transport, policy and automation to move data securely at massive scale.</h2>
+            <p>It interconnects servers, storage, security controls and applications through high-speed fabrics, routing, load balancing and software-defined operations.</p>
+          </div>
+
+          <div class="map-grid">
+            <article class="flow-panel panel-define">
+              <div class="section-heading">
+                <span class="step">01</span>
+                <div>
+                  <h2>What it is</h2>
+                  <p>The foundation that enables digital services, application availability and low-latency data exchange inside and across data center domains.</p>
+                </div>
+              </div>
+              <div class="node-grid">
+                <label class="node" for="info-definition"><svg><use href="#icon-building" /></svg><span>Servers, storage and apps connected as one platform</span></label>
+                <label class="node" for="info-latency"><svg><use href="#icon-rocket" /></svg><span>Ultra-low latency for transactional and real-time workloads</span></label>
+                <label class="node" for="info-resilience"><svg><use href="#icon-scale" /></svg><span>High availability through resilient paths and redundancy</span></label>
+                <label class="node" for="info-visibility"><svg><use href="#icon-eye" /></svg><span>Operational visibility across traffic, health and capacity</span></label>
+              </div>
+            </article>
+
+            <article class="flow-panel panel-components">
+              <div class="section-heading">
+                <span class="step">02</span>
+                <div>
+                  <h2>Core components</h2>
+                  <p>Physical network functions and software abstraction layers work together to deliver performance, segmentation and control.</p>
+                </div>
+              </div>
+              <div class="mini-grid">
+                <label class="mini-card" for="info-switching"><svg><use href="#icon-network" /></svg><span><strong>Switching</strong><span>High-speed packet forwarding across leaf and spine layers.</span></span></label>
+                <label class="mini-card" for="info-routing"><svg><use href="#icon-route" /></svg><span><strong>Routing</strong><span>Traffic path selection, inter-VLAN / inter-zone movement and policy control.</span></span></label>
+                <label class="mini-card" for="info-ddi"><svg><use href="#icon-globe" /></svg><span><strong>DDI</strong><span>DNS, DHCP and IP address management for service reachability and governance.</span></span></label>
+                <label class="mini-card" for="info-firewalls"><svg><use href="#icon-shield" /></svg><span><strong>Firewalls</strong><span>Segmentation, inspection and policy enforcement at multiple trust boundaries.</span></span></label>
+                <label class="mini-card" for="info-loadbalancers"><svg><use href="#icon-grid" /></svg><span><strong>Load balancing</strong><span>Distributes sessions across applications, clusters and sites.</span></span></label>
+                <label class="mini-card" for="info-virtualization"><svg><use href="#icon-cloud" /></svg><span><strong>Virtualization & SDN</strong><span>Overlay networking, automation and infrastructure abstraction.</span></span></label>
+                <label class="mini-card" for="info-fabric"><svg><use href="#icon-server" /></svg><span><strong>Network fabric</strong><span>Spine-and-leaf architecture for predictable east-west performance.</span></span></label>
+              </div>
+            </article>
+
+            <article class="flow-panel panel-patterns">
+              <div class="section-heading">
+                <span class="step">03</span>
+                <div>
+                  <h2>Traffic patterns</h2>
+                  <p>Modern design depends on understanding where traffic flows: inward and outward, or laterally between systems.</p>
+                </div>
+              </div>
+              <div class="node-grid">
+                <label class="node" for="info-northsouth"><svg><use href="#icon-globe" /></svg><span>North-South<br/>User-to-app and app-to-external traffic</span></label>
+                <label class="node" for="info-eastwest"><svg><use href="#icon-network" /></svg><span>East-West<br/>Server-to-server, storage and service mesh traffic</span></label>
+                <label class="node" for="info-ai-traffic"><svg><use href="#icon-server" /></svg><span>AI / distributed compute<br/>Heavy internal data exchange at scale</span></label>
+              </div>
+            </article>
+
+            <article class="flow-panel panel-trends">
+              <div class="section-heading">
+                <span class="step">04</span>
+                <div>
+                  <h2>Modern challenges & trends</h2>
+                  <p>Contemporary environments demand more bandwidth, more security and much more automation than legacy architectures were designed for.</p>
+                </div>
+              </div>
+              <div class="mini-grid">
+                <label class="mini-card" for="info-ai-gpu"><svg><use href="#icon-rocket" /></svg><span><strong>AI and GPU clusters</strong><span>400G / 800G bandwidth, low loss and deterministic performance are becoming critical.</span></span></label>
+                <label class="mini-card" for="info-security"><svg><use href="#icon-lock" /></svg><span><strong>Embedded security</strong><span>Zero Trust and micro-segmentation move protection closer to workloads.</span></span></label>
+                <label class="mini-card" for="info-automation"><svg><use href="#icon-gear" /></svg><span><strong>Automation</strong><span>Intent-based provisioning, validation and closed-loop operations reduce human error.</span></span></label>
+                <label class="mini-card" for="info-observability"><svg><use href="#icon-eye" /></svg><span><strong>Observability</strong><span>Telemetry, analytics and AI-assisted operations accelerate troubleshooting and optimization.</span></span></label>
+              </div>
+            </article>
+
+            <article class="signal-band">
+              <div class="section-heading">
+                <span class="step">05</span>
+                <div>
+                  <h2>Why it matters</h2>
+                  <p>A strong data center network is not just infrastructure — it directly influences application experience, cyber resilience and business scale.</p>
+                </div>
+              </div>
+              <div class="signal-row">
+                <label class="signal-pill" for="info-scale">Scales cloud, virtualization and AI growth</label>
+                <label class="signal-pill" for="info-latency">Delivers predictable latency for critical workloads</label>
+                <label class="signal-pill" for="info-resilience">Protects uptime with resilient and secure design</label>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <aside class="right-rail" aria-label="Selected detail">
+          <article class="detail-panel" aria-live="polite">
+            <div class="detail-state detail-intro">
+              <p>Explore the overview</p>
+              <h2>Click any card to expand the concept</h2>
+              <p>This page explains what data center networking is, the building blocks it depends on, how traffic moves and why modernization matters for cloud, AI and business-critical applications.</p>
+            </div>
+            <div class="detail-state detail-definition"><p>Definition</p><h2>Data center networking in one sentence</h2><p>Data center networking is the combination of hardware and software that interconnects servers, storage platforms and applications so data can move securely, reliably and with very low latency across the environment.</p></div>
+            <div class="detail-state detail-switching"><p>Core component</p><h2>Switching</h2><p>Switches form the high-speed transport layer of the data center. In modern environments they are typically organized in leaf-spine topologies to create predictable throughput, reduce bottlenecks and simplify scaling.</p></div>
+            <div class="detail-state detail-routing"><p>Core component</p><h2>Routing</h2><p>Routing determines how traffic moves between networks, workloads and security zones. It becomes especially important in hybrid environments, segmented application estates and multi-tenant architectures.</p></div>
+            <div class="detail-state detail-ddi"><p>Core component</p><h2>DDI (DNS, DHCP, IPAM)</h2><p>DDI underpins service discovery, address allocation and IP governance. Without it, automation, segmentation and operational consistency become much harder to sustain at scale.</p></div>
+            <div class="detail-state detail-firewalls"><p>Core component</p><h2>Firewalls and segmentation</h2><p>Firewalls inspect, filter and enforce policy. In modern data centers they are part of a broader segmentation model designed to contain risk laterally as well as at perimeter boundaries.</p></div>
+            <div class="detail-state detail-loadbalancers"><p>Core component</p><h2>Load balancers</h2><p>Load balancers distribute application requests across servers, clusters or sites. They improve availability, help absorb spikes in demand and allow services to scale without exposing a single point of congestion.</p></div>
+            <div class="detail-state detail-fabric"><p>Architecture</p><h2>Network fabric and spine-and-leaf</h2><p>Modern fabrics replace hierarchical bottlenecks with a flatter topology. Spine-and-leaf architectures provide more uniform east-west paths and make it easier to add capacity as clusters grow.</p></div>
+            <div class="detail-state detail-virtualization"><p>Architecture</p><h2>Virtualization and SDN</h2><p>Software-defined networking creates virtual overlays on top of the physical network so policies, segmentation and network services can be provisioned consistently and automated more easily.</p></div>
+            <div class="detail-state detail-northsouth"><p>Traffic pattern</p><h2>North-South traffic</h2><p>This is traffic entering or leaving the data center, such as a user accessing a business application over the Internet or a partner system reaching an exposed service.</p></div>
+            <div class="detail-state detail-eastwest"><p>Traffic pattern</p><h2>East-West traffic</h2><p>This is internal traffic moving laterally between servers, services, databases and application tiers. It has grown dramatically due to virtualization, cloud-native design and distributed analytics.</p></div>
+            <div class="detail-state detail-ai-traffic"><p>Traffic pattern</p><h2>AI-driven east-west growth</h2><p>AI pipelines, GPU clusters and distributed training create extremely dense internal traffic patterns. Data center networks must now support synchronized, high-throughput traffic between many nodes in parallel.</p></div>
+            <div class="detail-state detail-ai-gpu"><p>Trend</p><h2>AI and GPU fabrics</h2><p>Large AI environments push demand for 400G and 800G Ethernet, low-latency transport, congestion control and lossless or near-lossless behavior in parts of the network where GPU efficiency matters most.</p></div>
+            <div class="detail-state detail-security"><p>Trend</p><h2>Security built into the fabric</h2><p>Traditional perimeter-only protection is no longer enough. Zero Trust, micro-segmentation and workload-aware policies are increasingly embedded directly into network design and operations.</p></div>
+            <div class="detail-state detail-automation"><p>Trend</p><h2>Automation and AI operations</h2><p>Modern networks are too dynamic to manage manually at scale. Teams increasingly rely on automation for provisioning, policy validation, change control, drift detection and AI-assisted troubleshooting.</p></div>
+            <div class="detail-state detail-observability"><p>Trend</p><h2>Observability and analytics</h2><p>Operators need flow data, health metrics, telemetry and event correlation to understand performance and quickly isolate faults. Observability is now a design requirement, not an afterthought.</p></div>
+            <div class="detail-state detail-scale"><p>Outcome</p><h2>Scale</h2><p>A well-architected data center network allows organizations to add new racks, clusters, applications and tenants without redesigning the environment every time demand grows.</p></div>
+            <div class="detail-state detail-latency"><p>Outcome</p><h2>Latency and user experience</h2><p>Low and predictable latency directly affects application responsiveness, database performance, east-west efficiency and the overall experience delivered to users and systems.</p></div>
+            <div class="detail-state detail-resilience"><p>Outcome</p><h2>Resilience and uptime</h2><p>Resilient designs use redundancy, multiple paths, failover and controlled domains of failure to protect service continuity and reduce the impact of outages.</p></div>
+            <div class="detail-state detail-visibility"><p>Outcome</p><h2>Visibility and control</h2><p>Visibility is essential for troubleshooting, security assurance, capacity planning and optimization. The best designs make traffic behavior measurable, understandable and actionable.</p></div>
+            <div class="detail-state detail-principle-fabric"><p>Design principle</p><h2>Fabric-first architecture</h2><p>Designing around a scalable fabric makes performance more predictable, supports east-west growth and prevents inherited bottlenecks from older hierarchical models.</p></div>
+            <div class="detail-state detail-principle-zero-trust"><p>Design principle</p><h2>Security by design</h2><p>Identity, segmentation and least-privilege access should be integrated into the network model from the beginning, rather than layered on after deployment.</p></div>
+            <div class="detail-state detail-principle-automation"><p>Design principle</p><h2>Automate what must scale</h2><p>Provisioning, compliance checks, testing and operations workflows should be codified and repeatable so the network can evolve without growing operational fragility.</p></div>
+            <div class="detail-state detail-principle-modular"><p>Design principle</p><h2>Modular growth</h2><p>Modern data center networks should be expanded in building blocks — racks, leaf pairs, pods or domains — not as one-off custom changes each time new workloads arrive.</p></div>
+          </article>
+        </aside>
+
+        <section class="benefits-section" aria-label="Key outcomes">
+          <article class="benefits-card">
+            <h2>Key outcomes</h2>
+            <label class="benefit" for="info-scale"><svg><use href="#icon-network" /></svg><span><strong>Scalability</strong><small>Supports growth in cloud, virtualization and AI clusters.</small></span></label>
+            <label class="benefit" for="info-latency"><svg><use href="#icon-rocket" /></svg><span><strong>Low Latency</strong><small>Improves application responsiveness and internal service exchange.</small></span></label>
+            <label class="benefit" for="info-resilience"><svg><use href="#icon-scale" /></svg><span><strong>High Availability</strong><small>Redundant paths and resilient topologies protect uptime.</small></span></label>
+            <label class="benefit" for="info-security"><svg><use href="#icon-lock" /></svg><span><strong>Security</strong><small>Embedded segmentation and policy enforcement reduce risk.</small></span></label>
+            <label class="benefit" for="info-observability"><svg><use href="#icon-eye" /></svg><span><strong>Observability</strong><small>Telemetry and analytics improve troubleshooting speed.</small></span></label>
+            <label class="benefit" for="info-automation"><svg><use href="#icon-gear" /></svg><span><strong>Automation</strong><small>Consistent provisioning and less human error.</small></span></label>
+            <label class="benefit" for="info-fabric"><svg><use href="#icon-server" /></svg><span><strong>Efficient East-West Traffic</strong><small>Optimized for modern internal application patterns.</small></span></label>
+            <label class="benefit" for="info-ddi"><svg><use href="#icon-globe" /></svg><span><strong>Operational Control</strong><small>Addressing, naming and governance stay aligned at scale.</small></span></label>
+          </article>
+        </section>
+
+        <section class="secondary-section" aria-label="Design principles">
+          <div class="secondary-heading">
+            <p class="eyebrow">Design principles</p>
+            <h2>Modern data center networking is fabric-based, secure, observable and automated.</h2>
+            <p>As environments become more distributed and performance-sensitive, the network must act as a programmable platform rather than just a transport utility.</p>
+          </div>
+          <div class="principles-grid">
+            <label class="principle-card" for="info-principle-fabric"><svg><use href="#icon-server" /></svg><h3>Fabric-based scalability</h3></label>
+            <label class="principle-card" for="info-principle-zero-trust"><svg><use href="#icon-shield" /></svg><h3>Zero Trust segmentation</h3></label>
+            <label class="principle-card" for="info-principle-automation"><svg><use href="#icon-gear" /></svg><h3>Automation by default</h3></label>
+            <label class="principle-card" for="info-principle-modular"><svg><use href="#icon-grid" /></svg><h3>Modular growth</h3></label>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <!-- SPANISH -->
+    <div class="language-view language-es" lang="es">
+      <header class="topbar">
+        <div class="header-copy">
+          <div class="brand-row" aria-label="Kyndryl Network and Edge">
+            <span class="kyndryl-logo" aria-label="Kyndryl">
+              <svg viewBox="0 0 125.74 40" role="img" aria-labelledby="kyndryl-title-es" xmlns="http://www.w3.org/2000/svg">
+                <title id="kyndryl-title-es">Kyndryl</title>
+                <path d="M120,0V30h-3.518V0ZM48.854,9.537a5.575,5.575,0,0,0-5.9,4.993h-.172V10H39.26V30h3.519V17.544c0-3.368,1.793-4.911,4.8-4.911,3.442,0,4.981,1.706,4.981,5.09V30h3.518V17.264C56.074,12.489,53.374,9.537,48.854,9.537ZM27.323,29.462h-.115L21.1,10H17.454l6.465,20h3.237l-3.3,10H27.37l9.684-30H33.409Zm77.222,0h-.115L98.322,10H94.675l6.465,20h3.237l-3.3,10h3.511l9.684-30h-3.646ZM7.325,20l8.684-10H11.73l-8.1,9.652H3.519V0H0V30H3.519V20.185H6.862L13.624,30H17.7l-7-10Zm79.021-5.468h-.171V10H82.656V30h3.519V17.508c0-3.368,1.91-4.6,5.184-4.6a9.471,9.471,0,0,1,2.181.234v-3.4a5.152,5.152,0,0,0-1.669-.212A5.4,5.4,0,0,0,86.346,14.532ZM74.617,0h3.518V30H74.617V25.47h-.17c-.337,2.791-2.478,4.993-6.536,4.993-4.951,0-8.469-3.928-8.469-10.463S62.959,9.537,67.911,9.537c4.058,0,6.2,2.2,6.536,4.993h.17Zm0,17.358c0-3.368-2.542-4.726-5.695-4.726-3.324,0-5.81,2.068-5.81,7.368s2.486,7.368,5.81,7.368c3.153,0,5.695-1.358,5.695-4.726V17.358Zm46.956,10.529v.237h.639V30h.3V28.125h.639v-.237Zm3.52,0-.525,2.084h-.006l-.5-2.084h-.579L123.422,30h.283l.063-2.084h.006L124.293,30h.528l.551-2.084h.006L125.44,30h.3l-.069-2.112h-.577Z" fill="#ff462d" />
+              </svg>
+            </span>
+            <span class="practice-tag">Network and Edge</span>
+          </div>
+          <h1>¿Qué es el Data Center Networking?</h1>
+          <p class="subtitle">La columna vertebral digital que conecta cómputo, almacenamiento, seguridad y aplicaciones en el centro de datos moderno.</p>
+        </div>
+        <div class="language-switch" aria-label="Selector de idioma">
+          <label class="lang-option" for="lang-es">ES</label>
+          <label class="lang-option" for="lang-en">EN</label>
+        </div>
+      </header>
+
+      <main class="page-shell">
+        <section class="map-area" aria-label="Resumen interactivo de data center networking">
+          <div class="architecture-heading">
+            <p class="eyebrow">Resumen</p>
+            <h2>Data center networking integra transporte, políticas y automatización para mover datos de forma segura y a gran escala.</h2>
+            <p>Interconecta servidores, almacenamiento, controles de seguridad y aplicaciones mediante fabrics de alta velocidad, routing, balanceo y operación definida por software.</p>
+          </div>
+
+          <div class="map-grid">
+            <article class="flow-panel panel-define">
+              <div class="section-heading">
+                <span class="step">01</span>
+                <div>
+                  <h2>Qué es</h2>
+                  <p>La base que permite servicios digitales, disponibilidad de aplicaciones e intercambio de datos de baja latencia dentro y entre dominios del centro de datos.</p>
+                </div>
+              </div>
+              <div class="node-grid">
+                <label class="node" for="info-definition"><svg><use href="#icon-building" /></svg><span>Servidores, almacenamiento y aplicaciones conectados como una sola plataforma</span></label>
+                <label class="node" for="info-latency"><svg><use href="#icon-rocket" /></svg><span>Latencia ultra baja para cargas transaccionales y en tiempo real</span></label>
+                <label class="node" for="info-resilience"><svg><use href="#icon-scale" /></svg><span>Alta disponibilidad mediante redundancia y resiliencia</span></label>
+                <label class="node" for="info-visibility"><svg><use href="#icon-eye" /></svg><span>Visibilidad operativa sobre tráfico, salud y capacidad</span></label>
+              </div>
+            </article>
+
+            <article class="flow-panel panel-components">
+              <div class="section-heading">
+                <span class="step">02</span>
+                <div>
+                  <h2>Componentes clave</h2>
+                  <p>Funciones físicas de red y capas de abstracción software trabajan juntas para entregar rendimiento, segmentación y control.</p>
+                </div>
+              </div>
+              <div class="mini-grid">
+                <label class="mini-card" for="info-switching"><svg><use href="#icon-network" /></svg><span><strong>Switching</strong><span>Conmutación de alta velocidad en capas leaf y spine.</span></span></label>
+                <label class="mini-card" for="info-routing"><svg><use href="#icon-route" /></svg><span><strong>Routing</strong><span>Selección de caminos, movimiento entre zonas y políticas de tráfico.</span></span></label>
+                <label class="mini-card" for="info-ddi"><svg><use href="#icon-globe" /></svg><span><strong>DDI</strong><span>DNS, DHCP e IPAM para alcance del servicio y gobierno de direccionamiento.</span></span></label>
+                <label class="mini-card" for="info-firewalls"><svg><use href="#icon-shield" /></svg><span><strong>Firewalls</strong><span>Segmentación, inspección y enforcement de políticas.</span></span></label>
+                <label class="mini-card" for="info-loadbalancers"><svg><use href="#icon-grid" /></svg><span><strong>Load balancers</strong><span>Distribuyen sesiones entre aplicaciones, clústeres y sites.</span></span></label>
+                <label class="mini-card" for="info-virtualization"><svg><use href="#icon-cloud" /></svg><span><strong>Virtualización y SDN</strong><span>Overlay networking, automatización y abstracción de infraestructura.</span></span></label>
+                <label class="mini-card" for="info-fabric"><svg><use href="#icon-server" /></svg><span><strong>Network fabric</strong><span>Arquitectura spine-and-leaf para un rendimiento este-oeste predecible.</span></span></label>
+              </div>
+            </article>
+
+            <article class="flow-panel panel-patterns">
+              <div class="section-heading">
+                <span class="step">03</span>
+                <div>
+                  <h2>Patrones de tráfico</h2>
+                  <p>El diseño moderno depende de entender hacia dónde viaja el tráfico: hacia dentro y fuera, o lateralmente entre sistemas.</p>
+                </div>
+              </div>
+              <div class="node-grid">
+                <label class="node" for="info-northsouth"><svg><use href="#icon-globe" /></svg><span>Norte-Sur<br/>Tráfico usuario-aplicación y aplicación-exterior</span></label>
+                <label class="node" for="info-eastwest"><svg><use href="#icon-network" /></svg><span>Este-Oeste<br/>Tráfico entre servidores, almacenamiento y servicios internos</span></label>
+                <label class="node" for="info-ai-traffic"><svg><use href="#icon-server" /></svg><span>IA / cómputo distribuido<br/>Intercambio interno masivo de datos</span></label>
+              </div>
+            </article>
+
+            <article class="flow-panel panel-trends">
+              <div class="section-heading">
+                <span class="step">04</span>
+                <div>
+                  <h2>Retos y tendencias</h2>
+                  <p>Los entornos actuales exigen más ancho de banda, más seguridad y mucha más automatización que las arquitecturas legacy.</p>
+                </div>
+              </div>
+              <div class="mini-grid">
+                <label class="mini-card" for="info-ai-gpu"><svg><use href="#icon-rocket" /></svg><span><strong>IA y clústeres GPU</strong><span>400G / 800G, baja pérdida y rendimiento determinista son cada vez más relevantes.</span></span></label>
+                <label class="mini-card" for="info-security"><svg><use href="#icon-lock" /></svg><span><strong>Seguridad embebida</strong><span>Zero Trust y microsegmentación acercan la protección a la carga.</span></span></label>
+                <label class="mini-card" for="info-automation"><svg><use href="#icon-gear" /></svg><span><strong>Automatización</strong><span>Provisioning, validación y operaciones cerradas reducen error humano.</span></span></label>
+                <label class="mini-card" for="info-observability"><svg><use href="#icon-eye" /></svg><span><strong>Observabilidad</strong><span>Telemetría y analítica aceleran troubleshooting y optimización.</span></span></label>
+              </div>
+            </article>
+
+            <article class="signal-band">
+              <div class="section-heading">
+                <span class="step">05</span>
+                <div>
+                  <h2>Por qué importa</h2>
+                  <p>Una red sólida de data center no es solo infraestructura: influye directamente en la experiencia de las aplicaciones, la ciberresiliencia y la capacidad de escalar el negocio.</p>
+                </div>
+              </div>
+              <div class="signal-row">
+                <label class="signal-pill" for="info-scale">Escala crecimiento cloud, virtualización e IA</label>
+                <label class="signal-pill" for="info-latency">Entrega latencia predecible para cargas críticas</label>
+                <label class="signal-pill" for="info-resilience">Protege disponibilidad con diseño resiliente y seguro</label>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <aside class="right-rail" aria-label="Detalle seleccionado">
+          <article class="detail-panel" aria-live="polite">
+            <div class="detail-state detail-intro"><p>Explora el resumen</p><h2>Haz clic en cualquier tarjeta para ampliar el concepto</h2><p>Esta página explica qué es el data center networking, los bloques que lo componen, cómo fluye el tráfico y por qué su modernización es clave para cloud, IA y aplicaciones críticas.</p></div>
+            <div class="detail-state detail-definition"><p>Definición</p><h2>Data center networking en una frase</h2><p>Es la combinación de hardware y software que interconecta servidores, plataformas de almacenamiento y aplicaciones para que los datos se muevan de forma segura, fiable y con muy baja latencia.</p></div>
+            <div class="detail-state detail-switching"><p>Componente</p><h2>Switching</h2><p>Los switches forman la capa de transporte de alta velocidad del centro de datos. En entornos modernos suelen organizarse en topologías leaf-spine para ofrecer throughput predecible y escalar sin cuellos de botella jerárquicos.</p></div>
+            <div class="detail-state detail-routing"><p>Componente</p><h2>Routing</h2><p>El routing determina cómo se mueve el tráfico entre redes, cargas y zonas de seguridad. Es especialmente importante en entornos híbridos, segmentados y multi-tenant.</p></div>
+            <div class="detail-state detail-ddi"><p>Componente</p><h2>DDI (DNS, DHCP, IPAM)</h2><p>DDI sostiene el descubrimiento de servicios, la asignación de direcciones y el gobierno IP. Sin ello, la automatización, la segmentación y la consistencia operativa se vuelven mucho más complejas.</p></div>
+            <div class="detail-state detail-firewalls"><p>Componente</p><h2>Firewalls y segmentación</h2><p>Los firewalls inspeccionan, filtran y aplican políticas. En centros de datos modernos forman parte de un modelo de segmentación más amplio diseñado para contener el riesgo lateral, no solo perimetral.</p></div>
+            <div class="detail-state detail-loadbalancers"><p>Componente</p><h2>Load balancers</h2><p>Los balanceadores distribuyen solicitudes entre servidores, clústeres o sites. Mejoran disponibilidad, absorben picos de demanda y permiten escalar servicios evitando puntos únicos de congestión.</p></div>
+            <div class="detail-state detail-fabric"><p>Arquitectura</p><h2>Network fabric y spine-and-leaf</h2><p>Los fabrics modernos sustituyen cuellos de botella jerárquicos por una topología más plana. Spine-and-leaf aporta rutas más uniformes para tráfico este-oeste y facilita añadir capacidad a medida que crecen los clústeres.</p></div>
+            <div class="detail-state detail-virtualization"><p>Arquitectura</p><h2>Virtualización y SDN</h2><p>El software-defined networking crea overlays virtuales sobre la red física para que políticas, segmentación y servicios de red se puedan aprovisionar y automatizar de forma consistente.</p></div>
+            <div class="detail-state detail-northsouth"><p>Tráfico</p><h2>Tráfico Norte-Sur</h2><p>Es el tráfico que entra o sale del centro de datos, por ejemplo un usuario accediendo a una aplicación empresarial o un partner alcanzando un servicio expuesto.</p></div>
+            <div class="detail-state detail-eastwest"><p>Tráfico</p><h2>Tráfico Este-Oeste</h2><p>Es el tráfico interno que se mueve lateralmente entre servidores, servicios, bases de datos y capas de aplicación. Ha crecido enormemente por virtualización, cloud-native y analítica distribuida.</p></div>
+            <div class="detail-state detail-ai-traffic"><p>Tráfico</p><h2>Crecimiento este-oeste impulsado por IA</h2><p>Los pipelines de IA, clústeres GPU y entrenamiento distribuido generan patrones internos muy densos. La red debe soportar grandes volúmenes de tráfico sincronizado entre muchos nodos en paralelo.</p></div>
+            <div class="detail-state detail-ai-gpu"><p>Tendencia</p><h2>Fabrics para IA y GPU</h2><p>Los entornos de IA a gran escala empujan la demanda de Ethernet 400G y 800G, baja latencia, control de congestión y comportamientos lossless o casi lossless en los tramos más sensibles.</p></div>
+            <div class="detail-state detail-security"><p>Tendencia</p><h2>Seguridad integrada en el fabric</h2><p>La protección perimetral tradicional ya no basta. Zero Trust, microsegmentación y políticas orientadas a la carga se integran cada vez más directamente en el diseño y la operación de la red.</p></div>
+            <div class="detail-state detail-automation"><p>Tendencia</p><h2>Automatización y operaciones asistidas por IA</h2><p>Las redes modernas son demasiado dinámicas para gestionarse manualmente a escala. Por ello se adopta automatización para provisioning, validación, control de cambios, detección de drift y troubleshooting asistido por IA.</p></div>
+            <div class="detail-state detail-observability"><p>Tendencia</p><h2>Observabilidad y analítica</h2><p>Los operadores necesitan flows, métricas, telemetría y correlación de eventos para entender el rendimiento y aislar fallos rápidamente. La observabilidad ya es un requisito de diseño.</p></div>
+            <div class="detail-state detail-scale"><p>Resultado</p><h2>Escalabilidad</h2><p>Una red de data center bien diseñada permite añadir racks, clústeres, aplicaciones y tenants sin rediseñar toda la plataforma cada vez que crece la demanda.</p></div>
+            <div class="detail-state detail-latency"><p>Resultado</p><h2>Latencia y experiencia</h2><p>Una latencia baja y predecible impacta directamente en la respuesta de aplicaciones, el rendimiento de bases de datos, la eficiencia este-oeste y la experiencia general del negocio.</p></div>
+            <div class="detail-state detail-resilience"><p>Resultado</p><h2>Resiliencia y continuidad</h2><p>Los diseños resilientes usan redundancia, múltiples caminos, failover y dominios de fallo controlados para proteger la continuidad del servicio y reducir el impacto de interrupciones.</p></div>
+            <div class="detail-state detail-visibility"><p>Resultado</p><h2>Visibilidad y control</h2><p>La visibilidad es esencial para troubleshooting, seguridad, capacity planning y optimización. Los mejores diseños hacen que el comportamiento del tráfico sea medible y accionable.</p></div>
+            <div class="detail-state detail-principle-fabric"><p>Principio</p><h2>Arquitectura basada en fabric</h2><p>Diseñar alrededor de un fabric escalable hace más predecible el rendimiento, soporta el crecimiento este-oeste y evita limitaciones heredadas de modelos jerárquicos tradicionales.</p></div>
+            <div class="detail-state detail-principle-zero-trust"><p>Principio</p><h2>Seguridad by design</h2><p>Identidad, segmentación y mínimo privilegio deben integrarse en el modelo de red desde el principio, no añadirse al final.</p></div>
+            <div class="detail-state detail-principle-automation"><p>Principio</p><h2>Automatizar lo que tiene que escalar</h2><p>Provisioning, compliance, testing y workflows operativos deben codificarse y ser repetibles para que la red evolucione sin fragilidad operativa creciente.</p></div>
+            <div class="detail-state detail-principle-modular"><p>Principio</p><h2>Crecimiento modular</h2><p>Las redes modernas deben ampliarse en bloques —racks, pares leaf, pods o dominios— y no mediante cambios únicos y manuales cada vez que llegan nuevas cargas.</p></div>
+          </article>
+        </aside>
+
+        <section class="benefits-section" aria-label="Resultados clave">
+          <article class="benefits-card">
+            <h2>Resultados clave</h2>
+            <label class="benefit" for="info-scale"><svg><use href="#icon-network" /></svg><span><strong>Escalabilidad</strong><small>Soporta crecimiento cloud, virtualización y clústeres de IA.</small></span></label>
+            <label class="benefit" for="info-latency"><svg><use href="#icon-rocket" /></svg><span><strong>Baja Latencia</strong><small>Mejora la respuesta de aplicaciones y servicios internos.</small></span></label>
+            <label class="benefit" for="info-resilience"><svg><use href="#icon-scale" /></svg><span><strong>Alta Disponibilidad</strong><small>Rutas redundantes y topologías resilientes protegen el servicio.</small></span></label>
+            <label class="benefit" for="info-security"><svg><use href="#icon-lock" /></svg><span><strong>Seguridad</strong><small>Segmentación embebida y enforcement de políticas.</small></span></label>
+            <label class="benefit" for="info-observability"><svg><use href="#icon-eye" /></svg><span><strong>Observabilidad</strong><small>Telemetría y analítica aceleran el troubleshooting.</small></span></label>
+            <label class="benefit" for="info-automation"><svg><use href="#icon-gear" /></svg><span><strong>Automatización</strong><small>Provisioning consistente y menos error humano.</small></span></label>
+            <label class="benefit" for="info-fabric"><svg><use href="#icon-server" /></svg><span><strong>Este-Oeste Eficiente</strong><small>Optimizado para patrones internos modernos.</small></span></label>
+            <label class="benefit" for="info-ddi"><svg><use href="#icon-globe" /></svg><span><strong>Control Operativo</strong><small>Direccionamiento, naming y gobierno alineados.</small></span></label>
+          </article>
+        </section>
+
+        <section class="secondary-section" aria-label="Principios de diseño">
+          <div class="secondary-heading">
+            <p class="eyebrow">Principios de diseño</p>
+            <h2>El data center networking moderno es fabric-based, seguro, observable y automatizado.</h2>
+            <p>A medida que los entornos se vuelven más distribuidos y sensibles al rendimiento, la red debe comportarse como una plataforma programable, no solo como transporte.</p>
+          </div>
+          <div class="principles-grid">
+            <label class="principle-card" for="info-principle-fabric"><svg><use href="#icon-server" /></svg><h3>Escalabilidad basada en fabric</h3></label>
+            <label class="principle-card" for="info-principle-zero-trust"><svg><use href="#icon-shield" /></svg><h3>Segmentación Zero Trust</h3></label>
+            <label class="principle-card" for="info-principle-automation"><svg><use href="#icon-gear" /></svg><h3>Automatización por defecto</h3></label>
+            <label class="principle-card" for="info-principle-modular"><svg><use href="#icon-grid" /></svg><h3>Crecimiento modular</h3></label>
+          </div>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>

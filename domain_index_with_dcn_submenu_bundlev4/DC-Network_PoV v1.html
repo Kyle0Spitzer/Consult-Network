@@ -1,0 +1,3475 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Cloud Networking - Point of View</title>
+    <style>
+:root {
+  color-scheme: light;
+  --ink: #07163f;
+  --muted: #52617f;
+  --line: #b8c8f6;
+  --line-strong: #2359ff;
+  --surface: #ffffff;
+  --surface-soft: #f4f7fd;
+  --panel: #f9fbff;
+  --blue: #1147c8;
+  --cyan: #0089d6;
+  --teal: #008c7d;
+  --green: #2f8a46;
+  --amber: #d98b00;
+  --coral: #e15b3c;
+  --violet: #7050d8;
+  --shadow: 0 22px 70px rgba(17, 47, 105, 0.16);
+  --radius: 8px;
+  --gap: clamp(14px, 1.6vw, 22px);
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: auto;
+  overflow-anchor: none;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  color: var(--ink);
+  background:
+    linear-gradient(90deg, rgba(17, 71, 200, 0.05) 1px, transparent 1px) 0 0 / 48px 48px,
+    linear-gradient(rgba(17, 71, 200, 0.04) 1px, transparent 1px) 0 0 / 48px 48px,
+    #f7f9fe;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button {
+  color: inherit;
+}
+
+label {
+  font: inherit;
+}
+
+.info-radio,
+.language-radio {
+  position: fixed;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.icon-defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+.language-view {
+  display: none;
+}
+
+#lang-es:checked ~ .language-es,
+#lang-en:checked ~ .language-en {
+  display: block;
+}
+
+.language-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-width: max-content;
+  padding: 4px;
+  border: 1px solid rgba(35, 89, 255, 0.2);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.lang-option {
+  display: grid;
+  min-width: 44px;
+  min-height: 32px;
+  place-items: center;
+  border-radius: 6px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 900;
+  cursor: pointer;
+  transition:
+    background 180ms ease,
+    color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.lang-option:hover,
+.lang-option:focus-visible {
+  color: var(--blue);
+  background: #eef4ff;
+  outline: 0;
+}
+
+#lang-es:checked ~ .language-view [for="lang-es"],
+#lang-en:checked ~ .language-view [for="lang-en"] {
+  color: #fff;
+  background: var(--blue);
+  box-shadow: 0 8px 18px rgba(35, 89, 255, 0.22);
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 18px clamp(18px, 3vw, 42px);
+  border-bottom: 1px solid rgba(35, 89, 255, 0.16);
+  background: rgba(249, 251, 255, 0.92);
+  backdrop-filter: blur(18px);
+}
+
+.header-copy {
+  min-width: 0;
+}
+
+.brand-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 10px;
+}
+
+.kyndryl-logo {
+  display: inline-flex;
+  align-items: center;
+  width: 142px;
+  min-width: 142px;
+  height: 45px;
+}
+
+.kyndryl-logo svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.practice-tag {
+  display: inline-grid;
+  min-height: 34px;
+  align-items: center;
+  padding: 0 12px;
+  border: 1px solid rgba(255, 70, 45, 0.24);
+  border-radius: 8px;
+  background: #fff6f3;
+  color: #07163f;
+  font-size: 0.88rem;
+  font-weight: 900;
+}
+
+.eyebrow {
+  margin: 0 0 4px;
+  color: var(--cyan);
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin-top: 0;
+}
+
+h1 {
+  margin-bottom: 5px;
+  color: var(--blue);
+  font-size: 3.7rem;
+  line-height: 0.95;
+  letter-spacing: 0;
+}
+
+.subtitle {
+  margin-bottom: 0;
+  color: var(--muted);
+  font-size: 1.12rem;
+}
+
+.page-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(350px, 380px);
+  gap: var(--gap);
+  align-items: start;
+  width: min(1840px, 100%);
+  margin: 0 auto;
+  padding: clamp(18px, 2.6vw, 38px);
+}
+
+.kyndryl-model-section,
+.principles-section {
+  border: 1px solid rgba(35, 89, 255, 0.2);
+  border-radius: var(--radius);
+  background:
+    linear-gradient(90deg, rgba(17, 71, 200, 0.07), transparent 52%),
+    rgba(255, 255, 255, 0.9);
+}
+
+.principles-heading h2 {
+  margin-bottom: 10px;
+  color: var(--blue);
+  font-size: 2.25rem;
+  line-height: 1.04;
+  letter-spacing: 0;
+}
+
+.principles-heading p:last-child {
+  margin-bottom: 0;
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1.56;
+}
+
+.map-area {
+  position: relative;
+  grid-column: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
+  gap: clamp(16px, 2vw, 24px);
+  align-items: start;
+  padding: clamp(18px, 2.2vw, 30px);
+  border: 1px solid rgba(35, 89, 255, 0.22);
+  border-radius: var(--radius);
+  background:
+    linear-gradient(135deg, rgba(35, 89, 255, 0.1), transparent 38%),
+    linear-gradient(90deg, rgba(0, 140, 125, 0.08), transparent 62%),
+    rgba(255, 255, 255, 0.9);
+  box-shadow: var(--shadow);
+}
+
+.architecture-heading {
+  display: grid;
+  grid-template-columns: minmax(240px, 0.44fr) minmax(0, 0.56fr);
+  gap: var(--gap);
+  align-items: end;
+  padding-bottom: 6px;
+}
+
+.architecture-heading .eyebrow {
+  grid-column: 1 / -1;
+  margin-bottom: -8px;
+}
+
+.architecture-heading h2 {
+  margin-bottom: 0;
+  color: var(--blue);
+  font-size: 2.1rem;
+  line-height: 1.04;
+  letter-spacing: 0;
+}
+
+.architecture-heading p:last-child {
+  margin-bottom: 0;
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.map-grid {
+  display: grid;
+  gap: 18px;
+  min-width: 0;
+}
+
+.flow-panel,
+.landing-zone,
+.ops-band,
+.detail-panel,
+.benefits-card {
+  border: 1px solid rgba(35, 89, 255, 0.22);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.86);
+}
+
+.detail-panel,
+.benefits-card,
+.kyndryl-model-section {
+  box-shadow: var(--shadow);
+}
+
+.flow-panel,
+.landing-zone,
+.ops-band {
+  position: relative;
+  min-width: 0;
+  scroll-margin-top: 130px;
+  padding: clamp(16px, 1.8vw, 24px);
+}
+
+.global-panel,
+.hub-panel,
+.landing-zone {
+  border-width: 2px;
+  background-color: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 20px 54px rgba(17, 47, 105, 0.12);
+}
+
+.global-panel .step,
+.hub-panel .step,
+.landing-zone .step {
+  width: 46px;
+  min-width: 46px;
+  height: 46px;
+  border-color: rgba(35, 89, 255, 0.44);
+  box-shadow: 0 10px 22px rgba(35, 89, 255, 0.14);
+  font-size: 0.9rem;
+}
+
+.global-panel .section-heading h2,
+.hub-panel .section-heading h2,
+.landing-zone .section-heading h2 {
+  font-size: 1.36rem;
+}
+
+.global-panel {
+  border-color: rgba(35, 89, 255, 0.44);
+  background:
+    linear-gradient(90deg, rgba(17, 71, 200, 0.06), transparent 42%),
+    rgba(255, 255, 255, 0.88);
+}
+
+.hub-panel {
+  width: min(100%, 960px);
+  justify-self: center;
+  border-color: rgba(0, 140, 125, 0.45);
+  background:
+    linear-gradient(90deg, rgba(0, 140, 125, 0.08), transparent 44%),
+    rgba(255, 255, 255, 0.9);
+}
+
+.section-heading {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.section-heading.compact {
+  margin-bottom: 14px;
+}
+
+.section-heading h2 {
+  margin-bottom: 3px;
+  color: var(--blue);
+  font-size: 1.22rem;
+  line-height: 1.18;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.section-heading p {
+  margin-bottom: 0;
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.step {
+  display: inline-grid;
+  width: 40px;
+  min-width: 40px;
+  height: 40px;
+  place-items: center;
+  border: 1px solid rgba(35, 89, 255, 0.34);
+  border-radius: 8px;
+  background: #eff4ff;
+  color: var(--blue);
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.global-nodes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 10px;
+}
+
+.node,
+.service-pill,
+.ops-card,
+.benefit,
+.roadmap-row,
+.principle-card,
+.feature-list label,
+.service-rail label,
+.oci-cross-connect {
+  border: 1px solid rgba(35, 89, 255, 0.22);
+  border-radius: 8px;
+  background: #fff;
+  min-width: 0;
+  cursor: pointer;
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    background 180ms ease;
+}
+
+.node {
+  display: grid;
+  grid-template-rows: 42px minmax(34px, auto);
+  justify-items: center;
+  align-items: center;
+  min-height: 104px;
+  padding: 11px 9px;
+  color: var(--blue);
+  text-align: center;
+}
+
+.node svg,
+.service-pill svg,
+.ops-card svg,
+.benefit svg,
+.principles-grid svg,
+.service-rail svg,
+.native-strip svg,
+.cloud-title svg {
+  width: 34px;
+  height: 34px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.node span {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 850;
+  line-height: 1.25;
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: none;
+}
+
+.node:hover,
+.node:focus-visible,
+.service-pill:hover,
+.service-pill:focus-visible,
+.ops-card:hover,
+.ops-card:focus-visible,
+.benefit:hover,
+.benefit:focus-visible,
+.roadmap-row:hover,
+.roadmap-row:focus-visible,
+.principle-card:hover,
+.principle-card:focus-visible,
+.feature-list label:hover,
+.feature-list label:focus-visible,
+.service-rail label:hover,
+.service-rail label:focus-visible,
+.oci-cross-connect:hover,
+.oci-cross-connect:focus-visible {
+  transform: translateY(-2px);
+  border-color: var(--line-strong);
+  box-shadow: 0 16px 34px rgba(35, 89, 255, 0.13);
+  outline: 0;
+}
+
+.detail-state {
+  display: none;
+}
+
+#info-intro:checked ~ .language-view main .detail-intro,
+#info-dns:checked ~ .language-view main .detail-dns,
+#info-health:checked ~ .language-view main .detail-health,
+#info-cdn:checked ~ .language-view main .detail-cdn,
+#info-latency:checked ~ .language-view main .detail-latency,
+#info-users:checked ~ .language-view main .detail-users,
+#info-branches:checked ~ .language-view main .detail-branches,
+#info-waf:checked ~ .language-view main .detail-waf,
+#info-ddos:checked ~ .language-view main .detail-ddos,
+#info-traffic-acceleration:checked ~ .language-view main .detail-traffic-acceleration,
+#info-load-balancing:checked ~ .language-view main .detail-load-balancing,
+#info-hubs:checked ~ .language-view main .detail-hubs,
+#info-bgp:checked ~ .language-view main .detail-bgp,
+#info-segmentation:checked ~ .language-view main .detail-segmentation,
+#info-active-active:checked ~ .language-view main .detail-active-active,
+#info-aws-tgw:checked ~ .language-view main .detail-aws-tgw,
+#info-aws-firewall:checked ~ .language-view main .detail-aws-firewall,
+#info-aws-routes:checked ~ .language-view main .detail-aws-routes,
+#info-azure-vwan:checked ~ .language-view main .detail-azure-vwan,
+#info-azure-firewall:checked ~ .language-view main .detail-azure-firewall,
+#info-azure-routes:checked ~ .language-view main .detail-azure-routes,
+#info-gcp-router:checked ~ .language-view main .detail-gcp-router,
+#info-gcp-firewall:checked ~ .language-view main .detail-gcp-firewall,
+#info-gcp-routes:checked ~ .language-view main .detail-gcp-routes,
+#info-oci-crossconnect:checked ~ .language-view main .detail-oci-crossconnect,
+#info-edge-hub:checked ~ .language-view main .detail-edge-hub,
+#info-hub-clouds:checked ~ .language-view main .detail-hub-clouds,
+#info-onprem-private-connectivity:checked ~ .language-view main .detail-onprem-private-connectivity,
+#info-onprem-bgp-routing:checked ~ .language-view main .detail-onprem-bgp-routing,
+#info-onprem-active-active:checked ~ .language-view main .detail-onprem-active-active,
+#info-onprem-hybrid-dns:checked ~ .language-view main .detail-onprem-hybrid-dns,
+#info-observability:checked ~ .language-view main .detail-observability,
+#info-automation:checked ~ .language-view main .detail-automation,
+#info-governance:checked ~ .language-view main .detail-governance,
+#info-ipam:checked ~ .language-view main .detail-ipam,
+#info-finops:checked ~ .language-view main .detail-finops,
+#info-plan:checked ~ .language-view main .detail-plan,
+#info-build:checked ~ .language-view main .detail-build,
+#info-run:checked ~ .language-view main .detail-run,
+#info-connectivity:checked ~ .language-view main .detail-connectivity,
+#info-performance:checked ~ .language-view main .detail-performance,
+#info-availability:checked ~ .language-view main .detail-availability,
+#info-privacy:checked ~ .language-view main .detail-privacy,
+#info-consistency:checked ~ .language-view main .detail-consistency,
+#info-benefit-automation:checked ~ .language-view main .detail-benefit-automation,
+#info-visibility:checked ~ .language-view main .detail-visibility,
+#info-scalability:checked ~ .language-view main .detail-scalability,
+#info-principle-cloud-centric:checked ~ .language-view main .detail-principle-cloud-centric,
+#info-principle-transport-overlay:checked ~ .language-view main .detail-principle-transport-overlay,
+#info-principle-modularity:checked ~ .language-view main .detail-principle-modularity,
+#info-principle-neutrality:checked ~ .language-view main .detail-principle-neutrality,
+#info-principle-visibility:checked ~ .language-view main .detail-principle-visibility,
+#info-principle-zero-trust:checked ~ .language-view main .detail-principle-zero-trust,
+#info-principle-resilience:checked ~ .language-view main .detail-principle-resilience,
+#info-principle-network-code:checked ~ .language-view main .detail-principle-network-code {
+  display: block;
+}
+
+#info-dns:checked ~ .language-view main [for="info-dns"],
+#info-health:checked ~ .language-view main [for="info-health"],
+#info-cdn:checked ~ .language-view main [for="info-cdn"],
+#info-latency:checked ~ .language-view main [for="info-latency"],
+#info-users:checked ~ .language-view main [for="info-users"],
+#info-branches:checked ~ .language-view main [for="info-branches"],
+#info-waf:checked ~ .language-view main [for="info-waf"],
+#info-ddos:checked ~ .language-view main [for="info-ddos"],
+#info-traffic-acceleration:checked ~ .language-view main [for="info-traffic-acceleration"],
+#info-load-balancing:checked ~ .language-view main [for="info-load-balancing"],
+#info-hubs:checked ~ .language-view main [for="info-hubs"],
+#info-bgp:checked ~ .language-view main [for="info-bgp"],
+#info-segmentation:checked ~ .language-view main [for="info-segmentation"],
+#info-active-active:checked ~ .language-view main [for="info-active-active"],
+#info-aws-tgw:checked ~ .language-view main [for="info-aws-tgw"],
+#info-aws-firewall:checked ~ .language-view main [for="info-aws-firewall"],
+#info-aws-routes:checked ~ .language-view main [for="info-aws-routes"],
+#info-azure-vwan:checked ~ .language-view main [for="info-azure-vwan"],
+#info-azure-firewall:checked ~ .language-view main [for="info-azure-firewall"],
+#info-azure-routes:checked ~ .language-view main [for="info-azure-routes"],
+#info-gcp-router:checked ~ .language-view main [for="info-gcp-router"],
+#info-gcp-firewall:checked ~ .language-view main [for="info-gcp-firewall"],
+#info-gcp-routes:checked ~ .language-view main [for="info-gcp-routes"],
+#info-oci-crossconnect:checked ~ .language-view main [for="info-oci-crossconnect"],
+#info-onprem-private-connectivity:checked ~ .language-view main [for="info-onprem-private-connectivity"],
+#info-onprem-bgp-routing:checked ~ .language-view main [for="info-onprem-bgp-routing"],
+#info-onprem-active-active:checked ~ .language-view main [for="info-onprem-active-active"],
+#info-onprem-hybrid-dns:checked ~ .language-view main [for="info-onprem-hybrid-dns"],
+#info-observability:checked ~ .language-view main [for="info-observability"],
+#info-automation:checked ~ .language-view main [for="info-automation"],
+#info-governance:checked ~ .language-view main [for="info-governance"],
+#info-ipam:checked ~ .language-view main [for="info-ipam"],
+#info-finops:checked ~ .language-view main [for="info-finops"],
+#info-plan:checked ~ .language-view main [for="info-plan"],
+#info-build:checked ~ .language-view main [for="info-build"],
+#info-run:checked ~ .language-view main [for="info-run"],
+#info-connectivity:checked ~ .language-view main [for="info-connectivity"],
+#info-performance:checked ~ .language-view main [for="info-performance"],
+#info-availability:checked ~ .language-view main [for="info-availability"],
+#info-privacy:checked ~ .language-view main [for="info-privacy"],
+#info-consistency:checked ~ .language-view main [for="info-consistency"],
+#info-benefit-automation:checked ~ .language-view main [for="info-benefit-automation"],
+#info-visibility:checked ~ .language-view main [for="info-visibility"],
+#info-scalability:checked ~ .language-view main [for="info-scalability"],
+#info-principle-cloud-centric:checked ~ .language-view main [for="info-principle-cloud-centric"],
+#info-principle-transport-overlay:checked ~ .language-view main [for="info-principle-transport-overlay"],
+#info-principle-modularity:checked ~ .language-view main [for="info-principle-modularity"],
+#info-principle-neutrality:checked ~ .language-view main [for="info-principle-neutrality"],
+#info-principle-visibility:checked ~ .language-view main [for="info-principle-visibility"],
+#info-principle-zero-trust:checked ~ .language-view main [for="info-principle-zero-trust"],
+#info-principle-resilience:checked ~ .language-view main [for="info-principle-resilience"],
+#info-principle-network-code:checked ~ .language-view main [for="info-principle-network-code"] {
+  border-color: var(--line-strong);
+  background: #eef4ff;
+  box-shadow: 0 16px 34px rgba(35, 89, 255, 0.17);
+}
+
+.accent-node {
+  color: var(--cyan);
+  border-color: rgba(0, 137, 214, 0.34);
+}
+
+.service-rail {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 8px;
+  margin-top: 12px;
+  padding: 8px;
+  border: 1px solid rgba(35, 89, 255, 0.28);
+  border-radius: 8px;
+  background: #f7fbff;
+}
+
+.service-rail label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 0;
+  min-height: 34px;
+  padding: 8px 10px;
+  color: var(--blue);
+  font-size: 0.8rem;
+  font-weight: 800;
+  text-align: center;
+  line-height: 1.18;
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: none;
+}
+
+.service-rail svg {
+  width: 22px;
+  height: 22px;
+}
+
+.flow-arrow {
+  position: relative;
+  display: grid;
+  min-height: 44px;
+  place-items: center;
+  cursor: pointer;
+}
+
+.flow-arrow::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--line-strong);
+}
+
+.flow-arrow::after {
+  content: "";
+  position: absolute;
+  left: calc(50% - 5px);
+  bottom: 0;
+  width: 10px;
+  height: 10px;
+  border-right: 2px solid var(--line-strong);
+  border-bottom: 2px solid var(--line-strong);
+  transform: rotate(45deg);
+}
+
+.flow-arrow span {
+  position: relative;
+  z-index: 1;
+  max-width: min(88%, 620px);
+  padding: 6px 12px;
+  border: 1px solid rgba(35, 89, 255, 0.22);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--blue);
+  font-size: 0.78rem;
+  font-weight: 900;
+  line-height: 1.2;
+  text-align: center;
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    background 180ms ease;
+}
+
+.flow-arrow:hover span,
+.flow-arrow:focus-visible span,
+#info-edge-hub:checked ~ .language-view main [for="info-edge-hub"] span,
+#info-hub-clouds:checked ~ .language-view main [for="info-hub-clouds"] span {
+  border-color: var(--line-strong);
+  background: #eef4ff;
+  box-shadow: 0 16px 34px rgba(35, 89, 255, 0.13);
+  outline: 0;
+}
+
+.hub-nodes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+}
+
+.hub-nodes .node {
+  color: var(--teal);
+  min-height: 92px;
+}
+
+.landing-zone {
+  border-color: rgba(112, 80, 216, 0.36);
+  background:
+    linear-gradient(90deg, rgba(112, 80, 216, 0.07), transparent 48%),
+    rgba(255, 255, 255, 0.9);
+}
+
+.landing-heading {
+  width: min(100%, 900px);
+  margin-inline: auto;
+  text-align: left;
+}
+
+.zone-layout {
+  display: grid;
+  grid-template-columns: minmax(190px, 0.72fr) repeat(3, minmax(220px, 1fr));
+  gap: 12px;
+  align-items: start;
+}
+
+.cloud-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  min-height: 0;
+  padding: 14px;
+  border: 1px solid rgba(35, 89, 255, 0.22);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.onprem-card {
+  justify-content: center;
+  border-color: rgba(112, 80, 216, 0.42);
+}
+
+.cloud-title {
+  display: grid;
+  gap: 12px;
+  justify-items: center;
+  color: var(--violet);
+  text-align: center;
+}
+
+.cloud-title svg {
+  width: 64px;
+  height: 64px;
+}
+
+.cloud-title h3 {
+  margin-bottom: 6px;
+  color: var(--ink);
+  font-size: 1rem;
+  text-transform: uppercase;
+}
+
+.cloud-title p {
+  margin-bottom: 0;
+  color: var(--muted);
+  font-size: 0.84rem;
+  line-height: 1.35;
+}
+
+.feature-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.feature-list span,
+.feature-list label {
+  display: block;
+  padding: 10px;
+  border: 1px solid rgba(112, 80, 216, 0.22);
+  border-radius: 8px;
+  color: var(--violet);
+  background: #f8f6ff;
+  font-size: 0.82rem;
+  font-weight: 800;
+  text-align: center;
+}
+
+.aws-card {
+  border-color: rgba(225, 91, 60, 0.38);
+}
+
+.azure-card {
+  border-color: rgba(17, 71, 200, 0.36);
+}
+
+.gcp-card {
+  border-color: rgba(0, 140, 125, 0.36);
+}
+
+.oci-cross-connect {
+  --oci-connector-length: 48px;
+  position: relative;
+  grid-column: 3 / 4;
+  display: grid;
+  align-content: center;
+  gap: 6px;
+  justify-items: center;
+  min-height: 104px;
+  padding: 18px 12px 12px;
+  border: 1px dashed rgba(225, 91, 60, 0.42);
+  border-radius: 8px;
+  background: #fffafa;
+  text-align: center;
+}
+
+.oci-cross-connect::before {
+  content: "";
+  position: absolute;
+  top: calc(var(--oci-connector-length) * -1);
+  left: 50%;
+  width: 2px;
+  height: var(--oci-connector-length);
+  background: var(--violet);
+}
+
+.oci-cross-connect::after {
+  content: "";
+  position: absolute;
+  top: calc(var(--oci-connector-length) * -1);
+  left: calc(50% - 5px);
+  width: 10px;
+  height: 10px;
+  border-left: 2px solid var(--violet);
+  border-top: 2px solid var(--violet);
+  transform: rotate(45deg);
+}
+
+.oracle-logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 138px;
+  height: 28px;
+}
+
+.oracle-logo svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.oci-cross-connect strong {
+  color: var(--coral);
+  font-size: 0.78rem;
+  line-height: 1.15;
+  text-transform: uppercase;
+}
+
+.cloud-brand {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 58px;
+  border-bottom: 1px solid rgba(35, 89, 255, 0.12);
+  padding-bottom: 10px;
+}
+
+.cloud-brand > span:last-child {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 850;
+  text-align: right;
+  text-transform: uppercase;
+}
+
+.cloud-logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 108px;
+  min-width: 86px;
+  height: 38px;
+}
+
+.cloud-logo svg {
+  display: block;
+  width: 100%;
+  max-height: 38px;
+}
+
+.cloud-logo.azure-logo {
+  width: 52px;
+  min-width: 52px;
+}
+
+.cloud-logo.azure-logo svg {
+  width: 38px;
+  height: 38px;
+}
+
+.cloud-logo.gcp-logo {
+  width: 48px;
+  min-width: 48px;
+}
+
+.cloud-services {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.service-pill {
+  display: grid;
+  grid-template-rows: 30px minmax(34px, auto);
+  place-items: center;
+  min-height: 92px;
+  padding: 9px 7px;
+  color: var(--blue);
+  font-size: 0.72rem;
+  font-weight: 850;
+  line-height: 1.2;
+  text-align: center;
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: none;
+}
+
+.aws-card .service-pill {
+  color: var(--coral);
+  border-color: rgba(225, 91, 60, 0.24);
+}
+
+.azure-card .service-pill {
+  color: var(--blue);
+}
+
+.gcp-card .service-pill {
+  color: var(--teal);
+  border-color: rgba(0, 140, 125, 0.24);
+}
+
+.service-pill svg {
+  width: 28px;
+  height: 28px;
+}
+
+.spoke-band {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  padding: 12px 0;
+  border-top: 1px dashed rgba(35, 89, 255, 0.2);
+  border-bottom: 1px dashed rgba(35, 89, 255, 0.2);
+}
+
+.spoke-band span {
+  min-height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  background: var(--surface-soft);
+  color: var(--blue);
+  font-size: 0.75rem;
+  font-weight: 900;
+}
+
+.native-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.native-strip span {
+  min-height: 66px;
+  display: grid;
+  grid-template-rows: 25px minmax(0, auto);
+  gap: 6px;
+  place-items: center;
+  padding: 8px 6px;
+  border-radius: 8px;
+  background: #f8fbff;
+  color: var(--muted);
+  font-size: 0.68rem;
+  font-weight: 800;
+  line-height: 1.18;
+  text-align: center;
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: none;
+}
+
+.native-strip svg {
+  width: 25px;
+  height: 25px;
+}
+
+.ops-band {
+  border-color: rgba(0, 137, 214, 0.36);
+  background:
+    linear-gradient(90deg, rgba(0, 137, 214, 0.07), transparent 42%),
+    rgba(255, 255, 255, 0.9);
+}
+
+.ops-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 10px;
+}
+
+.ops-card {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr);
+  align-items: center;
+  gap: 9px;
+  min-height: 78px;
+  padding: 10px;
+  color: var(--blue);
+  text-align: left;
+}
+
+.ops-card svg {
+  width: 34px;
+  height: 34px;
+}
+
+.ops-card span {
+  min-width: 0;
+  font-size: 0.78rem;
+  font-weight: 900;
+  line-height: 1.2;
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: none;
+}
+
+.kyndryl-model-section {
+  grid-column: 1;
+  margin-top: var(--gap);
+  padding: clamp(16px, 2vw, 24px);
+  background:
+    linear-gradient(90deg, rgba(225, 91, 60, 0.07), transparent 46%),
+    rgba(255, 255, 255, 0.9);
+}
+
+.kyndryl-model-heading {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.42fr) minmax(0, 0.58fr);
+  gap: var(--gap);
+  align-items: end;
+  margin-bottom: 14px;
+}
+
+.kyndryl-model-heading .eyebrow {
+  grid-column: 1 / -1;
+  margin-bottom: -8px;
+  color: var(--coral);
+}
+
+.kyndryl-model-heading h2 {
+  margin-bottom: 0;
+  color: var(--blue);
+  font-size: 2rem;
+  line-height: 1.04;
+  letter-spacing: 0;
+}
+
+.kyndryl-model-heading p:last-child {
+  margin-bottom: 0;
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.project-roadmap {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid rgba(225, 91, 60, 0.24);
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, rgba(7, 22, 63, 0.04), transparent 36%),
+    #fff;
+}
+
+.roadmap-scale,
+.roadmap-row {
+  display: grid;
+  grid-template-columns: minmax(168px, 0.27fr) minmax(0, 1fr) minmax(136px, 0.2fr);
+  gap: 10px;
+  align-items: center;
+}
+
+.roadmap-scale {
+  padding: 0 10px;
+  color: var(--muted);
+  font-size: 0.7rem;
+  font-weight: 900;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.roadmap-milestones {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+  text-align: center;
+}
+
+.roadmap-row {
+  min-height: 90px;
+  padding: 10px;
+}
+
+.roadmap-stage {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+}
+
+.roadmap-stage svg {
+  width: 36px;
+  height: 36px;
+  color: var(--coral);
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.phase-build .roadmap-stage svg {
+  color: var(--blue);
+}
+
+.phase-run .roadmap-stage svg {
+  color: var(--teal);
+}
+
+.roadmap-stage strong,
+.roadmap-stage small,
+.roadmap-deliverable,
+.roadmap-footer strong,
+.roadmap-footer small {
+  display: block;
+  min-width: 0;
+}
+
+.roadmap-stage strong {
+  margin-bottom: 4px;
+  color: var(--ink);
+  font-size: 1rem;
+  line-height: 1.12;
+  text-transform: uppercase;
+}
+
+.roadmap-stage small {
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.roadmap-track {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  align-items: center;
+  min-height: 58px;
+  padding: 8px 10px;
+  overflow: hidden;
+  border: 1px solid rgba(35, 89, 255, 0.16);
+  border-radius: 8px;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      transparent 0,
+      transparent calc(20% - 1px),
+      rgba(35, 89, 255, 0.14) calc(20% - 1px),
+      rgba(35, 89, 255, 0.14) 20%
+    ),
+    #f7fbff;
+}
+
+.roadmap-bar {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  min-height: 34px;
+  place-items: center;
+  padding: 7px 12px;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 900;
+  line-height: 1.16;
+  text-align: center;
+  box-shadow: 0 12px 24px rgba(7, 22, 63, 0.16);
+}
+
+.phase-plan .roadmap-bar {
+  grid-column: 1 / 5;
+  background: linear-gradient(90deg, var(--coral), var(--amber));
+}
+
+.phase-build .roadmap-bar {
+  grid-column: 4 / 10;
+  background: linear-gradient(90deg, var(--blue), var(--cyan));
+}
+
+.phase-run .roadmap-bar {
+  grid-column: 9 / 13;
+  background: linear-gradient(90deg, var(--teal), var(--green));
+}
+
+.roadmap-checkpoint {
+  position: absolute;
+  top: 8px;
+  bottom: 8px;
+  width: 2px;
+  border-radius: 999px;
+  background: rgba(7, 22, 63, 0.28);
+}
+
+.roadmap-checkpoint::after {
+  content: "";
+  position: absolute;
+  top: calc(50% - 6px);
+  left: -5px;
+  width: 12px;
+  height: 12px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 0 2px rgba(7, 22, 63, 0.12);
+}
+
+.phase-plan .roadmap-checkpoint {
+  left: calc(33.333% - 1px);
+  color: var(--amber);
+}
+
+.phase-build .roadmap-checkpoint {
+  left: calc(75% - 1px);
+  color: var(--cyan);
+}
+
+.phase-run .roadmap-checkpoint {
+  left: calc(91.666% - 1px);
+  color: var(--green);
+}
+
+.roadmap-deliverable {
+  min-height: 58px;
+  padding: 10px 12px;
+  border: 1px solid rgba(35, 89, 255, 0.16);
+  border-radius: 8px;
+  background: #f9fbff;
+  color: var(--ink);
+  font-size: 0.78rem;
+  font-weight: 900;
+  line-height: 1.18;
+  text-align: center;
+}
+
+.roadmap-footer {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.roadmap-footer span {
+  min-height: 58px;
+  padding: 10px;
+  border: 1px solid rgba(225, 91, 60, 0.18);
+  border-radius: 8px;
+  background: #fff8f6;
+}
+
+.roadmap-footer strong {
+  margin-bottom: 4px;
+  color: var(--coral);
+  font-size: 0.72rem;
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+
+.roadmap-footer small {
+  color: var(--muted);
+  font-size: 0.74rem;
+  font-weight: 800;
+  line-height: 1.24;
+}
+
+#info-plan:checked ~ .language-view main .phase-plan .roadmap-bar,
+#info-build:checked ~ .language-view main .phase-build .roadmap-bar,
+#info-run:checked ~ .language-view main .phase-run .roadmap-bar {
+  box-shadow: 0 16px 34px rgba(35, 89, 255, 0.22);
+}
+
+.right-rail {
+  position: sticky;
+  top: 132px;
+  z-index: 20;
+  grid-column: 2;
+  grid-row: 1 / span 3;
+  align-self: start;
+  min-width: 0;
+  width: 100%;
+}
+
+.detail-panel {
+  min-height: 520px;
+  max-height: calc(100vh - 158px);
+  padding: 24px;
+  overflow: auto;
+  background: #07163f;
+  color: #fff;
+  box-shadow: 0 28px 86px rgba(7, 22, 63, 0.28);
+}
+
+.detail-panel p:first-child {
+  margin-bottom: 7px;
+  color: #8bd5ff;
+  font-size: 0.75rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.detail-panel h2 {
+  margin-bottom: 14px;
+  font-size: 1.82rem;
+  line-height: 1.05;
+  letter-spacing: 0;
+}
+
+.detail-panel p:last-child {
+  margin-bottom: 0;
+  color: #dce8ff;
+  font-size: 1.08rem;
+  line-height: 1.58;
+}
+
+.benefits-card {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  padding: 16px;
+}
+
+.benefits-card h2 {
+  grid-column: 1 / -1;
+  margin-bottom: 12px;
+  color: var(--blue);
+  font-size: 1.05rem;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.benefit {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+  width: 100%;
+  min-height: 74px;
+  margin-bottom: 0;
+  padding: 10px;
+  color: var(--blue);
+  text-align: left;
+}
+
+.benefit:last-child {
+  margin-bottom: 0;
+}
+
+.benefits-section {
+  grid-column: 1;
+  margin-top: var(--gap);
+}
+
+.benefit:nth-of-type(2n) {
+  color: var(--teal);
+}
+
+.benefit:nth-of-type(3n) {
+  color: var(--amber);
+}
+
+.benefit svg {
+  width: 38px;
+  height: 38px;
+}
+
+.benefit strong,
+.benefit small {
+  display: block;
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: none;
+}
+
+.benefit strong {
+  margin-bottom: 3px;
+  color: var(--ink);
+  font-size: 0.9rem;
+  line-height: 1.18;
+}
+
+.benefit small {
+  color: var(--muted);
+  font-size: 0.75rem;
+  line-height: 1.25;
+}
+
+.principles-section {
+  grid-column: 1;
+  margin-top: var(--gap);
+  padding: clamp(16px, 2vw, 24px);
+}
+
+.principles-heading {
+  display: grid;
+  grid-template-columns: minmax(240px, 0.45fr) minmax(0, 0.55fr);
+  gap: var(--gap);
+  align-items: end;
+  margin-bottom: 16px;
+}
+
+.principles-heading .eyebrow {
+  grid-column: 1 / -1;
+  margin-bottom: -8px;
+}
+
+.principles-heading h2 {
+  margin-bottom: 0;
+}
+
+.principles-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.principle-card {
+  display: grid;
+  align-content: center;
+  min-height: 128px;
+  padding: 14px;
+  border: 1px solid rgba(35, 89, 255, 0.2);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.principles-grid svg {
+  width: 34px;
+  height: 34px;
+  margin-bottom: 16px;
+  color: var(--blue);
+}
+
+.principles-grid .principle-card:nth-child(2n) svg {
+  color: var(--teal);
+}
+
+.principles-grid .principle-card:nth-child(3n) svg {
+  color: var(--amber);
+}
+
+.principles-grid h3 {
+  margin-bottom: 0;
+  color: var(--ink);
+  font-size: 0.96rem;
+  line-height: 1.16;
+}
+
+.focus-target {
+  scroll-margin-top: 130px;
+}
+
+.focus-target.is-highlighted,
+.focus-target:target {
+  box-shadow:
+    0 0 0 3px rgba(35, 89, 255, 0.2),
+    0 18px 42px rgba(35, 89, 255, 0.1);
+}
+
+@media (max-width: 1380px) {
+  .topbar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .benefits-card {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+  }
+
+  .benefits-card h2 {
+    grid-column: 1 / -1;
+  }
+
+  .benefit {
+    margin-bottom: 0;
+  }
+
+  .architecture-heading,
+  .kyndryl-model-heading,
+  .principles-heading {
+    grid-template-columns: 1fr;
+  }
+
+  .principles-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 1180px) {
+  .page-shell {
+    grid-template-columns: minmax(0, 1fr) minmax(300px, 330px);
+  }
+
+  .detail-panel {
+    min-height: 460px;
+    max-height: calc(100vh - 144px);
+    padding: 18px;
+  }
+
+  .detail-panel h2 {
+    font-size: 1.42rem;
+    margin-bottom: 9px;
+  }
+
+  .detail-panel p:last-child {
+    font-size: 0.96rem;
+    line-height: 1.5;
+  }
+
+  .global-nodes {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .service-rail {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .zone-layout {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .oci-cross-connect {
+    --oci-connector-length: 18px;
+    grid-column: auto;
+  }
+
+  .ops-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .principles-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 980px) {
+  body {
+    padding-bottom: 0;
+  }
+
+  .page-shell {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .right-rail {
+    position: static;
+    order: 2;
+    z-index: auto;
+    grid-column: auto;
+    grid-row: auto;
+    width: 100%;
+    max-width: none;
+    margin-top: var(--gap);
+  }
+
+  .map-area {
+    order: 1;
+  }
+
+  .kyndryl-model-section {
+    order: 3;
+  }
+
+  .benefits-section {
+    order: 4;
+  }
+
+  .principles-section {
+    order: 5;
+  }
+
+  .detail-panel {
+    min-height: 0;
+    max-height: none;
+    overflow: visible;
+  }
+}
+
+@media (max-width: 760px) {
+  body {
+    background: #f7f9fe;
+  }
+
+  .topbar {
+    padding: 15px;
+  }
+
+  .brand-row {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .kyndryl-logo {
+    width: 124px;
+    min-width: 124px;
+  }
+
+  .practice-tag {
+    min-height: 30px;
+    font-size: 0.8rem;
+  }
+
+  h1 {
+    font-size: 2.25rem;
+  }
+
+  .subtitle {
+    font-size: 1rem;
+  }
+
+  .architecture-heading h2,
+  .kyndryl-model-heading h2,
+  .principles-heading h2 {
+    font-size: 1.62rem;
+  }
+
+  .page-shell {
+    padding: 14px;
+  }
+
+  .map-area {
+    padding: 14px;
+  }
+
+  .global-nodes,
+  .hub-nodes,
+  .service-rail,
+  .cloud-services,
+  .native-strip,
+  .ops-grid,
+  .benefits-card,
+  .roadmap-footer,
+  .principles-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .project-roadmap {
+    padding: 12px;
+  }
+
+  .roadmap-scale {
+    display: none;
+  }
+
+  .roadmap-row {
+    grid-template-columns: 1fr;
+    min-height: 0;
+  }
+
+  .roadmap-track {
+    min-height: 54px;
+  }
+
+  .roadmap-bar {
+    padding: 7px 8px;
+    font-size: 0.72rem;
+  }
+
+  .roadmap-deliverable {
+    min-height: 0;
+    text-align: left;
+  }
+
+  .zone-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .node {
+    grid-template-columns: 42px minmax(0, 1fr);
+    grid-template-rows: auto;
+    justify-items: start;
+    min-height: 70px;
+    text-align: left;
+  }
+
+  .service-rail label {
+    justify-content: flex-start;
+  }
+
+  .cloud-card {
+    min-height: auto;
+  }
+
+  .cloud-brand {
+    align-items: center;
+  }
+
+  .cloud-logo {
+    width: 102px;
+    min-width: 82px;
+  }
+
+  .cloud-logo.azure-logo {
+    width: 52px;
+    min-width: 52px;
+  }
+
+  .cloud-logo.gcp-logo {
+    width: 48px;
+    min-width: 48px;
+  }
+
+  .spoke-band {
+    grid-template-columns: 1fr;
+  }
+
+  .ops-card,
+  .benefit {
+    min-height: 68px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition: none !important;
+  }
+}
+    </style>
+  </head>
+  <body>
+    <input class="language-radio" type="radio" name="language" id="lang-es" checked />
+    <input class="language-radio" type="radio" name="language" id="lang-en" />
+
+    <svg class="icon-defs" aria-hidden="true" focusable="false">
+      <symbol id="icon-globe" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="9" />
+        <path d="M3.6 9h16.8M3.6 15h16.8M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18" />
+      </symbol>
+      <symbol id="icon-shield" viewBox="0 0 24 24">
+        <path d="M12 3l7 3v5.5c0 4.7-2.8 7.8-7 9.5-4.2-1.7-7-4.8-7-9.5V6l7-3z" />
+        <path d="M8.4 12.2l2.1 2.1 5-5" />
+      </symbol>
+      <symbol id="icon-cloud" viewBox="0 0 24 24">
+        <path d="M7.2 18h9.3a4.4 4.4 0 0 0 .4-8.8 6 6 0 0 0-11.5 1.9A3.6 3.6 0 0 0 7.2 18z" />
+      </symbol>
+      <symbol id="icon-network" viewBox="0 0 24 24">
+        <circle cx="12" cy="5" r="2.5" />
+        <circle cx="5" cy="18" r="2.5" />
+        <circle cx="19" cy="18" r="2.5" />
+        <path d="M10.7 7.1l-4.4 8.7M13.3 7.1l4.4 8.7M7.4 18h9.2" />
+      </symbol>
+      <symbol id="icon-route" viewBox="0 0 24 24">
+        <path d="M5 18c5 0 2-12 7-12h7" />
+        <path d="M15.5 2.8L19 6l-3.5 3.2" />
+        <circle cx="5" cy="18" r="2.5" />
+      </symbol>
+      <symbol id="icon-users" viewBox="0 0 24 24">
+        <circle cx="9" cy="8" r="3" />
+        <circle cx="17" cy="9" r="2.4" />
+        <path d="M3.8 19c.7-3 2.6-5 5.2-5s4.5 2 5.2 5M14.2 15.2c2.5.2 4.2 1.6 5 3.8" />
+      </symbol>
+      <symbol id="icon-building" viewBox="0 0 24 24">
+        <path d="M5 21V5h8v16M13 9h6v12" />
+        <path d="M8 8h2M8 12h2M8 16h2M16 12h1.5M16 16h1.5M3 21h18" />
+      </symbol>
+      <symbol id="icon-rocket" viewBox="0 0 24 24">
+        <path d="M13 4c3.7.4 6.2 2.9 7 7l-6 6-5-5 4-8z" />
+        <path d="M8.5 12.5L5 13.7l1.2-3.5M11.5 15.5L10.3 19l3.5-1.2M14.5 8.5h.1" />
+      </symbol>
+      <symbol id="icon-link" viewBox="0 0 24 24">
+        <path d="M10 8H8a4 4 0 0 0 0 8h2M14 8h2a4 4 0 0 1 0 8h-2M9 12h6" />
+      </symbol>
+      <symbol id="icon-lock" viewBox="0 0 24 24">
+        <rect x="5" y="10" width="14" height="10" rx="2" />
+        <path d="M8 10V7a4 4 0 0 1 8 0v3M12 14v2.8" />
+      </symbol>
+      <symbol id="icon-eye" viewBox="0 0 24 24">
+        <path d="M3 12s3.2-6 9-6 9 6 9 6-3.2 6-9 6-9-6-9-6z" />
+        <circle cx="12" cy="12" r="2.8" />
+      </symbol>
+      <symbol id="icon-gear" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="3.2" />
+        <path d="M12 2.8v3M12 18.2v3M4.3 5.2l2.1 2.1M17.6 16.7l2.1 2.1M2.8 12h3M18.2 12h3M4.3 18.8l2.1-2.1M17.6 7.3l2.1-2.1" />
+      </symbol>
+      <symbol id="icon-ip" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="9" />
+        <path d="M8.2 16V8M11.2 16V8h3.1a2.5 2.5 0 0 1 0 5h-3.1" />
+      </symbol>
+      <symbol id="icon-scale" viewBox="0 0 24 24">
+        <path d="M12 3v18M5 8h14M7 8l-3 6h6L7 8zM17 8l-3 6h6l-3-6z" />
+      </symbol>
+      <symbol id="icon-cost" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="9" />
+        <path d="M14.7 8.5c-.5-.7-1.3-1.1-2.5-1.1-1.5 0-2.7.8-2.7 2 0 3 5.7 1.6 5.7 5 0 1.3-1.1 2.2-2.8 2.2-1.2 0-2.4-.4-3.1-1.3M12 5.5v13" />
+      </symbol>
+      <symbol id="icon-grid" viewBox="0 0 24 24">
+        <path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z" />
+      </symbol>
+    </svg>
+
+    <input class="info-radio" type="radio" name="info-panel" id="info-intro" checked />
+    <input class="info-radio" type="radio" name="info-panel" id="info-dns" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-health" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-cdn" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-latency" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-users" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-branches" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-waf" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-ddos" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-traffic-acceleration" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-load-balancing" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-hubs" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-bgp" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-segmentation" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-active-active" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-aws-tgw" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-aws-firewall" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-aws-routes" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-azure-vwan" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-azure-firewall" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-azure-routes" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-gcp-router" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-gcp-firewall" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-gcp-routes" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-oci-crossconnect" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-edge-hub" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-hub-clouds" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-onprem-private-connectivity" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-onprem-bgp-routing" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-onprem-active-active" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-onprem-hybrid-dns" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-observability" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-automation" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-governance" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-ipam" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-finops" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-plan" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-build" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-run" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-connectivity" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-performance" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-availability" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-privacy" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-consistency" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-benefit-automation" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-visibility" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-scalability" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-principle-cloud-centric" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-principle-transport-overlay" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-principle-modularity" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-principle-neutrality" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-principle-visibility" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-principle-zero-trust" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-principle-resilience" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-principle-network-code" />
+
+    <div class="language-view language-es" lang="es">
+    <header class="topbar">
+      <div class="header-copy">
+        <div class="brand-row" aria-label="Kyndryl Network and Edge">
+          <span class="kyndryl-logo" aria-label="Kyndryl">
+            <svg viewBox="0 0 125.74 40" role="img" aria-labelledby="kyndryl-title" xmlns="http://www.w3.org/2000/svg">
+              <title id="kyndryl-title">Kyndryl</title>
+              <path d="M120,0V30h-3.518V0ZM48.854,9.537a5.575,5.575,0,0,0-5.9,4.993h-.172V10H39.26V30h3.519V17.544c0-3.368,1.793-4.911,4.8-4.911,3.442,0,4.981,1.706,4.981,5.09V30h3.518V17.264C56.074,12.489,53.374,9.537,48.854,9.537ZM27.323,29.462h-.115L21.1,10H17.454l6.465,20h3.237l-3.3,10H27.37l9.684-30H33.409Zm77.222,0h-.115L98.322,10H94.675l6.465,20h3.237l-3.3,10h3.511l9.684-30h-3.646ZM7.325,20l8.684-10H11.73l-8.1,9.652H3.519V0H0V30H3.519V20.185H6.862L13.624,30H17.7l-7-10Zm79.021-5.468h-.171V10H82.656V30h3.519V17.508c0-3.368,1.91-4.6,5.184-4.6a9.471,9.471,0,0,1,2.181.234v-3.4a5.152,5.152,0,0,0-1.669-.212A5.4,5.4,0,0,0,86.346,14.532ZM74.617,0h3.518V30H74.617V25.47h-.17c-.337,2.791-2.478,4.993-6.536,4.993-4.951,0-8.469-3.928-8.469-10.463S62.959,9.537,67.911,9.537c4.058,0,6.2,2.2,6.536,4.993h.17Zm0,17.358c0-3.368-2.542-4.726-5.695-4.726-3.324,0-5.81,2.068-5.81,7.368s2.486,7.368,5.81,7.368c3.153,0,5.695-1.358,5.695-4.726V17.358Zm46.956,10.529v.237h.639V30h.3V28.125h.639v-.237Zm3.52,0-.525,2.084h-.006l-.5-2.084h-.579L123.422,30h.283l.063-2.084h.006L124.293,30h.528l.551-2.084h.006L125.44,30h.3l-.069-2.112h-.577Z" fill="#ff462d" />
+            </svg>
+          </span>
+          <span class="practice-tag">Network and Edge</span>
+        </div>
+        <h1>Data Center Networking - Point of View</h1>
+        <p class="subtitle">Rendimiento, seguridad y alta disponibilidad para arquitecturas híbridas, multi-cloud y cross-cloud.</p>
+      </div>
+
+      <div class="language-switch" aria-label="Selector de idioma">
+        <label class="lang-option" for="lang-es">ES</label>
+        <label class="lang-option" for="lang-en">EN</label>
+      </div>
+    </header>
+
+    <main class="page-shell">
+      <section class="map-area" aria-label="Infografía interactiva cloud networking">
+        <div class="architecture-heading">
+          <p class="eyebrow">Arquitectura de referencia</p>
+          <h2>Arquitectura cloud networking para conectar, proteger y escalar entornos híbridos, multi-cloud y cross-cloud</h2>
+          <p>La arquitectura se estructura en tres capas: un punto de entrada global, una interconexión neutral híbrida y Landing Zones nativas en cada hyperscaler</p>
+        </div>
+        <div class="map-grid">
+          <article class="flow-panel global-panel focus-target" id="es-global" data-layer="global">
+            <div class="section-heading">
+              <span class="step">01</span>
+              <div>
+                <h2>Punto de entrada global</h2>
+                <p>Front door unificado para tráfico corporativo, clientes de Internet y sedes SD-WAN, con Anycast para dirigir cada petición al endpoint más eficiente.</p>
+              </div>
+            </div>
+            <div class="global-nodes">
+              <label class="node" for="info-dns">
+                <svg><use href="#icon-globe" /></svg>
+                <span>DNS Global</span>
+              </label>
+              <label class="node" for="info-health">
+                <svg><use href="#icon-shield" /></svg>
+                <span>Health Checks</span>
+              </label>
+              <label class="node" for="info-cdn">
+                <svg><use href="#icon-cloud" /></svg>
+                <span>CDN</span>
+              </label>
+              <label class="node" for="info-latency">
+                <svg><use href="#icon-route" /></svg>
+                <span>Routing Inteligente</span>
+              </label>
+              <label class="node accent-node" for="info-users">
+                <svg><use href="#icon-users" /></svg>
+                <span>Acceso remoto ZTNA</span>
+              </label>
+              <label class="node accent-node" for="info-branches">
+                <svg><use href="#icon-building" /></svg>
+                <span>Sedes SD-WAN</span>
+              </label>
+            </div>
+            <div class="service-rail" aria-label="Servicios de protección y aceleración">
+              <label for="info-waf"><svg><use href="#icon-shield" /></svg>WAF</label>
+              <label for="info-ddos"><svg><use href="#icon-lock" /></svg>DDoS Protection</label>
+              <label for="info-traffic-acceleration"><svg><use href="#icon-rocket" /></svg>Traffic Acceleration</label>
+              <label for="info-load-balancing"><svg><use href="#icon-network" /></svg>Load Balancing</label>
+            </div>
+          </article>
+
+          <label class="flow-arrow" for="info-edge-hub" aria-label="Conectividad Edge a Hub">
+            <span>Edge a Hub: Internet / CNI</span>
+          </label>
+
+          <article class="flow-panel hub-panel focus-target" id="es-hubs" data-layer="hubs">
+            <div class="section-heading compact">
+              <span class="step">02</span>
+              <div>
+                <h2>Interconexión neutral y hubs de conectividad</h2>
+                <p>Hub híbrido central para conectar hyperscalers y CPDs corporativos mediante circuitos dedicados, fabric, MPLS, ISP, P2P o BYOP, sin caer en una topología full mesh difícil de gobernar.</p>
+              </div>
+            </div>
+            <div class="hub-nodes">
+              <label class="node" for="info-hubs">
+                <svg><use href="#icon-network" /></svg>
+                <span>Hubs Redundados</span>
+              </label>
+              <label class="node" for="info-bgp">
+                <svg><use href="#icon-globe" /></svg>
+                <span>Routing y Peering</span>
+              </label>
+              <label class="node" for="info-segmentation">
+                <svg><use href="#icon-shield" /></svg>
+                <span>Appliances de Red</span>
+              </label>
+              <label class="node" for="info-active-active">
+                <svg><use href="#icon-link" /></svg>
+                <span>Resiliencia Graduable</span>
+              </label>
+            </div>
+          </article>
+
+          <label class="flow-arrow" for="info-hub-clouds" aria-label="Conectividad Hub a Clouds">
+            <span>Hub a Clouds: cross-connects / Direct Connect / Interconnect / FastConnect</span>
+          </label>
+
+          <section class="landing-zone focus-target" id="es-landing" data-layer="landing">
+            <div class="section-heading landing-heading">
+              <span class="step">03</span>
+              <div>
+                <h2>Landing zones por cloud</h2>
+                <p>Arquitectura hub-and-spoke, segmentación por entornos y servicios nativos para routing, balanceo, firewall, DNS y conectividad privada hacia PaaS.</p>
+              </div>
+            </div>
+
+            <div class="zone-layout">
+              <article class="onprem-card cloud-card">
+                <div class="cloud-title">
+                  <svg><use href="#icon-building" /></svg>
+                  <div>
+                    <h3>On-Premises</h3>
+                    <p>CPDs corporativos con conectividad privada y alta disponibilidad</p>
+                  </div>
+                </div>
+                <div class="feature-list">
+                  <label for="info-onprem-private-connectivity">Conectividad privada</label>
+                  <label for="info-onprem-bgp-routing">BGP / routing dinámico</label>
+                  <label for="info-onprem-active-active">Diseño activo-activo</label>
+                  <label for="info-onprem-hybrid-dns">DNS híbrido</label>
+                </div>
+              </article>
+
+              <article class="cloud-card aws-card">
+                <div class="cloud-brand">
+                  <span class="cloud-logo aws-logo" aria-label="AWS">
+                    <svg viewBox="-.1 1.1 304.9 179.8" role="img" aria-labelledby="aws-title" xmlns="http://www.w3.org/2000/svg">
+                      <title id="aws-title">AWS</title>
+                      <path d="m86.4 66.4c0 3.7.4 6.7 1.1 8.9.8 2.2 1.8 4.6 3.2 7.2.5.8.7 1.6.7 2.3 0 1-.6 2-1.9 3l-6.3 4.2c-.9.6-1.8.9-2.6.9-1 0-2-.5-3-1.4-1.4-1.5-2.6-3.1-3.6-4.7-1-1.7-2-3.6-3.1-5.9-7.8 9.2-17.6 13.8-29.4 13.8-8.4 0-15.1-2.4-20-7.2s-7.4-11.2-7.4-19.2c0-8.5 3-15.4 9.1-20.6s14.2-7.8 24.5-7.8c3.4 0 6.9.3 10.6.8s7.5 1.3 11.5 2.2v-7.3c0-7.6-1.6-12.9-4.7-16-3.2-3.1-8.6-4.6-16.3-4.6-3.5 0-7.1.4-10.8 1.3s-7.3 2-10.8 3.4c-1.6.7-2.8 1.1-3.5 1.3s-1.2.3-1.6.3c-1.4 0-2.1-1-2.1-3.1v-4.9c0-1.6.2-2.8.7-3.5s1.4-1.4 2.8-2.1c3.5-1.8 7.7-3.3 12.6-4.5 4.9-1.3 10.1-1.9 15.6-1.9 11.9 0 20.6 2.7 26.2 8.1 5.5 5.4 8.3 13.6 8.3 24.6v32.4zm-40.6 15.2c3.3 0 6.7-.6 10.3-1.8s6.8-3.4 9.5-6.4c1.6-1.9 2.8-4 3.4-6.4s1-5.3 1-8.7v-4.2c-2.9-.7-6-1.3-9.2-1.7s-6.3-.6-9.4-.6c-6.7 0-11.6 1.3-14.9 4s-4.9 6.5-4.9 11.5c0 4.7 1.2 8.2 3.7 10.6 2.4 2.5 5.9 3.7 10.5 3.7zm80.3 10.8c-1.8 0-3-.3-3.8-1-.8-.6-1.5-2-2.1-3.9l-23.5-77.3c-.6-2-.9-3.3-.9-4 0-1.6.8-2.5 2.4-2.5h9.8c1.9 0 3.2.3 3.9 1 .8.6 1.4 2 2 3.9l16.8 66.2 15.6-66.2c.5-2 1.1-3.3 1.9-3.9s2.2-1 4-1h8c1.9 0 3.2.3 4 1 .8.6 1.5 2 1.9 3.9l15.8 67 17.3-67c.6-2 1.3-3.3 2-3.9.8-.6 2.1-1 3.9-1h9.3c1.6 0 2.5.8 2.5 2.5 0 .5-.1 1-.2 1.6s-.3 1.4-.7 2.5l-24.1 77.3c-.6 2-1.3 3.3-2.1 3.9s-2.1 1-3.8 1h-8.6c-1.9 0-3.2-.3-4-1s-1.5-2-1.9-4l-15.5-64.5-15.4 64.4c-.5 2-1.1 3.3-1.9 4s-2.2 1-4 1zm128.5 2.7c-5.2 0-10.4-.6-15.4-1.8s-8.9-2.5-11.5-4c-1.6-.9-2.7-1.9-3.1-2.8s-.6-1.9-.6-2.8v-5.1c0-2.1.8-3.1 2.3-3.1.6 0 1.2.1 1.8.3s1.5.6 2.5 1c3.4 1.5 7.1 2.7 11 3.5 4 .8 7.9 1.2 11.9 1.2 6.3 0 11.2-1.1 14.6-3.3s5.2-5.4 5.2-9.5c0-2.8-.9-5.1-2.7-7s-5.2-3.6-10.1-5.2l-14.5-4.5c-7.3-2.3-12.7-5.7-16-10.2-3.3-4.4-5-9.3-5-14.5 0-4.2.9-7.9 2.7-11.1s4.2-6 7.2-8.2c3-2.3 6.4-4 10.4-5.2s8.2-1.7 12.6-1.7c2.2 0 4.5.1 6.7.4 2.3.3 4.4.7 6.5 1.1 2 .5 3.9 1 5.7 1.6s3.2 1.2 4.2 1.8c1.4.8 2.4 1.6 3 2.5.6.8.9 1.9.9 3.3v4.7c0 2.1-.8 3.2-2.3 3.2-.8 0-2.1-.4-3.8-1.2-5.7-2.6-12.1-3.9-19.2-3.9-5.7 0-10.2.9-13.3 2.8s-4.7 4.8-4.7 8.9c0 2.8 1 5.2 3 7.1s5.7 3.8 11 5.5l14.2 4.5c7.2 2.3 12.4 5.5 15.5 9.6s4.6 8.8 4.6 14c0 4.3-.9 8.2-2.6 11.6-1.8 3.4-4.2 6.4-7.3 8.8-3.1 2.5-6.8 4.3-11.1 5.6-4.5 1.4-9.2 2.1-14.3 2.1z" fill="#252f3e" />
+                      <path d="m273.5 143.7c-32.9 24.3-80.7 37.2-121.8 37.2-57.6 0-109.5-21.3-148.7-56.7-3.1-2.8-.3-6.6 3.4-4.4 42.4 24.6 94.7 39.5 148.8 39.5 36.5 0 76.6-7.6 113.5-23.2 5.5-2.5 10.2 3.6 4.8 7.6zM287.2 128.1c-4.2-5.4-27.8-2.6-38.5-1.3-3.2.4-3.7-2.4-.8-4.5 18.8-13.2 49.7-9.4 53.3-5 3.6 4.5-1 35.4-18.6 50.2-2.7 2.3-5.3 1.1-4.1-1.9 4-9.9 12.9-32.2 8.7-37.5z" fill="#f90" />
+                    </svg>
+                  </span>
+                  <span>Landing Zone</span>
+                </div>
+                <div class="cloud-services">
+                  <label class="service-pill" for="info-aws-tgw">
+                    <svg><use href="#icon-network" /></svg>
+                    Transit Gateway
+                  </label>
+                  <label class="service-pill" for="info-aws-firewall">
+                    <svg><use href="#icon-shield" /></svg>
+                    Network Firewall
+                  </label>
+                  <label class="service-pill" for="info-aws-routes">
+                    <svg><use href="#icon-grid" /></svg>
+                    Route Tables
+                  </label>
+                </div>
+                <div class="spoke-band">
+                  <span>VPC 1</span>
+                  <span>VPC 2</span>
+                  <span>VPC n</span>
+                </div>
+                <div class="native-strip">
+                  <span><svg><use href="#icon-network" /></svg>ALB / NLB</span>
+                  <span><svg><use href="#icon-globe" /></svg>Route 53</span>
+                  <span><svg><use href="#icon-lock" /></svg>PrivateLink</span>
+                  <span><svg><use href="#icon-route" /></svg>NAT</span>
+                </div>
+              </article>
+
+              <article class="cloud-card azure-card">
+                <div class="cloud-brand">
+                  <span class="cloud-logo azure-logo" aria-label="Microsoft Azure">
+                    <svg viewBox="0 0 96 96" role="img" aria-labelledby="azure-title" xmlns="http://www.w3.org/2000/svg">
+                      <title id="azure-title">Microsoft Azure</title>
+                      <defs>
+                        <linearGradient id="azure-gradient-a" x1="42.828" x2="15.787" y1="12.688" y2="92.574" gradientUnits="userSpaceOnUse">
+                          <stop offset="0" stop-color="#114a8b" />
+                          <stop offset="1" stop-color="#0669bc" />
+                        </linearGradient>
+                        <linearGradient id="azure-gradient-b" x1="51.275" x2="45.02" y1="49.917" y2="52.032" gradientUnits="userSpaceOnUse">
+                          <stop offset="0" stop-opacity=".3" />
+                          <stop offset=".071" stop-opacity=".2" />
+                          <stop offset=".321" stop-opacity=".1" />
+                          <stop offset=".623" stop-opacity=".05" />
+                          <stop offset="1" stop-opacity="0" />
+                        </linearGradient>
+                        <linearGradient id="azure-gradient-c" x1="47.835" x2="77.518" y1="10.358" y2="89.439" gradientUnits="userSpaceOnUse">
+                          <stop offset="0" stop-color="#3ccbf4" />
+                          <stop offset="1" stop-color="#2892df" />
+                        </linearGradient>
+                      </defs>
+                      <path fill="url(#azure-gradient-a)" d="M33.338 6.544h26.038l-27.03 80.087a4.152 4.152 0 0 1-3.933 2.824H8.149a4.145 4.145 0 0 1-3.928-5.47L29.404 9.368a4.152 4.152 0 0 1 3.934-2.825z" />
+                      <path fill="#0078d4" d="M71.175 60.261h-41.29a1.911 1.911 0 0 0-1.305 3.309l26.532 24.764a4.171 4.171 0 0 0 2.846 1.121h23.38z" />
+                      <path fill="url(#azure-gradient-b)" d="M33.338 6.544a4.118 4.118 0 0 0-3.943 2.879L4.252 83.917a4.14 4.14 0 0 0 3.908 5.538h20.787a4.443 4.443 0 0 0 3.41-2.9l5.014-14.777 17.91 16.705a4.237 4.237 0 0 0 2.666.972H81.24L71.024 60.261l-29.781.007L59.47 6.544z" />
+                      <path fill="url(#azure-gradient-c)" d="M66.595 9.364a4.145 4.145 0 0 0-3.928-2.82H33.648a4.146 4.146 0 0 1 3.928 2.82l25.184 74.62a4.146 4.146 0 0 1-3.928 5.472h29.02a4.146 4.146 0 0 0 3.927-5.472z" />
+                    </svg>
+                  </span>
+                  <span>Landing Zone</span>
+                </div>
+                <div class="cloud-services">
+                  <label class="service-pill" for="info-azure-vwan">
+                    <svg><use href="#icon-cloud" /></svg>
+                    vWAN Hub 
+                  </label>
+                  <label class="service-pill" for="info-azure-firewall">
+                    <svg><use href="#icon-shield" /></svg>
+                    Azure Firewall
+                  </label>
+                  <label class="service-pill" for="info-azure-routes">
+                    <svg><use href="#icon-grid" /></svg>
+                    Route Tables
+                  </label>
+                </div>
+                <div class="spoke-band">
+                  <span>VNet 1</span>
+                  <span>VNet 2</span>
+                  <span>VNet n</span>
+                </div>
+                <div class="native-strip">
+                  <span><svg><use href="#icon-network" /></svg>Load Balancer</span>
+                  <span><svg><use href="#icon-globe" /></svg>Private DNS</span>
+                  <span><svg><use href="#icon-lock" /></svg>Private Link</span>
+                  <span><svg><use href="#icon-route" /></svg>NAT</span>
+                </div>
+              </article>
+
+              <article class="cloud-card gcp-card">
+                <div class="cloud-brand">
+                  <span class="cloud-logo gcp-logo" aria-label="Google Cloud">
+                    <svg viewBox="0 0 32 28" role="img" aria-labelledby="gcp-title" xmlns="http://www.w3.org/2000/svg">
+                      <title id="gcp-title">Google Cloud</title>
+                      <path fill="#ea4335" d="M21.85,7.41l1,0,2.85-2.85.14-1.21A12.81,12.81,0,0,0,5,9.6a1.55,1.55,0,0,1,1-.06l5.7-.94s.29-.48.44-.45a7.11,7.11,0,0,1,9.73-.74Z" />
+                      <path fill="#4285f4" d="M29.76,9.6a12.84,12.84,0,0,0-3.87-6.24l-4,4A7.11,7.11,0,0,1,24.5,13v.71a3.56,3.56,0,1,1,0,7.12H17.38l-.71.72v4.27l.71.71H24.5A9.26,9.26,0,0,0,29.76,9.6Z" />
+                      <path fill="#34a853" d="M10.25,26.49h7.12v-5.7H10.25a3.54,3.54,0,0,1-1.47-.32l-1,.31L4.91,23.63l-.25,1A9.21,9.21,0,0,0,10.25,26.49Z" />
+                      <path fill="#fbbc05" d="M10.25,8A9.26,9.26,0,0,0,4.66,24.6l4.13-4.13a3.56,3.56,0,1,1,4.71-4.71l4.13-4.13A9.25,9.25,0,0,0,10.25,8Z" />
+                    </svg>
+                  </span>
+                  <span>Landing Zone</span>
+                </div>
+                <div class="cloud-services">
+                  <label class="service-pill" for="info-gcp-router">
+                    <svg><use href="#icon-route" /></svg>
+                    Cloud Router
+                  </label>
+                  <label class="service-pill" for="info-gcp-firewall">
+                    <svg><use href="#icon-shield" /></svg>
+                    Firewall
+                  </label>
+                  <label class="service-pill" for="info-gcp-routes">
+                    <svg><use href="#icon-grid" /></svg>
+                    Route Tables
+                  </label>
+                </div>
+                <div class="spoke-band">
+                  <span>VPC 1</span>
+                  <span>VPC 2</span>
+                  <span>VPC n</span>
+                </div>
+                <div class="native-strip">
+                  <span><svg><use href="#icon-network" /></svg>Cloud LB</span>
+                  <span><svg><use href="#icon-globe" /></svg>Cloud DNS</span>
+                  <span><svg><use href="#icon-lock" /></svg>Private Connect</span>
+                  <span><svg><use href="#icon-route" /></svg>Cloud NAT</span>
+                </div>
+              </article>
+
+              <label class="oci-cross-connect" for="info-oci-crossconnect" aria-label="Cross-connect con Oracle Cloud">
+                <span class="oracle-logo" aria-label="Oracle Cloud">
+                  <svg viewBox="0 0 231 30" role="img" aria-labelledby="oracle-title" xmlns="http://www.w3.org/2000/svg">
+                    <title id="oracle-title">Oracle Cloud</title>
+                    <path fill="#c74634" d="M99.61,19.52h15.24l-8.05-13L92,30H85.27l18-28.17a4.29,4.29,0,0,1,7-.05L128.32,30h-6.73l-3.17-5.25H103l-3.36-5.23m69.93,5.23V0.28h-5.72V27.16a2.76,2.76,0,0,0,.85,2,2.89,2.89,0,0,0,2.08.87h26l3.39-5.25H169.54M75,20.38A10,10,0,0,0,75,.28H50V30h5.71V5.54H74.65a4.81,4.81,0,0,1,0,9.62H58.54L75.6,30h8.29L72.43,20.38H75M14.88,30H32.15a14.86,14.86,0,0,0,0-29.71H14.88a14.86,14.86,0,1,0,0,29.71m16.88-5.23H15.26a9.62,9.62,0,0,1,0-19.23h16.5a9.62,9.62,0,1,1,0,19.23M140.25,30h17.63l3.34-5.23H140.64a9.62,9.62,0,1,1,0-19.23h16.75l3.38-5.25H140.25a14.86,14.86,0,1,0,0,29.71m69.87-5.23a9.62,9.62,0,0,1-9.26-7h24.42l3.36-5.24H200.86a9.61,9.61,0,0,1,9.26-7h16.76l3.35-5.25h-20.5a14.86,14.86,0,0,0,0,29.71h17.63l3.35-5.23h-20.6" transform="translate(-0.02 0)" />
+                  </svg>
+                </span>
+                <strong>OCI Cross-connect</strong>
+                
+              </label>
+
+            </div>
+          </section>
+
+          <article class="ops-band focus-target" data-layer="ops">
+            <div class="section-heading compact">
+              <span class="step">04</span>
+              <div>
+                <h2>Capas transversales de operación</h2>
+                <p>Modelo operativo común para toda la red: observabilidad, automatización, gobierno, IPAM y FinOps aplicados de extremo a extremo.</p>
+              </div>
+            </div>
+            <div class="ops-grid">
+              <label class="ops-card" for="info-observability">
+                <svg><use href="#icon-eye" /></svg>
+                <span>Observabilidad</span>
+              </label>
+              <label class="ops-card" for="info-automation">
+                <svg><use href="#icon-gear" /></svg>
+                <span>Automatización</span>
+              </label>
+              <label class="ops-card" for="info-governance">
+                <svg><use href="#icon-shield" /></svg>
+                <span>Gobierno</span>
+              </label>
+              <label class="ops-card" for="info-ipam">
+                <svg><use href="#icon-ip" /></svg>
+                <span>IPAM</span>
+              </label>
+              <label class="ops-card" for="info-finops">
+                <svg><use href="#icon-cost" /></svg>
+                <span>FinOps</span>
+              </label>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="kyndryl-model-section focus-target" data-layer="kyndryl-model" aria-label="Kyndryl model">
+        <div class="kyndryl-model-heading">
+          <p class="eyebrow">Kyndryl model</p>
+          <h2>Plan, Build y Run</h2>
+          <p>Modelo de acompañamiento para llevar la visión de cloud networking desde el diseño hasta la operación continua, con patrones reutilizables, automatización y gobierno operativo.</p>
+        </div>
+        <div class="project-roadmap" aria-label="Roadmap de proyecto Plan Build Run">
+          <div class="roadmap-scale" aria-hidden="true">
+            <span>Fase</span>
+            <span class="roadmap-milestones">
+              <span>Inicio</span>
+              <span>Assessment</span>
+              <span>Diseño</span>
+              <span>Piloto</span>
+              <span>Operación</span>
+            </span>
+            <span>Entregable</span>
+          </div>
+          <label class="roadmap-row phase-plan" for="info-plan">
+            <span class="roadmap-stage">
+              <svg><use href="#icon-route" /></svg>
+              <span>
+                <strong>Plan</strong>
+                <small>Descubrir, priorizar y decidir</small>
+              </span>
+            </span>
+            <span class="roadmap-track">
+              <span class="roadmap-bar">Assessment y diseño objetivo</span>
+              <span class="roadmap-checkpoint" aria-hidden="true"></span>
+            </span>
+            <span class="roadmap-deliverable">Roadmap + business case</span>
+          </label>
+          <label class="roadmap-row phase-build" for="info-build">
+            <span class="roadmap-stage">
+              <svg><use href="#icon-gear" /></svg>
+              <span>
+                <strong>Build</strong>
+                <small>Construir plataforma y patrones</small>
+              </span>
+            </span>
+            <span class="roadmap-track">
+              <span class="roadmap-bar">Landing Zones, IaC y validaciones</span>
+              <span class="roadmap-checkpoint" aria-hidden="true"></span>
+            </span>
+            <span class="roadmap-deliverable">Plataforma productiva</span>
+          </label>
+          <label class="roadmap-row phase-run" for="info-run">
+            <span class="roadmap-stage">
+              <svg><use href="#icon-eye" /></svg>
+              <span>
+                <strong>Run</strong>
+                <small>Operar, medir y optimizar</small>
+              </span>
+            </span>
+            <span class="roadmap-track">
+              <span class="roadmap-bar">Operación continua y mejora</span>
+              <span class="roadmap-checkpoint" aria-hidden="true"></span>
+            </span>
+            <span class="roadmap-deliverable">KPIs + backlog vivo</span>
+          </label>
+          <div class="roadmap-footer" aria-label="Hitos de entrega">
+            <span>
+              <strong>M0</strong>
+              <small>Baseline y riesgos</small>
+            </span>
+            <span>
+              <strong>M1</strong>
+              <small>Arquitectura objetivo</small>
+            </span>
+            <span>
+              <strong>M2</strong>
+              <small>Piloto validado</small>
+            </span>
+            <span>
+              <strong>M3</strong>
+              <small>Operación transferida</small>
+            </span>
+          </div>
+        </div>
+      </section>
+
+      <aside class="right-rail" aria-label="Detalle seleccionado">
+          <article class="detail-panel" aria-live="polite">
+            <div class="detail-state detail-intro">
+              <p>Explora la arquitectura</p>
+              <h2>Haz clic en los iconos para conocer más</h2>
+              <p>Selecciona cualquier elemento de la arquitectura, beneficios o capas operativas para ver su función.</p>
+            </div>
+            <div class="detail-state detail-dns">
+              <p>Entrada global</p>
+              <h2>DNS global (GSLB)</h2>
+              <p>Resolución global con políticas por salud, ubicación, latencia y prioridad de servicio. Permite mover aplicaciones entre AWS, Google Cloud o Azure remanente sin cambiar el front door.</p>
+            </div>
+            <div class="detail-state detail-health">
+              <p>Entrada global</p>
+              <h2>Health checks globales</h2>
+              <p>Pruebas continuas para retirar destinos degradados, activar failover automático y sostener la experiencia de usuario ante fallos regionales.</p>
+            </div>
+            <div class="detail-state detail-cdn">
+              <p>Entrada global</p>
+              <h2>CDN y optimización</h2>
+              <p>Aceleración de contenido y descarga de tráfico para acercar la experiencia al usuario final.</p>
+            </div>
+            <div class="detail-state detail-latency">
+              <p>Entrada global</p>
+              <h2>Routing por latencia</h2>
+              <p>Selección dinámica del mejor destino según proximidad, rendimiento y estado operativo.</p>
+            </div>
+            <div class="detail-state detail-users">
+              <p>Canales de acceso</p>
+              <h2>Acceso remoto ZTNA</h2>
+              <p>Acceso remoto seguro basado en Zero Trust Network Access para empleados y terceros, con políticas de identidad, contexto y postura del dispositivo.</p>
+            </div>
+            <div class="detail-state detail-branches">
+              <p>Canales de acceso</p>
+              <h2>Acceso de sedes (SD-WAN)</h2>
+              <p>Integración de sucursales y campus mediante conectividad segura, priorización de tráfico y políticas centralizadas.</p>
+            </div>
+            <div class="detail-state detail-waf">
+              <p>Servicios Edge</p>
+              <h2>WAF</h2>
+              <p>Protección de aplicaciones web frente a ataques de capa 7, explotación de vulnerabilidades, bots y tráfico malicioso, aplicando políticas cerca del usuario antes de llegar a las Landing Zones.</p>
+            </div>
+            <div class="detail-state detail-ddos">
+              <p>Servicios Edge</p>
+              <h2>DDoS Protection</h2>
+              <p>Mitigación distribuida de ataques volumétricos y de protocolo, absorbiendo tráfico malicioso en el edge para preservar disponibilidad y evitar saturación de enlaces hacia clouds o CPDs.</p>
+            </div>
+            <div class="detail-state detail-traffic-acceleration">
+              <p>Servicios Edge</p>
+              <h2>Traffic Acceleration</h2>
+              <p>Optimización de rutas, TLS, caché y transporte para reducir latencia percibida, mejorar estabilidad y acercar el servicio al usuario independientemente de la cloud donde resida la aplicación.</p>
+            </div>
+            <div class="detail-state detail-load-balancing">
+              <p>Servicios Edge</p>
+              <h2>Load Balancing</h2>
+              <p>Distribución de tráfico entre endpoints, regiones y clouds con criterios de salud, capacidad, prioridad y proximidad, desacoplando el front door del despliegue concreto de cada aplicación.</p>
+            </div>
+            <div class="detail-state detail-hubs">
+              <p>Interconexión neutral</p>
+              <h2>Hubs redundados</h2>
+              <p>Plataforma central de interconexión para hyperscalers, CPDs y sedes, con paths físicamente diversificados para evitar puntos únicos de fallo y protegerse ante cortes de fibra.</p>
+            </div>
+            <div class="detail-state detail-bgp">
+              <p>Interconexión neutral</p>
+              <h2>Routing y peering</h2>
+              <p>Control centralizado de routing con BGP, anuncios dinámicos, preferencia de paths, políticas de filtrado y convergencia entre Direct Connect, Partner Interconnect, fabrics y CPDs.</p>
+            </div>
+            <div class="detail-state detail-segmentation">
+              <p>Interconexión neutral</p>
+              <h2>Appliances de red</h2>
+              <p>El hub puede alojar appliances físicos o virtuales para funciones de routing y seguridad: firewall, inspección, NAT, segmentación, control de tráfico y servicios avanzados de red.</p>
+            </div>
+            <div class="detail-state detail-active-active">
+              <p>Interconexión neutral</p>
+              <h2>Resiliencia graduable</h2>
+              <p>Diseño ajustable por criticidad: hubs geográficamente redundantes y físicamente diversos para servicios críticos, redundancia local para cargas relevantes, o modelos más simples cuando el perfil de riesgo lo permite.</p>
+            </div>
+            <div class="detail-state detail-aws-tgw">
+              <p>AWS Landing Zone</p>
+              <h2>AWS Transit Gateway</h2>
+              <p>Hub regional para VPCs, redes compartidas y conectividad híbrida. Encaja con Control Tower, Organizations y cuentas separadas por entorno o dominio.</p>
+            </div>
+            <div class="detail-state detail-aws-firewall">
+              <p>AWS Landing Zone</p>
+              <h2>AWS Network Firewall</h2>
+              <p>Inspección y control de tráfico este-oeste y norte-sur desde un dominio compartido, alineado con guardrails heredados y políticas centralizadas.</p>
+            </div>
+            <div class="detail-state detail-aws-routes">
+              <p>AWS Landing Zone</p>
+              <h2>Route Tables</h2>
+              <p>Route tables como punto de gobierno para propagación, aislamiento y paths preferentes.</p>
+            </div>
+            <div class="detail-state detail-azure-vwan">
+              <p>Azure Landing Zone</p>
+              <h2>vWAN Hub</h2>
+              <p>Hub de conectividad y routing para VNets, ramas, usuarios y enlaces privados, combinando el modelo gestionado de vWAN con routing dinámico cuando aplica.</p>
+            </div>
+            <div class="detail-state detail-azure-firewall">
+              <p>Azure Landing Zone</p>
+              <h2>Azure Firewall</h2>
+              <p>Control centralizado de tráfico con políticas reutilizables entre VNets y entornos.</p>
+            </div>
+            <div class="detail-state detail-azure-routes">
+              <p>Azure Landing Zone</p>
+              <h2>Route Tables</h2>
+              <p>Route tables definidas para separar dominios, dirigir tráfico a inspección y controlar egress.</p>
+            </div>
+            <div class="detail-state detail-gcp-router">
+              <p>Google Cloud Landing Zone</p>
+              <h2>Cloud Router</h2>
+              <p>Intercambio dinámico de routing para conectividad híbrida, Cloud Interconnect y comunicación gobernada entre dominios.</p>
+            </div>
+            <div class="detail-state detail-gcp-firewall">
+              <p>Google Cloud Landing Zone</p>
+              <h2>Cloud Firewall</h2>
+              <p>Políticas de seguridad de red aplicadas de forma coherente en VPCs y proyectos, alineadas con Organization Policies.</p>
+            </div>
+            <div class="detail-state detail-gcp-routes">
+              <p>Google Cloud Landing Zone</p>
+              <h2>Route Tables</h2>
+              <p>Gobierno de routing paths para tráfico entre VPCs, servicios privados y egress controlado.</p>
+            </div>
+            <div class="detail-state detail-oci-crossconnect">
+              <p>Cross-cloud</p>
+              <h2>Oracle Cloud cross-connect</h2>
+              <p>Conectividad privada entre Azure y OCI para integrar plataformas de datos y servicios gestionados sin exponer el tráfico a Internet pública. El patrón mantiene Landing Zones nativas y habilita flujos cross-cloud gobernados cuando la arquitectura lo requiere.</p>
+            </div>
+            <div class="detail-state detail-edge-hub">
+              <p>Interconexión</p>
+              <h2>Edge a Hub: Internet / CNI</h2>
+              <p>Tramo de conectividad desde el front door global hacia el hub neutral, usando Internet o conectividad cloud/network interconnect según criticidad, latencia, seguridad y coste del servicio.</p>
+            </div>
+            <div class="detail-state detail-hub-clouds">
+              <p>Interconexión</p>
+              <h2>Hub a Clouds</h2>
+              <p>Conexión privada y gobernada desde el hub neutral hacia las Landing Zones mediante cross-connects, Direct Connect, Interconnect o FastConnect, con control de routing, resiliencia y segmentación.</p>
+            </div>
+            <div class="detail-state detail-onprem-private-connectivity">
+              <p>On-Premises</p>
+              <h2>Conectividad privada</h2>
+              <p>Integración de CPDs corporativos mediante enlaces dedicados, fabrics o circuitos privados para evitar exposición innecesaria a Internet y mantener control de latencia, disponibilidad y seguridad.</p>
+            </div>
+            <div class="detail-state detail-onprem-bgp-routing">
+              <p>On-Premises</p>
+              <h2>BGP / routing dinámico</h2>
+              <p>Intercambio dinámico de rutas entre CPDs, hubs de interconexión y clouds, con políticas de preferencia, filtrado y convergencia para operar cambios y failover de forma controlada.</p>
+            </div>
+            <div class="detail-state detail-onprem-active-active">
+              <p>On-Premises</p>
+              <h2>Diseño activo-activo</h2>
+              <p>Conectividad redundada y caminos simultáneamente operativos para distribuir tráfico, reducir tiempos de recuperación y evitar dependencias de un único enlace, site o path.</p>
+            </div>
+            <div class="detail-state detail-onprem-hybrid-dns">
+              <p>On-Premises</p>
+              <h2>DNS híbrido</h2>
+              <p>Resolución coherente entre CPDs y clouds, integrando zonas privadas, forwarding y políticas de resolución para soportar flujos distribuidos sin depender de exposición pública.</p>
+            </div>
+            <div class="detail-state detail-observability">
+              <p>Operación transversal</p>
+              <h2>Observabilidad de red</h2>
+              <p>Flow logs, métricas, alertas, dashboards, estado de BGP peering, utilización inbound/outbound y visibilidad por aplicación para operar con criterio end-to-end.</p>
+            </div>
+            <div class="detail-state detail-automation">
+              <p>Operación transversal</p>
+              <h2>Automatización e IaC</h2>
+              <p>Terraform, GitOps, validaciones automáticas y cambios auditables para que la evolución de las Landing Zones sea reproducible.</p>
+            </div>
+            <div class="detail-state detail-governance">
+              <p>Operación transversal</p>
+              <h2>Gobierno y estándares</h2>
+              <p>Políticas de red, nomenclatura, etiquetado, catálogo de patrones, RACI, KPIs, control de costes y alineamiento con CCoE y DORA.</p>
+            </div>
+            <div class="detail-state detail-ipam">
+              <p>Operación transversal</p>
+              <h2>IPAM centralizado</h2>
+              <p>Planificación IP, prevención de solapes, visibilidad global y gestión de reservas.</p>
+            </div>
+            <div class="detail-state detail-finops">
+              <p>Operación transversal</p>
+              <h2>Optimización end-to-end de red (FinOps)</h2>
+              <p>Modelo de egress distribuido por cloud, control de egress, optimización de routing paths, análisis de costes y forecast de capacidad.</p>
+            </div>
+            <div class="detail-state detail-plan">
+              <p>Kyndryl model</p>
+              <h2>Plan</h2>
+              <p>Assessment de situación actual, requisitos de negocio, criticidad, diseño objetivo, decisiones de conectividad, seguridad y routing, roadmap de evolución y definición de patrones reutilizables.</p>
+            </div>
+            <div class="detail-state detail-build">
+              <p>Kyndryl model</p>
+              <h2>Build</h2>
+              <p>Construcción de la plataforma mediante infraestructura como código, despliegue de servicios nativos, validaciones técnicas, migración controlada y activación de patrones de red gobernados.</p>
+            </div>
+            <div class="detail-state detail-run">
+              <p>Kyndryl model</p>
+              <h2>Run</h2>
+              <p>Operación continua con KPIs, RACI, observabilidad, gestión de cambios, health checks, performance, capacidad, estado de peering y visibilidad end-to-end de flujos.</p>
+            </div>
+            <div class="detail-state detail-connectivity">
+              <p>Beneficio</p>
+              <h2>Conectividad global</h2>
+              <p>Entrada única Anycast y hub neutral para conectar clouds, CPDs, sedes y terceros mediante opciones de acceso flexibles y gobernadas.</p>
+            </div>
+            <div class="detail-state detail-performance">
+              <p>Beneficio</p>
+              <h2>Rendimiento óptimo</h2>
+              <p>Aceleración, CDN, routing por latencia y baja latencia entre on-premises, edge y cloud para mover datos y workloads con mejor experiencia.</p>
+            </div>
+            <div class="detail-state detail-availability">
+              <p>Beneficio</p>
+              <h2>Alta disponibilidad</h2>
+              <p>Arquitecturas activo-activo, hubs redundados, failover automático y niveles de resiliencia ajustados a la criticidad del servicio.</p>
+            </div>
+            <div class="detail-state detail-privacy">
+              <p>Beneficio</p>
+              <h2>Privacy by design</h2>
+              <p>Conectividad privada dedicada entre on-premises, clouds y servicios críticos, priorizando PrivateLink, Private Endpoint y Private Service Connect.</p>
+            </div>
+            <div class="detail-state detail-consistency">
+              <p>Beneficio</p>
+              <h2>Consistencia operativa</h2>
+              <p>Patrones reutilizables, módulos componibles y estándares repetibles: spoke estándar, spoke regulado, spoke internet-facing, shared services y conectividad con terceros.</p>
+            </div>
+            <div class="detail-state detail-benefit-automation">
+              <p>Beneficio</p>
+              <h2>Automatización</h2>
+              <p>Network as Code, validaciones y cambios trazables para reducir riesgo operativo.</p>
+            </div>
+            <div class="detail-state detail-visibility">
+              <p>Beneficio</p>
+              <h2>Visibilidad end-to-end</h2>
+              <p>Observabilidad completa de la red, su rendimiento y sus costes asociados.</p>
+            </div>
+            <div class="detail-state detail-scalability">
+              <p>Beneficio</p>
+              <h2>Escalabilidad global</h2>
+              <p>Modelo modular y pay-as-you-grow, preparado para nuevos clouds, regiones, sedes, proyectos y servicios sin reconstruir la red completa.</p>
+            </div>
+            <div class="detail-state detail-principle-cloud-centric">
+              <p>Principio de diseño</p>
+              <h2>Cloud-centric y asset-light</h2>
+              <p>La red se diseña desde la aplicación, los servicios cloud y sus patrones de consumo, reduciendo dependencias de hardware dedicado y priorizando capacidades nativas cuando aportan soporte, evolución y operación más simple.</p>
+            </div>
+            <div class="detail-state detail-principle-transport-overlay">
+              <p>Principio de diseño</p>
+              <h2>Transporte y overlay separados</h2>
+              <p>La conectividad física, los fabrics y los carriers se desacoplan del overlay lógico de routing, segmentación y seguridad. Esto permite cambiar transporte sin rediseñar la arquitectura de red consumida por las aplicaciones.</p>
+            </div>
+            <div class="detail-state detail-principle-modularity">
+              <p>Principio de diseño</p>
+              <h2>Escalabilidad modular</h2>
+              <p>Las capacidades se publican como patrones componibles para crecer por dominio, cloud, región o criticidad. El objetivo es evolucionar sin reconstruir la plataforma ni crear excepciones difíciles de operar.</p>
+            </div>
+            <div class="detail-state detail-principle-neutrality">
+              <p>Principio de diseño</p>
+              <h2>Neutralidad tecnológica</h2>
+              <p>El diseño evita acoplarse innecesariamente a un carrier, fabricante o cloud concreta. La consistencia se consigue con patrones comunes, mientras cada proveedor mantiene sus capacidades nativas.</p>
+            </div>
+            <div class="detail-state detail-principle-visibility">
+              <p>Principio de diseño</p>
+              <h2>Visibilidad end-to-end</h2>
+              <p>La operación necesita telemetría de salud, rendimiento, capacidad, costes y flujos para tomar decisiones con contexto. La observabilidad debe cubrir edge, hubs, clouds, conectividad privada y servicios compartidos.</p>
+            </div>
+            <div class="detail-state detail-principle-zero-trust">
+              <p>Principio de diseño</p>
+              <h2>Control y Zero Trust</h2>
+              <p>El acceso se gobierna por identidad, contexto, postura y segmentación, con exposición mínima y conectividad privada por defecto cuando aplica. Las políticas deben acompañar al servicio aunque cambie de cloud o dominio.</p>
+            </div>
+            <div class="detail-state detail-principle-resilience">
+              <p>Principio de diseño</p>
+              <h2>Resiliencia por criticidad</h2>
+              <p>La redundancia local, geográfica y la diversidad física se dimensionan según impacto real de negocio. No todos los servicios necesitan el mismo nivel de resiliencia, pero todos deben tener una decisión explícita y trazable.</p>
+            </div>
+            <div class="detail-state detail-principle-network-code">
+              <p>Principio de diseño</p>
+              <h2>Network as Code</h2>
+              <p>Los cambios de red se modelan como código con Terraform, GitOps, validaciones y revisión trazable. Esto hace reproducible la evolución de Landing Zones, reduce riesgo operativo y facilita auditoría.</p>
+            </div>
+          </article>
+        </aside>
+
+      <section class="benefits-section focus-target" data-layer="benefits" aria-label="Beneficios clave">
+        <article class="benefits-card">
+            <h2>Beneficios clave</h2>
+            <label class="benefit" for="info-connectivity">
+              <svg><use href="#icon-globe" /></svg>
+              <span>
+                <strong>Conectividad Global</strong>
+                <small>Anycast, hub neutral y multi-cloud.</small>
+              </span>
+            </label>
+            <label class="benefit" for="info-performance">
+              <svg><use href="#icon-rocket" /></svg>
+              <span>
+                <strong>Rendimiento Óptimo</strong>
+                <small>Latencia, CDN y aceleración.</small>
+              </span>
+            </label>
+            <label class="benefit" for="info-availability">
+              <svg><use href="#icon-scale" /></svg>
+              <span>
+                <strong>Alta Disponibilidad</strong>
+                <small>Resiliencia por criticidad.</small>
+              </span>
+            </label>
+            <label class="benefit" for="info-privacy">
+              <svg><use href="#icon-lock" /></svg>
+              <span>
+                <strong>Privacy by Design</strong>
+                <small>Tráfico privado y controlado.</small>
+              </span>
+            </label>
+            <label class="benefit" for="info-consistency">
+              <svg><use href="#icon-grid" /></svg>
+              <span>
+                <strong>Consistencia Operativa</strong>
+                <small>Módulos y patrones repetibles.</small>
+              </span>
+            </label>
+            <label class="benefit" for="info-benefit-automation">
+              <svg><use href="#icon-gear" /></svg>
+              <span>
+                <strong>Automatización</strong>
+                <small>IaC, GitOps y validaciones.</small>
+              </span>
+            </label>
+            <label class="benefit" for="info-visibility">
+              <svg><use href="#icon-eye" /></svg>
+              <span>
+                <strong>Visibilidad End-to-End</strong>
+                <small>Health, performance y flujos.</small>
+              </span>
+            </label>
+            <label class="benefit" for="info-scalability">
+              <svg><use href="#icon-network" /></svg>
+              <span>
+                <strong>Escalabilidad Global</strong>
+                <small>Pay-as-you-grow modular.</small>
+              </span>
+            </label>
+        </article>
+      </section>
+
+      <section class="principles-section" aria-label="Principios de diseño cloud networking">
+        <div class="principles-heading">
+          <p class="eyebrow">Principios de diseño</p>
+          <h2>Una arquitectura cloud-first, modular y operable end-to-end</h2>
+          <p>
+            El modelo evita una capa propietaria de abstracción multi-cloud. Cada cloud usa sus capacidades nativas, mientras la plataforma publica patrones comunes para consumir red de forma consistente, gobernada y automatizada.
+          </p>
+        </div>
+        <div class="principles-grid">
+          <label class="principle-card" for="info-principle-cloud-centric">
+            <svg><use href="#icon-cloud" /></svg>
+            <h3>Cloud-centric y asset-light</h3>
+          </label>
+          <label class="principle-card" for="info-principle-transport-overlay">
+            <svg><use href="#icon-route" /></svg>
+            <h3>Transporte y overlay separados</h3>
+          </label>
+          <label class="principle-card" for="info-principle-modularity">
+            <svg><use href="#icon-network" /></svg>
+            <h3>Escalabilidad modular</h3>
+          </label>
+          <label class="principle-card" for="info-principle-neutrality">
+            <svg><use href="#icon-link" /></svg>
+            <h3>Neutralidad tecnológica</h3>
+          </label>
+          <label class="principle-card" for="info-principle-visibility">
+            <svg><use href="#icon-eye" /></svg>
+            <h3>Visibilidad end-to-end</h3>
+          </label>
+          <label class="principle-card" for="info-principle-zero-trust">
+            <svg><use href="#icon-shield" /></svg>
+            <h3>Control y Zero Trust</h3>
+          </label>
+          <label class="principle-card" for="info-principle-resilience">
+            <svg><use href="#icon-scale" /></svg>
+            <h3>Resiliencia por criticidad</h3>
+          </label>
+          <label class="principle-card" for="info-principle-network-code">
+            <svg><use href="#icon-gear" /></svg>
+            <h3>Network as Code</h3>
+          </label>
+        </div>
+      </section>
+    </main>
+    </div>
+
+    <div class="language-view language-en" lang="en">
+    <header class="topbar">
+      <div class="header-copy">
+        <div class="brand-row" aria-label="Kyndryl Network and Edge">
+          <span class="kyndryl-logo" aria-label="Kyndryl">
+            <svg viewBox="0 0 125.74 40" role="img" aria-labelledby="kyndryl-title-en" xmlns="http://www.w3.org/2000/svg">
+              <title id="kyndryl-title-en">Kyndryl</title>
+              <path d="M120,0V30h-3.518V0ZM48.854,9.537a5.575,5.575,0,0,0-5.9,4.993h-.172V10H39.26V30h3.519V17.544c0-3.368,1.793-4.911,4.8-4.911,3.442,0,4.981,1.706,4.981,5.09V30h3.518V17.264C56.074,12.489,53.374,9.537,48.854,9.537ZM27.323,29.462h-.115L21.1,10H17.454l6.465,20h3.237l-3.3,10H27.37l9.684-30H33.409Zm77.222,0h-.115L98.322,10H94.675l6.465,20h3.237l-3.3,10h3.511l9.684-30h-3.646ZM7.325,20l8.684-10H11.73l-8.1,9.652H3.519V0H0V30H3.519V20.185H6.862L13.624,30H17.7l-7-10Zm79.021-5.468h-.171V10H82.656V30h3.519V17.508c0-3.368,1.91-4.6,5.184-4.6a9.471,9.471,0,0,1,2.181.234v-3.4a5.152,5.152,0,0,0-1.669-.212A5.4,5.4,0,0,0,86.346,14.532ZM74.617,0h3.518V30H74.617V25.47h-.17c-.337,2.791-2.478,4.993-6.536,4.993-4.951,0-8.469-3.928-8.469-10.463S62.959,9.537,67.911,9.537c4.058,0,6.2,2.2,6.536,4.993h.17Zm0,17.358c0-3.368-2.542-4.726-5.695-4.726-3.324,0-5.81,2.068-5.81,7.368s2.486,7.368,5.81,7.368c3.153,0,5.695-1.358,5.695-4.726V17.358Zm46.956,10.529v.237h.639V30h.3V28.125h.639v-.237Zm3.52,0-.525,2.084h-.006l-.5-2.084h-.579L123.422,30h.283l.063-2.084h.006L124.293,30h.528l.551-2.084h.006L125.44,30h.3l-.069-2.112h-.577Z" fill="#ff462d" />
+            </svg>
+          </span>
+          <span class="practice-tag">Network and Edge</span>
+        </div>
+        <h1>Cloud Networking - Point of View</h1>
+        <p class="subtitle">Performance, security and high availability for hybrid, multi-cloud and cross-cloud architectures.</p>
+      </div>
+
+      <div class="language-switch" aria-label="Language selector">
+        <label class="lang-option" for="lang-es">ES</label>
+        <label class="lang-option" for="lang-en">EN</label>
+      </div>
+    </header>
+
+    <main class="page-shell">
+      <section class="map-area" aria-label="Interactive cloud networking infographic">
+        <div class="architecture-heading">
+          <p class="eyebrow">Reference architecture</p>
+          <h2>Cloud networking architecture to connect, protect and scale hybrid, multi-cloud and cross-cloud environments</h2>
+          <p>The architecture is structured in three layers: a global entry point, a neutral hybrid interconnection layer and native Landing Zones in each hyperscaler</p>
+        </div>
+        <div class="map-grid">
+          <article class="flow-panel global-panel focus-target" id="en-global" data-layer="global">
+            <div class="section-heading">
+              <span class="step">01</span>
+              <div>
+                <h2>Global entry point</h2>
+                <p>Unified front door for corporate traffic, Internet customers and SD-WAN sites, using Anycast to route each request to the most efficient endpoint.</p>
+              </div>
+            </div>
+            <div class="global-nodes">
+              <label class="node" for="info-dns">
+                <svg><use href="#icon-globe" /></svg>
+                <span>Global DNS</span>
+              </label>
+              <label class="node" for="info-health">
+                <svg><use href="#icon-shield" /></svg>
+                <span>Health Checks</span>
+              </label>
+              <label class="node" for="info-cdn">
+                <svg><use href="#icon-cloud" /></svg>
+                <span>CDN</span>
+              </label>
+              <label class="node" for="info-latency">
+                <svg><use href="#icon-route" /></svg>
+                <span>Intelligent Routing</span>
+              </label>
+              <label class="node accent-node" for="info-users">
+                <svg><use href="#icon-users" /></svg>
+                <span>Remote ZTNA Access</span>
+              </label>
+              <label class="node accent-node" for="info-branches">
+                <svg><use href="#icon-building" /></svg>
+                <span>SD-WAN Sites</span>
+              </label>
+            </div>
+            <div class="service-rail" aria-label="Protection and acceleration services">
+              <label for="info-waf"><svg><use href="#icon-shield" /></svg>WAF</label>
+              <label for="info-ddos"><svg><use href="#icon-lock" /></svg>DDoS Protection</label>
+              <label for="info-traffic-acceleration"><svg><use href="#icon-rocket" /></svg>Traffic Acceleration</label>
+              <label for="info-load-balancing"><svg><use href="#icon-network" /></svg>Load Balancing</label>
+            </div>
+          </article>
+
+          <label class="flow-arrow" for="info-edge-hub" aria-label="Edge to Hub connectivity">
+            <span>Edge to Hub: Internet / CNI</span>
+          </label>
+
+          <article class="flow-panel hub-panel focus-target" id="en-hubs" data-layer="hubs">
+            <div class="section-heading compact">
+              <span class="step">02</span>
+              <div>
+                <h2>Neutral interconnection and connectivity hubs</h2>
+                <p>Central hybrid hub to connect hyperscalers and corporate data centers through dedicated circuits, fabric, MPLS, ISP, P2P or BYOP, without falling into a full-mesh topology that is hard to govern.</p>
+              </div>
+            </div>
+            <div class="hub-nodes">
+              <label class="node" for="info-hubs">
+                <svg><use href="#icon-network" /></svg>
+                <span>Redundant Hubs</span>
+              </label>
+              <label class="node" for="info-bgp">
+                <svg><use href="#icon-globe" /></svg>
+                <span>Routing and Peering</span>
+              </label>
+              <label class="node" for="info-segmentation">
+                <svg><use href="#icon-shield" /></svg>
+                <span>Network Appliances</span>
+              </label>
+              <label class="node" for="info-active-active">
+                <svg><use href="#icon-link" /></svg>
+                <span>Graduated Resilience</span>
+              </label>
+            </div>
+          </article>
+
+          <label class="flow-arrow" for="info-hub-clouds" aria-label="Hub to Clouds connectivity">
+            <span>Hub to Clouds: cross-connects / Direct Connect / Interconnect / FastConnect</span>
+          </label>
+
+          <section class="landing-zone focus-target" id="en-landing" data-layer="landing">
+            <div class="section-heading landing-heading">
+              <span class="step">03</span>
+              <div>
+                <h2>Cloud Landing Zones</h2>
+                <p>Hub-and-spoke architecture, environment segmentation and native services for routing, load balancing, firewall, DNS and private connectivity to PaaS.</p>
+              </div>
+            </div>
+
+            <div class="zone-layout">
+              <article class="onprem-card cloud-card">
+                <div class="cloud-title">
+                  <svg><use href="#icon-building" /></svg>
+                  <div>
+                    <h3>On-Premises</h3>
+                    <p>Corporate data centers with private connectivity and high availability</p>
+                  </div>
+                </div>
+                <div class="feature-list">
+                  <label for="info-onprem-private-connectivity">Private connectivity</label>
+                  <label for="info-onprem-bgp-routing">Dynamic BGP / routing</label>
+                  <label for="info-onprem-active-active">Active-active design</label>
+                  <label for="info-onprem-hybrid-dns">Hybrid DNS</label>
+                </div>
+              </article>
+
+              <article class="cloud-card aws-card">
+                <div class="cloud-brand">
+                  <span class="cloud-logo aws-logo" aria-label="AWS">
+                    <svg viewBox="-.1 1.1 304.9 179.8" role="img" aria-labelledby="aws-title-en" xmlns="http://www.w3.org/2000/svg">
+                      <title id="aws-title-en">AWS</title>
+                      <path d="m86.4 66.4c0 3.7.4 6.7 1.1 8.9.8 2.2 1.8 4.6 3.2 7.2.5.8.7 1.6.7 2.3 0 1-.6 2-1.9 3l-6.3 4.2c-.9.6-1.8.9-2.6.9-1 0-2-.5-3-1.4-1.4-1.5-2.6-3.1-3.6-4.7-1-1.7-2-3.6-3.1-5.9-7.8 9.2-17.6 13.8-29.4 13.8-8.4 0-15.1-2.4-20-7.2s-7.4-11.2-7.4-19.2c0-8.5 3-15.4 9.1-20.6s14.2-7.8 24.5-7.8c3.4 0 6.9.3 10.6.8s7.5 1.3 11.5 2.2v-7.3c0-7.6-1.6-12.9-4.7-16-3.2-3.1-8.6-4.6-16.3-4.6-3.5 0-7.1.4-10.8 1.3s-7.3 2-10.8 3.4c-1.6.7-2.8 1.1-3.5 1.3s-1.2.3-1.6.3c-1.4 0-2.1-1-2.1-3.1v-4.9c0-1.6.2-2.8.7-3.5s1.4-1.4 2.8-2.1c3.5-1.8 7.7-3.3 12.6-4.5 4.9-1.3 10.1-1.9 15.6-1.9 11.9 0 20.6 2.7 26.2 8.1 5.5 5.4 8.3 13.6 8.3 24.6v32.4zm-40.6 15.2c3.3 0 6.7-.6 10.3-1.8s6.8-3.4 9.5-6.4c1.6-1.9 2.8-4 3.4-6.4s1-5.3 1-8.7v-4.2c-2.9-.7-6-1.3-9.2-1.7s-6.3-.6-9.4-.6c-6.7 0-11.6 1.3-14.9 4s-4.9 6.5-4.9 11.5c0 4.7 1.2 8.2 3.7 10.6 2.4 2.5 5.9 3.7 10.5 3.7zm80.3 10.8c-1.8 0-3-.3-3.8-1-.8-.6-1.5-2-2.1-3.9l-23.5-77.3c-.6-2-.9-3.3-.9-4 0-1.6.8-2.5 2.4-2.5h9.8c1.9 0 3.2.3 3.9 1 .8.6 1.4 2 2 3.9l16.8 66.2 15.6-66.2c.5-2 1.1-3.3 1.9-3.9s2.2-1 4-1h8c1.9 0 3.2.3 4 1 .8.6 1.5 2 1.9 3.9l15.8 67 17.3-67c.6-2 1.3-3.3 2-3.9.8-.6 2.1-1 3.9-1h9.3c1.6 0 2.5.8 2.5 2.5 0 .5-.1 1-.2 1.6s-.3 1.4-.7 2.5l-24.1 77.3c-.6 2-1.3 3.3-2.1 3.9s-2.1 1-3.8 1h-8.6c-1.9 0-3.2-.3-4-1s-1.5-2-1.9-4l-15.5-64.5-15.4 64.4c-.5 2-1.1 3.3-1.9 4s-2.2 1-4 1zm128.5 2.7c-5.2 0-10.4-.6-15.4-1.8s-8.9-2.5-11.5-4c-1.6-.9-2.7-1.9-3.1-2.8s-.6-1.9-.6-2.8v-5.1c0-2.1.8-3.1 2.3-3.1.6 0 1.2.1 1.8.3s1.5.6 2.5 1c3.4 1.5 7.1 2.7 11 3.5 4 .8 7.9 1.2 11.9 1.2 6.3 0 11.2-1.1 14.6-3.3s5.2-5.4 5.2-9.5c0-2.8-.9-5.1-2.7-7s-5.2-3.6-10.1-5.2l-14.5-4.5c-7.3-2.3-12.7-5.7-16-10.2-3.3-4.4-5-9.3-5-14.5 0-4.2.9-7.9 2.7-11.1s4.2-6 7.2-8.2c3-2.3 6.4-4 10.4-5.2s8.2-1.7 12.6-1.7c2.2 0 4.5.1 6.7.4 2.3.3 4.4.7 6.5 1.1 2 .5 3.9 1 5.7 1.6s3.2 1.2 4.2 1.8c1.4.8 2.4 1.6 3 2.5.6.8.9 1.9.9 3.3v4.7c0 2.1-.8 3.2-2.3 3.2-.8 0-2.1-.4-3.8-1.2-5.7-2.6-12.1-3.9-19.2-3.9-5.7 0-10.2.9-13.3 2.8s-4.7 4.8-4.7 8.9c0 2.8 1 5.2 3 7.1s5.7 3.8 11 5.5l14.2 4.5c7.2 2.3 12.4 5.5 15.5 9.6s4.6 8.8 4.6 14c0 4.3-.9 8.2-2.6 11.6-1.8 3.4-4.2 6.4-7.3 8.8-3.1 2.5-6.8 4.3-11.1 5.6-4.5 1.4-9.2 2.1-14.3 2.1z" fill="#252f3e" />
+                      <path d="m273.5 143.7c-32.9 24.3-80.7 37.2-121.8 37.2-57.6 0-109.5-21.3-148.7-56.7-3.1-2.8-.3-6.6 3.4-4.4 42.4 24.6 94.7 39.5 148.8 39.5 36.5 0 76.6-7.6 113.5-23.2 5.5-2.5 10.2 3.6 4.8 7.6zM287.2 128.1c-4.2-5.4-27.8-2.6-38.5-1.3-3.2.4-3.7-2.4-.8-4.5 18.8-13.2 49.7-9.4 53.3-5 3.6 4.5-1 35.4-18.6 50.2-2.7 2.3-5.3 1.1-4.1-1.9 4-9.9 12.9-32.2 8.7-37.5z" fill="#f90" />
+                    </svg>
+                  </span>
+                  <span>Landing Zone</span>
+                </div>
+                <div class="cloud-services">
+                  <label class="service-pill" for="info-aws-tgw">
+                    <svg><use href="#icon-network" /></svg>
+                    Transit Gateway
+                  </label>
+                  <label class="service-pill" for="info-aws-firewall">
+                    <svg><use href="#icon-shield" /></svg>
+                    Network Firewall
+                  </label>
+                  <label class="service-pill" for="info-aws-routes">
+                    <svg><use href="#icon-grid" /></svg>
+                    Route Tables
+                  </label>
+                </div>
+                <div class="spoke-band">
+                  <span>VPC 1</span>
+                  <span>VPC 2</span>
+                  <span>VPC n</span>
+                </div>
+                <div class="native-strip">
+                  <span><svg><use href="#icon-network" /></svg>ALB / NLB</span>
+                  <span><svg><use href="#icon-globe" /></svg>Route 53</span>
+                  <span><svg><use href="#icon-lock" /></svg>PrivateLink</span>
+                  <span><svg><use href="#icon-route" /></svg>NAT</span>
+                </div>
+              </article>
+
+              <article class="cloud-card azure-card">
+                <div class="cloud-brand">
+                  <span class="cloud-logo azure-logo" aria-label="Microsoft Azure">
+                    <svg viewBox="0 0 96 96" role="img" aria-labelledby="azure-title-en" xmlns="http://www.w3.org/2000/svg">
+                      <title id="azure-title-en">Microsoft Azure</title>
+                      <defs>
+                        <linearGradient id="azure-gradient-a-en" x1="42.828" x2="15.787" y1="12.688" y2="92.574" gradientUnits="userSpaceOnUse">
+                          <stop offset="0" stop-color="#114a8b" />
+                          <stop offset="1" stop-color="#0669bc" />
+                        </linearGradient>
+                        <linearGradient id="azure-gradient-b-en" x1="51.275" x2="45.02" y1="49.917" y2="52.032" gradientUnits="userSpaceOnUse">
+                          <stop offset="0" stop-opacity=".3" />
+                          <stop offset=".071" stop-opacity=".2" />
+                          <stop offset=".321" stop-opacity=".1" />
+                          <stop offset=".623" stop-opacity=".05" />
+                          <stop offset="1" stop-opacity="0" />
+                        </linearGradient>
+                        <linearGradient id="azure-gradient-c-en" x1="47.835" x2="77.518" y1="10.358" y2="89.439" gradientUnits="userSpaceOnUse">
+                          <stop offset="0" stop-color="#3ccbf4" />
+                          <stop offset="1" stop-color="#2892df" />
+                        </linearGradient>
+                      </defs>
+                      <path fill="url(#azure-gradient-a-en)" d="M33.338 6.544h26.038l-27.03 80.087a4.152 4.152 0 0 1-3.933 2.824H8.149a4.145 4.145 0 0 1-3.928-5.47L29.404 9.368a4.152 4.152 0 0 1 3.934-2.825z" />
+                      <path fill="#0078d4" d="M71.175 60.261h-41.29a1.911 1.911 0 0 0-1.305 3.309l26.532 24.764a4.171 4.171 0 0 0 2.846 1.121h23.38z" />
+                      <path fill="url(#azure-gradient-b-en)" d="M33.338 6.544a4.118 4.118 0 0 0-3.943 2.879L4.252 83.917a4.14 4.14 0 0 0 3.908 5.538h20.787a4.443 4.443 0 0 0 3.41-2.9l5.014-14.777 17.91 16.705a4.237 4.237 0 0 0 2.666.972H81.24L71.024 60.261l-29.781.007L59.47 6.544z" />
+                      <path fill="url(#azure-gradient-c-en)" d="M66.595 9.364a4.145 4.145 0 0 0-3.928-2.82H33.648a4.146 4.146 0 0 1 3.928 2.82l25.184 74.62a4.146 4.146 0 0 1-3.928 5.472h29.02a4.146 4.146 0 0 0 3.927-5.472z" />
+                    </svg>
+                  </span>
+                  <span>Landing Zone</span>
+                </div>
+                <div class="cloud-services">
+                  <label class="service-pill" for="info-azure-vwan">
+                    <svg><use href="#icon-cloud" /></svg>
+                    vWAN Hub
+                  </label>
+                  <label class="service-pill" for="info-azure-firewall">
+                    <svg><use href="#icon-shield" /></svg>
+                    Azure Firewall
+                  </label>
+                  <label class="service-pill" for="info-azure-routes">
+                    <svg><use href="#icon-grid" /></svg>
+                    Route Tables
+                  </label>
+                </div>
+                <div class="spoke-band">
+                  <span>VNet 1</span>
+                  <span>VNet 2</span>
+                  <span>VNet n</span>
+                </div>
+                <div class="native-strip">
+                  <span><svg><use href="#icon-network" /></svg>Load Balancer</span>
+                  <span><svg><use href="#icon-globe" /></svg>Private DNS</span>
+                  <span><svg><use href="#icon-lock" /></svg>Private Link</span>
+                  <span><svg><use href="#icon-route" /></svg>NAT</span>
+                </div>
+              </article>
+
+              <article class="cloud-card gcp-card">
+                <div class="cloud-brand">
+                  <span class="cloud-logo gcp-logo" aria-label="Google Cloud">
+                    <svg viewBox="0 0 32 28" role="img" aria-labelledby="gcp-title-en" xmlns="http://www.w3.org/2000/svg">
+                      <title id="gcp-title-en">Google Cloud</title>
+                      <path fill="#ea4335" d="M21.85,7.41l1,0,2.85-2.85.14-1.21A12.81,12.81,0,0,0,5,9.6a1.55,1.55,0,0,1,1-.06l5.7-.94s.29-.48.44-.45a7.11,7.11,0,0,1,9.73-.74Z" />
+                      <path fill="#4285f4" d="M29.76,9.6a12.84,12.84,0,0,0-3.87-6.24l-4,4A7.11,7.11,0,0,1,24.5,13v.71a3.56,3.56,0,1,1,0,7.12H17.38l-.71.72v4.27l.71.71H24.5A9.26,9.26,0,0,0,29.76,9.6Z" />
+                      <path fill="#34a853" d="M10.25,26.49h7.12v-5.7H10.25a3.54,3.54,0,0,1-1.47-.32l-1,.31L4.91,23.63l-.25,1A9.21,9.21,0,0,0,10.25,26.49Z" />
+                      <path fill="#fbbc05" d="M10.25,8A9.26,9.26,0,0,0,4.66,24.6l4.13-4.13a3.56,3.56,0,1,1,4.71-4.71l4.13-4.13A9.25,9.25,0,0,0,10.25,8Z" />
+                    </svg>
+                  </span>
+                  <span>Landing Zone</span>
+                </div>
+                <div class="cloud-services">
+                  <label class="service-pill" for="info-gcp-router">
+                    <svg><use href="#icon-route" /></svg>
+                    Cloud Router
+                  </label>
+                  <label class="service-pill" for="info-gcp-firewall">
+                    <svg><use href="#icon-shield" /></svg>
+                    Firewall
+                  </label>
+                  <label class="service-pill" for="info-gcp-routes">
+                    <svg><use href="#icon-grid" /></svg>
+                    Route Tables
+                  </label>
+                </div>
+                <div class="spoke-band">
+                  <span>VPC 1</span>
+                  <span>VPC 2</span>
+                  <span>VPC n</span>
+                </div>
+                <div class="native-strip">
+                  <span><svg><use href="#icon-network" /></svg>Cloud LB</span>
+                  <span><svg><use href="#icon-globe" /></svg>Cloud DNS</span>
+                  <span><svg><use href="#icon-lock" /></svg>Private Service Connect</span>
+                  <span><svg><use href="#icon-route" /></svg>Cloud NAT</span>
+                </div>
+              </article>
+
+              <label class="oci-cross-connect" for="info-oci-crossconnect" aria-label="Oracle Cloud cross-connect">
+                <span class="oracle-logo" aria-label="Oracle Cloud">
+                  <svg viewBox="0 0 231 30" role="img" aria-labelledby="oracle-title-en" xmlns="http://www.w3.org/2000/svg">
+                    <title id="oracle-title-en">Oracle Cloud</title>
+                    <path fill="#c74634" d="M99.61,19.52h15.24l-8.05-13L92,30H85.27l18-28.17a4.29,4.29,0,0,1,7-.05L128.32,30h-6.73l-3.17-5.25H103l-3.36-5.23m69.93,5.23V0.28h-5.72V27.16a2.76,2.76,0,0,0,.85,2,2.89,2.89,0,0,0,2.08.87h26l3.39-5.25H169.54M75,20.38A10,10,0,0,0,75,.28H50V30h5.71V5.54H74.65a4.81,4.81,0,0,1,0,9.62H58.54L75.6,30h8.29L72.43,20.38H75M14.88,30H32.15a14.86,14.86,0,0,0,0-29.71H14.88a14.86,14.86,0,1,0,0,29.71m16.88-5.23H15.26a9.62,9.62,0,0,1,0-19.23h16.5a9.62,9.62,0,1,1,0,19.23M140.25,30h17.63l3.34-5.23H140.64a9.62,9.62,0,1,1,0-19.23h16.75l3.38-5.25H140.25a14.86,14.86,0,1,0,0,29.71m69.87-5.23a9.62,9.62,0,0,1-9.26-7h24.42l3.36-5.24H200.86a9.61,9.61,0,0,1,9.26-7h16.76l3.35-5.25h-20.5a14.86,14.86,0,0,0,0,29.71h17.63l3.35-5.23h-20.6" transform="translate(-0.02 0)" />
+                  </svg>
+                </span>
+                <strong>OCI Cross-connect</strong>
+                
+              </label>
+
+            </div>
+          </section>
+
+          <article class="ops-band focus-target" data-layer="ops">
+            <div class="section-heading compact">
+              <span class="step">04</span>
+              <div>
+                <h2>Cross-cutting Operations Layers</h2>
+                <p>A common operating model for the whole network: observability, automation, governance, IPAM and FinOps applied end to end.</p>
+              </div>
+            </div>
+            <div class="ops-grid">
+              <label class="ops-card" for="info-observability">
+                <svg><use href="#icon-eye" /></svg>
+                <span>Observability</span>
+              </label>
+              <label class="ops-card" for="info-automation">
+                <svg><use href="#icon-gear" /></svg>
+                <span>Automation</span>
+              </label>
+              <label class="ops-card" for="info-governance">
+                <svg><use href="#icon-shield" /></svg>
+                <span>Governance</span>
+              </label>
+              <label class="ops-card" for="info-ipam">
+                <svg><use href="#icon-ip" /></svg>
+                <span>IPAM</span>
+              </label>
+              <label class="ops-card" for="info-finops">
+                <svg><use href="#icon-cost" /></svg>
+                <span>FinOps</span>
+              </label>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="kyndryl-model-section focus-target" data-layer="kyndryl-model" aria-label="Kyndryl model">
+        <div class="kyndryl-model-heading">
+          <p class="eyebrow">Kyndryl model</p>
+          <h2>Plan, Build and Run</h2>
+          <p>Engagement model to take the cloud networking vision from design into continuous operations, with reusable patterns, automation and operational governance.</p>
+        </div>
+        <div class="project-roadmap" aria-label="Plan Build Run project roadmap">
+          <div class="roadmap-scale" aria-hidden="true">
+            <span>Phase</span>
+            <span class="roadmap-milestones">
+              <span>Start</span>
+              <span>Assess</span>
+              <span>Design</span>
+              <span>Pilot</span>
+              <span>Operate</span>
+            </span>
+            <span>Outcome</span>
+          </div>
+          <label class="roadmap-row phase-plan" for="info-plan">
+            <span class="roadmap-stage">
+              <svg><use href="#icon-route" /></svg>
+              <span>
+                <strong>Plan</strong>
+                <small>Discover, prioritize and decide</small>
+              </span>
+            </span>
+            <span class="roadmap-track">
+              <span class="roadmap-bar">Assessment and target design</span>
+              <span class="roadmap-checkpoint" aria-hidden="true"></span>
+            </span>
+            <span class="roadmap-deliverable">Roadmap + business case</span>
+          </label>
+          <label class="roadmap-row phase-build" for="info-build">
+            <span class="roadmap-stage">
+              <svg><use href="#icon-gear" /></svg>
+              <span>
+                <strong>Build</strong>
+                <small>Build platform and patterns</small>
+              </span>
+            </span>
+            <span class="roadmap-track">
+              <span class="roadmap-bar">Landing Zones, IaC and validation</span>
+              <span class="roadmap-checkpoint" aria-hidden="true"></span>
+            </span>
+            <span class="roadmap-deliverable">Production platform</span>
+          </label>
+          <label class="roadmap-row phase-run" for="info-run">
+            <span class="roadmap-stage">
+              <svg><use href="#icon-eye" /></svg>
+              <span>
+                <strong>Run</strong>
+                <small>Operate, measure and optimize</small>
+              </span>
+            </span>
+            <span class="roadmap-track">
+              <span class="roadmap-bar">Continuous operations and improvement</span>
+              <span class="roadmap-checkpoint" aria-hidden="true"></span>
+            </span>
+            <span class="roadmap-deliverable">KPIs + living backlog</span>
+          </label>
+          <div class="roadmap-footer" aria-label="Delivery milestones">
+            <span>
+              <strong>M0</strong>
+              <small>Baseline and risks</small>
+            </span>
+            <span>
+              <strong>M1</strong>
+              <small>Target architecture</small>
+            </span>
+            <span>
+              <strong>M2</strong>
+              <small>Validated pilot</small>
+            </span>
+            <span>
+              <strong>M3</strong>
+              <small>Operations handover</small>
+            </span>
+          </div>
+        </div>
+      </section>
+
+      <aside class="right-rail" aria-label="Selected detail">
+          <article class="detail-panel" aria-live="polite">
+            <div class="detail-state detail-intro">
+              <p>Explore the architecture</p>
+              <h2>Click the icons to learn more</h2>
+              <p>Select any architecture element, benefit or operations layer to see its role.</p>
+            </div>
+            <div class="detail-state detail-dns">
+              <p>Global entry</p>
+              <h2>Global DNS (GSLB)</h2>
+              <p>Global resolution with policies based on health, location, latency and service priority. It allows applications to move between AWS, Google Cloud or the remaining Azure estate without changing the front door.</p>
+            </div>
+            <div class="detail-state detail-health">
+              <p>Global entry</p>
+              <h2>Global health checks</h2>
+              <p>Continuous checks to remove degraded destinations, trigger automatic failover and sustain the user experience during regional failures.</p>
+            </div>
+            <div class="detail-state detail-cdn">
+              <p>Global entry</p>
+              <h2>CDN and optimization</h2>
+              <p>Content acceleration and traffic offload to bring the experience closer to the end user.</p>
+            </div>
+            <div class="detail-state detail-latency">
+              <p>Global entry</p>
+              <h2>Latency-based routing</h2>
+              <p>Dynamic selection of the best destination based on proximity, performance and operational status.</p>
+            </div>
+            <div class="detail-state detail-users">
+              <p>Access channels</p>
+              <h2>Remote ZTNA Access</h2>
+              <p>Secure remote access based on Zero Trust Network Access for employees and third parties, with policies based on identity, context and device posture.</p>
+            </div>
+            <div class="detail-state detail-branches">
+              <p>Access channels</p>
+              <h2>Site access (SD-WAN)</h2>
+              <p>Branch and campus integration through secure connectivity, traffic prioritization and centralized policies.</p>
+            </div>
+            <div class="detail-state detail-waf">
+              <p>Edge services</p>
+              <h2>WAF</h2>
+              <p>Web application protection against layer 7 attacks, vulnerability exploitation, bots and malicious traffic, applying policies close to the user before traffic reaches the Landing Zones.</p>
+            </div>
+            <div class="detail-state detail-ddos">
+              <p>Edge services</p>
+              <h2>DDoS Protection</h2>
+              <p>Distributed mitigation of volumetric and protocol attacks, absorbing malicious traffic at the edge to preserve availability and avoid saturating links toward clouds or data centers.</p>
+            </div>
+            <div class="detail-state detail-traffic-acceleration">
+              <p>Edge services</p>
+              <h2>Traffic Acceleration</h2>
+              <p>Route, TLS, cache and transport optimization to reduce perceived latency, improve stability and bring the service closer to the user regardless of where the application runs.</p>
+            </div>
+            <div class="detail-state detail-load-balancing">
+              <p>Edge services</p>
+              <h2>Load Balancing</h2>
+              <p>Traffic distribution across endpoints, regions and clouds based on health, capacity, priority and proximity, decoupling the front door from each application's specific deployment.</p>
+            </div>
+            <div class="detail-state detail-hubs">
+              <p>Neutral interconnection</p>
+              <h2>Redundant hubs</h2>
+              <p>Central interconnection platform for hyperscalers, data centers and sites, with physically diversified paths to avoid single points of failure and protect against fiber cuts.</p>
+            </div>
+            <div class="detail-state detail-bgp">
+              <p>Neutral interconnection</p>
+              <h2>Routing and peering</h2>
+              <p>Centralized routing control with BGP, dynamic advertisements, path preference, filtering policies and convergence across Direct Connect, Partner Interconnect, fabrics and data centers.</p>
+            </div>
+            <div class="detail-state detail-segmentation">
+              <p>Neutral interconnection</p>
+              <h2>Network appliances</h2>
+              <p>The hub can host physical or virtual appliances for routing and security functions: firewall, inspection, NAT, segmentation, traffic control and advanced network services.</p>
+            </div>
+            <div class="detail-state detail-active-active">
+              <p>Neutral interconnection</p>
+              <h2>Graduated resilience</h2>
+              <p>Design adjustable by criticality: geographically redundant hubs with physical diversity for critical services, local redundancy for relevant workloads, or simpler models when the risk profile allows it.</p>
+            </div>
+            <div class="detail-state detail-aws-tgw">
+              <p>AWS Landing Zone</p>
+              <h2>AWS Transit Gateway</h2>
+              <p>Regional hub for VPCs, shared networks and hybrid connectivity. It fits with Control Tower, Organizations and accounts separated by environment or domain.</p>
+            </div>
+            <div class="detail-state detail-aws-firewall">
+              <p>AWS Landing Zone</p>
+              <h2>AWS Network Firewall</h2>
+              <p>Inspection and control of east-west and north-south traffic from a shared domain, aligned with inherited guardrails and centralized policies.</p>
+            </div>
+            <div class="detail-state detail-aws-routes">
+              <p>AWS Landing Zone</p>
+              <h2>Route Tables</h2>
+              <p>Route tables as a governance point for propagation, isolation and preferred paths.</p>
+            </div>
+            <div class="detail-state detail-azure-vwan">
+              <p>Azure Landing Zone</p>
+              <h2>vWAN Hub</h2>
+              <p>Connectivity and routing hub for VNets, branches, users and private links, combining the managed vWAN model with dynamic routing where applicable.</p>
+            </div>
+            <div class="detail-state detail-azure-firewall">
+              <p>Azure Landing Zone</p>
+              <h2>Azure Firewall</h2>
+              <p>Centralized traffic control with reusable policies across VNets and environments.</p>
+            </div>
+            <div class="detail-state detail-azure-routes">
+              <p>Azure Landing Zone</p>
+              <h2>Route Tables</h2>
+              <p>Route tables defined to separate domains, steer traffic to inspection and control egress.</p>
+            </div>
+            <div class="detail-state detail-gcp-router">
+              <p>Google Cloud Landing Zone</p>
+              <h2>Cloud Router</h2>
+              <p>Dynamic routing exchange for hybrid connectivity, Cloud Interconnect and governed communication across domains.</p>
+            </div>
+            <div class="detail-state detail-gcp-firewall">
+              <p>Google Cloud Landing Zone</p>
+              <h2>Cloud Firewall</h2>
+              <p>Network security policies applied consistently across VPCs and projects, aligned with Organization Policies.</p>
+            </div>
+            <div class="detail-state detail-gcp-routes">
+              <p>Google Cloud Landing Zone</p>
+              <h2>Route Tables</h2>
+              <p>Governance of routing paths for traffic between VPCs, private services and controlled egress.</p>
+            </div>
+            <div class="detail-state detail-oci-crossconnect">
+              <p>Cross-cloud</p>
+              <h2>Oracle Cloud cross-connect</h2>
+              <p>Private connectivity between Azure and OCI to integrate data platforms and managed services without exposing traffic to the public Internet. The pattern keeps native Landing Zones in place while enabling governed cross-cloud flows when the architecture requires them.</p>
+            </div>
+            <div class="detail-state detail-edge-hub">
+              <p>Interconnection</p>
+              <h2>Edge to Hub: Internet / CNI</h2>
+              <p>Connectivity path from the global front door to the neutral hub, using Internet or cloud/network interconnect options depending on service criticality, latency, security and cost.</p>
+            </div>
+            <div class="detail-state detail-hub-clouds">
+              <p>Interconnection</p>
+              <h2>Hub to Clouds</h2>
+              <p>Private, governed connectivity from the neutral hub into cloud Landing Zones through cross-connects, Direct Connect, Interconnect or FastConnect, with routing, resilience and segmentation control.</p>
+            </div>
+            <div class="detail-state detail-onprem-private-connectivity">
+              <p>On-Premises</p>
+              <h2>Private connectivity</h2>
+              <p>Corporate data center integration through dedicated links, fabrics or private circuits to avoid unnecessary Internet exposure and keep control of latency, availability and security.</p>
+            </div>
+            <div class="detail-state detail-onprem-bgp-routing">
+              <p>On-Premises</p>
+              <h2>Dynamic BGP / routing</h2>
+              <p>Dynamic route exchange between data centers, interconnection hubs and clouds, with path preference, filtering and convergence policies to operate changes and failover in a controlled way.</p>
+            </div>
+            <div class="detail-state detail-onprem-active-active">
+              <p>On-Premises</p>
+              <h2>Active-active design</h2>
+              <p>Redundant connectivity and simultaneously active paths to distribute traffic, reduce recovery time and avoid dependency on a single link, site or path.</p>
+            </div>
+            <div class="detail-state detail-onprem-hybrid-dns">
+              <p>On-Premises</p>
+              <h2>Hybrid DNS</h2>
+              <p>Consistent resolution across data centers and clouds, integrating private zones, forwarding and resolution policies to support distributed flows without relying on public exposure.</p>
+            </div>
+            <div class="detail-state detail-observability">
+              <p>Cross-cutting operations</p>
+              <h2>Network observability</h2>
+              <p>Flow logs, metrics, alerts, dashboards, BGP peering status, inbound/outbound utilization and application-level visibility to operate with end-to-end context.</p>
+            </div>
+            <div class="detail-state detail-automation">
+              <p>Cross-cutting operations</p>
+              <h2>Automation and IaC</h2>
+              <p>Terraform, GitOps, automated validations and auditable changes so Landing Zone evolution is reproducible.</p>
+            </div>
+            <div class="detail-state detail-governance">
+              <p>Cross-cutting operations</p>
+              <h2>Governance and standards</h2>
+              <p>Network policies, naming, tagging, pattern catalog, RACI, KPIs, cost control and alignment with CCoE and DORA.</p>
+            </div>
+            <div class="detail-state detail-ipam">
+              <p>Cross-cutting operations</p>
+              <h2>Centralized IPAM</h2>
+              <p>IP planning, overlap prevention, global visibility and reservation management.</p>
+            </div>
+            <div class="detail-state detail-finops">
+              <p>Cross-cutting operations</p>
+              <h2>End-to-end network optimization (FinOps)</h2>
+              <p>Distributed egress model per cloud, egress control, routing path optimization, cost analysis and capacity forecasting.</p>
+            </div>
+            <div class="detail-state detail-plan">
+              <p>Kyndryl model</p>
+              <h2>Plan</h2>
+              <p>Current-state assessment, business requirements, criticality, target design, connectivity, security and routing decisions, evolution roadmap and definition of reusable patterns.</p>
+            </div>
+            <div class="detail-state detail-build">
+              <p>Kyndryl model</p>
+              <h2>Build</h2>
+              <p>Platform build through infrastructure as code, native service deployment, technical validations, controlled migration and activation of governed network patterns.</p>
+            </div>
+            <div class="detail-state detail-run">
+              <p>Kyndryl model</p>
+              <h2>Run</h2>
+              <p>Continuous operations with KPIs, RACI, observability, change management, health checks, performance, capacity, peering status and end-to-end flow visibility.</p>
+            </div>
+            <div class="detail-state detail-connectivity">
+              <p>Benefit</p>
+              <h2>Global connectivity</h2>
+              <p>Single Anycast entry and neutral hub to connect clouds, data centers, sites and third parties through flexible, governed access options.</p>
+            </div>
+            <div class="detail-state detail-performance">
+              <p>Benefit</p>
+              <h2>Optimal performance</h2>
+              <p>Acceleration, CDN, latency-based routing and low latency between on-premises, edge and cloud to move data and workloads with a better experience.</p>
+            </div>
+            <div class="detail-state detail-availability">
+              <p>Benefit</p>
+              <h2>High availability</h2>
+              <p>Active-active architectures, redundant hubs, automatic failover and resilience levels adjusted to service criticality.</p>
+            </div>
+            <div class="detail-state detail-privacy">
+              <p>Benefit</p>
+              <h2>Privacy by design</h2>
+              <p>Dedicated private connectivity between on-premises, clouds and critical services, prioritizing PrivateLink, Private Endpoint and Private Service Connect.</p>
+            </div>
+            <div class="detail-state detail-consistency">
+              <p>Benefit</p>
+              <h2>Operational consistency</h2>
+              <p>Reusable patterns, composable modules and repeatable standards: standard spoke, regulated spoke, internet-facing spoke, shared services and third-party connectivity.</p>
+            </div>
+            <div class="detail-state detail-benefit-automation">
+              <p>Benefit</p>
+              <h2>Automation</h2>
+              <p>Network as Code, validations and traceable changes to reduce operational risk.</p>
+            </div>
+            <div class="detail-state detail-visibility">
+              <p>Benefit</p>
+              <h2>End-to-end visibility</h2>
+              <p>Complete observability of the network, its performance and associated costs.</p>
+            </div>
+            <div class="detail-state detail-scalability">
+              <p>Benefit</p>
+              <h2>Global scalability</h2>
+              <p>Modular pay-as-you-grow model, ready for new clouds, regions, sites, projects and services without rebuilding the whole network.</p>
+            </div>
+            <div class="detail-state detail-principle-cloud-centric">
+              <p>Design principle</p>
+              <h2>Cloud-centric and asset-light</h2>
+              <p>The network is designed from the application, cloud services and their consumption patterns, reducing dependency on dedicated hardware and prioritizing native capabilities when they improve support, evolution and operations.</p>
+            </div>
+            <div class="detail-state detail-principle-transport-overlay">
+              <p>Design principle</p>
+              <h2>Separate transport and overlay</h2>
+              <p>Physical connectivity, fabrics and carriers are decoupled from the logical overlay for routing, segmentation and security. This allows transport changes without redesigning the network architecture consumed by applications.</p>
+            </div>
+            <div class="detail-state detail-principle-modularity">
+              <p>Design principle</p>
+              <h2>Modular scalability</h2>
+              <p>Capabilities are published as composable patterns that can grow by domain, cloud, region or criticality. The goal is to evolve without rebuilding the platform or creating exceptions that are hard to operate.</p>
+            </div>
+            <div class="detail-state detail-principle-neutrality">
+              <p>Design principle</p>
+              <h2>Technology neutrality</h2>
+              <p>The design avoids unnecessary coupling to a specific carrier, vendor or cloud. Consistency comes from common patterns, while each provider keeps its native capabilities.</p>
+            </div>
+            <div class="detail-state detail-principle-visibility">
+              <p>Design principle</p>
+              <h2>End-to-end visibility</h2>
+              <p>Operations need telemetry for health, performance, capacity, costs and flows to make decisions with context. Observability should cover edge, hubs, clouds, private connectivity and shared services.</p>
+            </div>
+            <div class="detail-state detail-principle-zero-trust">
+              <p>Design principle</p>
+              <h2>Control and Zero Trust</h2>
+              <p>Access is governed by identity, context, posture and segmentation, with minimum exposure and private connectivity by default where applicable. Policies should follow the service even when it moves across clouds or domains.</p>
+            </div>
+            <div class="detail-state detail-principle-resilience">
+              <p>Design principle</p>
+              <h2>Resilience by Criticality</h2>
+              <p>Local redundancy, geographic redundancy and physical diversity are sized according to real business impact. Not every service needs the same resilience level, but every service should have an explicit, traceable decision.</p>
+            </div>
+            <div class="detail-state detail-principle-network-code">
+              <p>Design principle</p>
+              <h2>Network as Code</h2>
+              <p>Network changes are modeled as code with Terraform, GitOps, validations and traceable review. This makes Landing Zone evolution reproducible, reduces operational risk and supports auditability.</p>
+            </div>
+          </article>
+        </aside>
+
+      <section class="benefits-section focus-target" data-layer="benefits" aria-label="Key benefits">
+        <article class="benefits-card">
+            <h2>Key benefits</h2>
+            <label class="benefit" for="info-connectivity">
+              <svg><use href="#icon-globe" /></svg>
+              <span>
+                <strong>Global Connectivity</strong>
+                <small>Anycast, neutral hub and multi-cloud.</small>
+              </span>
+            </label>
+            <label class="benefit" for="info-performance">
+              <svg><use href="#icon-rocket" /></svg>
+              <span>
+                <strong>Optimal Performance</strong>
+                <small>Latency, CDN and acceleration.</small>
+              </span>
+            </label>
+            <label class="benefit" for="info-availability">
+              <svg><use href="#icon-scale" /></svg>
+              <span>
+                <strong>High Availability</strong>
+                <small>Resilience by Criticality.</small>
+              </span>
+            </label>
+            <label class="benefit" for="info-privacy">
+              <svg><use href="#icon-lock" /></svg>
+              <span>
+                <strong>Privacy by Design</strong>
+                <small>Private, controlled traffic.</small>
+              </span>
+            </label>
+            <label class="benefit" for="info-consistency">
+              <svg><use href="#icon-grid" /></svg>
+              <span>
+                <strong>Operational Consistency</strong>
+                <small>Repeatable modules and patterns.</small>
+              </span>
+            </label>
+            <label class="benefit" for="info-benefit-automation">
+              <svg><use href="#icon-gear" /></svg>
+              <span>
+                <strong>Automation</strong>
+                <small>IaC, GitOps and validations.</small>
+              </span>
+            </label>
+            <label class="benefit" for="info-visibility">
+              <svg><use href="#icon-eye" /></svg>
+              <span>
+                <strong>End-to-End Visibility</strong>
+                <small>Health, performance and flows.</small>
+              </span>
+            </label>
+            <label class="benefit" for="info-scalability">
+              <svg><use href="#icon-network" /></svg>
+              <span>
+                <strong>Global Scalability</strong>
+                <small>Modular pay-as-you-grow.</small>
+              </span>
+            </label>
+        </article>
+      </section>
+
+      <section class="principles-section" aria-label="Cloud networking design principles">
+        <div class="principles-heading">
+          <p class="eyebrow">Design principles</p>
+          <h2>A cloud-first, modular and end-to-end operable architecture</h2>
+          <p>
+            The model avoids a proprietary multi-cloud abstraction layer. Each cloud uses its native capabilities, while the platform publishes common patterns to consume networking consistently, with governance and automation.
+          </p>
+        </div>
+        <div class="principles-grid">
+          <label class="principle-card" for="info-principle-cloud-centric">
+            <svg><use href="#icon-cloud" /></svg>
+            <h3>Cloud-centric and asset-light</h3>
+          </label>
+          <label class="principle-card" for="info-principle-transport-overlay">
+            <svg><use href="#icon-route" /></svg>
+            <h3>Separate transport and overlay</h3>
+          </label>
+          <label class="principle-card" for="info-principle-modularity">
+            <svg><use href="#icon-network" /></svg>
+            <h3>Modular scalability</h3>
+          </label>
+          <label class="principle-card" for="info-principle-neutrality">
+            <svg><use href="#icon-link" /></svg>
+            <h3>Technology neutrality</h3>
+          </label>
+          <label class="principle-card" for="info-principle-visibility">
+            <svg><use href="#icon-eye" /></svg>
+            <h3>End-to-end visibility</h3>
+          </label>
+          <label class="principle-card" for="info-principle-zero-trust">
+            <svg><use href="#icon-shield" /></svg>
+            <h3>Control and Zero Trust</h3>
+          </label>
+          <label class="principle-card" for="info-principle-resilience">
+            <svg><use href="#icon-scale" /></svg>
+            <h3>Resilience by Criticality</h3>
+          </label>
+          <label class="principle-card" for="info-principle-network-code">
+            <svg><use href="#icon-gear" /></svg>
+            <h3>Network as Code</h3>
+          </label>
+        </div>
+      </section>
+    </main>
+    </div>
+
+  </body>
+</html>

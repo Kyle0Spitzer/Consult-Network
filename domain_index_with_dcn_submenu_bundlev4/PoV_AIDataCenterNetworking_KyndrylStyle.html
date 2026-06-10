@@ -1,0 +1,555 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AI in Data Center Networking - Point of View</title>
+    <style>
+:root {
+  color-scheme: light;
+  --ink: #07163f;
+  --muted: #52617f;
+  --line: #b8c8f6;
+  --line-strong: #2359ff;
+  --surface: #ffffff;
+  --surface-soft: #f4f7fd;
+  --panel: #f9fbff;
+  --blue: #1147c8;
+  --cyan: #0089d6;
+  --teal: #008c7d;
+  --green: #2f8a46;
+  --amber: #d98b00;
+  --coral: #e15b3c;
+  --violet: #7050d8;
+  --shadow: 0 22px 70px rgba(17, 47, 105, 0.16);
+  --radius: 8px;
+  --gap: clamp(14px, 1.6vw, 22px);
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: auto; overflow-anchor: none; }
+body {
+  margin: 0; min-width: 320px; color: var(--ink);
+  background:
+    linear-gradient(90deg, rgba(17, 71, 200, 0.05) 1px, transparent 1px) 0 0 / 48px 48px,
+    linear-gradient(rgba(17, 71, 200, 0.04) 1px, transparent 1px) 0 0 / 48px 48px,
+    #f7f9fe;
+}
+button,input,textarea,select,label { font: inherit; }
+button { color: inherit; }
+.info-radio,.language-radio { position: fixed; width:1px; height:1px; opacity:0; pointer-events:none; }
+.icon-defs { position:absolute; width:0; height:0; overflow:hidden; }
+.language-view { display:none; }
+#lang-es:checked ~ .language-es, #lang-en:checked ~ .language-en { display:block; }
+.language-switch {
+  display:inline-flex; align-items:center; gap:4px; min-width:max-content; padding:4px;
+  border:1px solid rgba(35,89,255,.2); border-radius:8px; background:#fff;
+}
+.lang-option {
+  display:grid; min-width:44px; min-height:32px; place-items:center; border-radius:6px;
+  color:var(--muted); font-size:.78rem; font-weight:900; cursor:pointer;
+  transition: background 180ms ease, color 180ms ease, box-shadow 180ms ease;
+}
+.lang-option:hover,.lang-option:focus-visible { color:var(--blue); background:#eef4ff; outline:0; }
+#lang-es:checked ~ .language-view [for="lang-es"], #lang-en:checked ~ .language-view [for="lang-en"] {
+  color:#fff; background:var(--blue); box-shadow:0 8px 18px rgba(35,89,255,.22);
+}
+.topbar {
+  position:sticky; top:0; z-index:10; display:flex; align-items:flex-start; justify-content:space-between;
+  gap:24px; padding:18px clamp(18px,3vw,42px); border-bottom:1px solid rgba(35,89,255,.16);
+  background:rgba(249,251,255,.92); backdrop-filter:blur(18px);
+}
+.header-copy { min-width:0; }
+.brand-row { display:flex; align-items:center; gap:14px; margin-bottom:10px; }
+.kyndryl-logo { display:inline-flex; align-items:center; width:142px; min-width:142px; height:45px; }
+.kyndryl-logo svg { display:block; width:100%; height:auto; }
+.practice-tag {
+  display:inline-grid; min-height:34px; align-items:center; padding:0 12px; border:1px solid rgba(255,70,45,.24);
+  border-radius:8px; background:#fff6f3; color:#07163f; font-size:.88rem; font-weight:900;
+}
+.eyebrow { margin:0 0 4px; color:var(--cyan); font-size:.76rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; }
+h1,h2,h3,p { margin-top:0; }
+h1 { margin-bottom:5px; color:var(--blue); font-size:3.5rem; line-height:.95; letter-spacing:0; }
+.subtitle { margin-bottom:0; color:var(--muted); font-size:1.12rem; }
+.page-shell {
+  display:grid; grid-template-columns:minmax(0,1fr) minmax(350px,380px); gap:var(--gap); align-items:start;
+  width:min(1840px,100%); margin:0 auto; padding:clamp(18px,2.6vw,38px);
+}
+.kyndryl-model-section,.principles-section {
+  border:1px solid rgba(35,89,255,.2); border-radius:var(--radius);
+  background:linear-gradient(90deg, rgba(17,71,200,.07), transparent 52%), rgba(255,255,255,.9);
+}
+.principles-heading h2 { margin-bottom:10px; color:var(--blue); font-size:2.25rem; line-height:1.04; letter-spacing:0; }
+.principles-heading p:last-child { margin-bottom:0; color:var(--muted); font-size:1rem; line-height:1.56; }
+.map-area {
+  position:relative; grid-column:1; display:grid; grid-template-columns:minmax(0,1fr); min-width:0; gap:clamp(16px,2vw,24px);
+  align-items:start; padding:clamp(18px,2.2vw,30px); border:1px solid rgba(35,89,255,.22); border-radius:var(--radius);
+  background:linear-gradient(135deg, rgba(35,89,255,.1), transparent 38%), linear-gradient(90deg, rgba(0,140,125,.08), transparent 62%), rgba(255,255,255,.9);
+  box-shadow:var(--shadow);
+}
+.architecture-heading {
+  display:grid; grid-template-columns:minmax(240px,.44fr) minmax(0,.56fr); gap:var(--gap); align-items:end; padding-bottom:6px;
+}
+.architecture-heading .eyebrow, .kyndryl-model-heading .eyebrow, .principles-heading .eyebrow { grid-column:1 / -1; margin-bottom:-8px; }
+.architecture-heading h2 { margin-bottom:0; color:var(--blue); font-size:2.1rem; line-height:1.04; letter-spacing:0; }
+.architecture-heading p:last-child,.kyndryl-model-heading p:last-child { margin-bottom:0; color:var(--muted); font-size:1rem; line-height:1.5; }
+.map-grid { display:grid; gap:18px; min-width:0; }
+.flow-panel,.landing-zone,.ops-band,.detail-panel,.benefits-card {
+  border:1px solid rgba(35,89,255,.22); border-radius:var(--radius); background:rgba(255,255,255,.86);
+}
+.detail-panel,.benefits-card,.kyndryl-model-section { box-shadow:var(--shadow); }
+.flow-panel,.landing-zone,.ops-band { position:relative; min-width:0; scroll-margin-top:130px; padding:clamp(16px,1.8vw,24px); }
+.global-panel,.hub-panel,.landing-zone {
+  border-width:2px; background-color:rgba(255,255,255,.94); box-shadow:0 20px 54px rgba(17,47,105,.12);
+}
+.global-panel .step,.hub-panel .step,.landing-zone .step { width:46px; min-width:46px; height:46px; border-color:rgba(35,89,255,.44); box-shadow:0 10px 22px rgba(35,89,255,.14); font-size:.9rem; }
+.global-panel .section-heading h2,.hub-panel .section-heading h2,.landing-zone .section-heading h2 { font-size:1.36rem; }
+.global-panel { border-color:rgba(35,89,255,.44); background:linear-gradient(90deg, rgba(17,71,200,.06), transparent 42%), rgba(255,255,255,.88); }
+.hub-panel { width:min(100%,960px); justify-self:center; border-color:rgba(0,140,125,.45); background:linear-gradient(90deg, rgba(0,140,125,.08), transparent 44%), rgba(255,255,255,.9); }
+.section-heading { display:flex; align-items:flex-start; gap:12px; margin-bottom:16px; }
+.section-heading.compact { margin-bottom:14px; }
+.section-heading h2 { margin-bottom:3px; color:var(--blue); font-size:1.22rem; line-height:1.18; letter-spacing:0; text-transform:uppercase; }
+.section-heading p { margin-bottom:0; color:var(--muted); font-size:.92rem; line-height:1.45; }
+.step { display:inline-grid; width:40px; min-width:40px; height:40px; place-items:center; border:1px solid rgba(35,89,255,.34); border-radius:8px; background:#eff4ff; color:var(--blue); font-size:.82rem; font-weight:900; }
+.global-nodes,.hub-nodes,.ops-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(130px,1fr)); gap:10px; }
+.node,.service-pill,.ops-card,.benefit,.roadmap-row,.principle-card,.feature-list label,.service-rail label,.oci-cross-connect {
+  border:1px solid rgba(35,89,255,.22); border-radius:8px; background:#fff; min-width:0; cursor:pointer;
+  transition:transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
+}
+.node {
+  display:grid; grid-template-rows:42px minmax(34px,auto); justify-items:center; align-items:center; min-height:104px; padding:11px 9px; color:var(--blue); text-align:center;
+}
+.node svg,.service-pill svg,.ops-card svg,.benefit svg,.principles-grid svg,.service-rail svg,.native-strip svg,.cloud-title svg {
+  width:34px; height:34px; fill:none; stroke:currentColor; stroke-linecap:round; stroke-linejoin:round; stroke-width:1.8;
+}
+.node span { display:block; font-size:.78rem; font-weight:850; line-height:1.25; }
+.node:hover,.node:focus-visible,.service-pill:hover,.service-pill:focus-visible,.ops-card:hover,.ops-card:focus-visible,.benefit:hover,.benefit:focus-visible,.roadmap-row:hover,.roadmap-row:focus-visible,.principle-card:hover,.principle-card:focus-visible,.feature-list label:hover,.feature-list label:focus-visible,.service-rail label:hover,.service-rail label:focus-visible,.oci-cross-connect:hover,.oci-cross-connect:focus-visible {
+  transform: translateY(-2px); border-color: var(--line-strong); box-shadow: 0 16px 34px rgba(35,89,255,.13); outline:0;
+}
+.detail-state { display:none; }
+#info-intro:checked ~ .language-view main .detail-intro,
+#info-ai-traffic:checked ~ .language-view main .detail-ai-traffic,
+#info-east-west:checked ~ .language-view main .detail-east-west,
+#info-latency:checked ~ .language-view main .detail-latency,
+#info-bandwidth:checked ~ .language-view main .detail-bandwidth,
+#info-lossless:checked ~ .language-view main .detail-lossless,
+#info-clos:checked ~ .language-view main .detail-clos,
+#info-optics:checked ~ .language-view main .detail-optics,
+#info-cooling:checked ~ .language-view main .detail-cooling,
+#info-predictive:checked ~ .language-view main .detail-predictive,
+#info-automation:checked ~ .language-view main .detail-automation,
+#info-security:checked ~ .language-view main .detail-security,
+#info-slicing:checked ~ .language-view main .detail-slicing,
+#info-disaggregated:checked ~ .language-view main .detail-disaggregated,
+#info-selfopt:checked ~ .language-view main .detail-selfopt,
+#info-plan:checked ~ .language-view main .detail-plan,
+#info-build:checked ~ .language-view main .detail-build,
+#info-run:checked ~ .language-view main .detail-run,
+#info-connectivity:checked ~ .language-view main .detail-connectivity,
+#info-performance:checked ~ .language-view main .detail-performance,
+#info-availability:checked ~ .language-view main .detail-availability,
+#info-sustainability:checked ~ .language-view main .detail-sustainability,
+#info-consistency:checked ~ .language-view main .detail-consistency,
+#info-visibility:checked ~ .language-view main .detail-visibility,
+#info-scalability:checked ~ .language-view main .detail-scalability,
+#info-principle-architectures:checked ~ .language-view main .detail-principle-architectures,
+#info-principle-automation:checked ~ .language-view main .detail-principle-automation,
+#info-principle-sustainability:checked ~ .language-view main .detail-principle-sustainability,
+#info-principle-resilience:checked ~ .language-view main .detail-principle-resilience,
+#info-principle-neutrality:checked ~ .language-view main .detail-principle-neutrality,
+#info-principle-observability:checked ~ .language-view main .detail-principle-observability,
+#info-principle-network-code:checked ~ .language-view main .detail-principle-network-code,
+#info-principle-modularity:checked ~ .language-view main .detail-principle-modularity {
+  display:block;
+}
+#info-ai-traffic:checked ~ .language-view main [for="info-ai-traffic"],
+#info-east-west:checked ~ .language-view main [for="info-east-west"],
+#info-latency:checked ~ .language-view main [for="info-latency"],
+#info-bandwidth:checked ~ .language-view main [for="info-bandwidth"],
+#info-lossless:checked ~ .language-view main [for="info-lossless"],
+#info-clos:checked ~ .language-view main [for="info-clos"],
+#info-optics:checked ~ .language-view main [for="info-optics"],
+#info-cooling:checked ~ .language-view main [for="info-cooling"],
+#info-predictive:checked ~ .language-view main [for="info-predictive"],
+#info-automation:checked ~ .language-view main [for="info-automation"],
+#info-security:checked ~ .language-view main [for="info-security"],
+#info-slicing:checked ~ .language-view main [for="info-slicing"],
+#info-disaggregated:checked ~ .language-view main [for="info-disaggregated"],
+#info-selfopt:checked ~ .language-view main [for="info-selfopt"],
+#info-plan:checked ~ .language-view main [for="info-plan"],
+#info-build:checked ~ .language-view main [for="info-build"],
+#info-run:checked ~ .language-view main [for="info-run"],
+#info-connectivity:checked ~ .language-view main [for="info-connectivity"],
+#info-performance:checked ~ .language-view main [for="info-performance"],
+#info-availability:checked ~ .language-view main [for="info-availability"],
+#info-sustainability:checked ~ .language-view main [for="info-sustainability"],
+#info-consistency:checked ~ .language-view main [for="info-consistency"],
+#info-visibility:checked ~ .language-view main [for="info-visibility"],
+#info-scalability:checked ~ .language-view main [for="info-scalability"],
+#info-principle-architectures:checked ~ .language-view main [for="info-principle-architectures"],
+#info-principle-automation:checked ~ .language-view main [for="info-principle-automation"],
+#info-principle-sustainability:checked ~ .language-view main [for="info-principle-sustainability"],
+#info-principle-resilience:checked ~ .language-view main [for="info-principle-resilience"],
+#info-principle-neutrality:checked ~ .language-view main [for="info-principle-neutrality"],
+#info-principle-observability:checked ~ .language-view main [for="info-principle-observability"],
+#info-principle-network-code:checked ~ .language-view main [for="info-principle-network-code"],
+#info-principle-modularity:checked ~ .language-view main [for="info-principle-modularity"] {
+  border-color:var(--line-strong); background:#eef4ff; box-shadow:0 16px 34px rgba(35,89,255,.17);
+}
+.accent-node { color: var(--cyan); border-color: rgba(0,137,214,.34); }
+.service-rail { display:grid; grid-template-columns:repeat(auto-fit, minmax(180px,1fr)); gap:8px; margin-top:12px; padding:8px; border:1px solid rgba(35,89,255,.28); border-radius:8px; background:#f7fbff; }
+.service-rail label { display:flex; align-items:center; justify-content:center; gap:8px; min-height:34px; padding:8px 10px; color:var(--blue); font-size:.8rem; font-weight:800; text-align:center; line-height:1.18; }
+.service-rail svg { width:22px; height:22px; }
+.flow-arrow { position:relative; display:grid; min-height:44px; place-items:center; cursor:pointer; }
+.flow-arrow::before { content:""; position:absolute; left:50%; top:0; bottom:0; width:2px; background:var(--line-strong); }
+.flow-arrow::after { content:""; position:absolute; left:calc(50% - 5px); bottom:0; width:10px; height:10px; border-right:2px solid var(--line-strong); border-bottom:2px solid var(--line-strong); transform:rotate(45deg); }
+.flow-arrow span { position:relative; z-index:1; max-width:min(88%,620px); padding:6px 12px; border:1px solid rgba(35,89,255,.22); border-radius:8px; background:#fff; color:var(--blue); font-size:.78rem; font-weight:900; line-height:1.2; text-align:center; }
+.hub-nodes .node { color: var(--teal); min-height: 92px; }
+.landing-zone { border-color: rgba(112,80,216,.36); background: linear-gradient(90deg, rgba(112,80,216,.07), transparent 48%), rgba(255,255,255,.9); }
+.landing-heading { width:min(100%,900px); margin-inline:auto; text-align:left; }
+.zone-layout { display:grid; grid-template-columns:minmax(190px,.72fr) repeat(3, minmax(220px,1fr)); gap:12px; align-items:start; }
+.cloud-card { display:flex; flex-direction:column; gap:12px; min-width:0; min-height:0; padding:14px; border:1px solid rgba(35,89,255,.22); border-radius:8px; background:#fff; }
+.onprem-card { justify-content:center; border-color: rgba(112,80,216,.42); }
+.cloud-title { display:grid; gap:12px; justify-items:center; color:var(--violet); text-align:center; }
+.cloud-title svg { width:64px; height:64px; }
+.cloud-title h3 { margin-bottom:6px; color:var(--ink); font-size:1rem; text-transform:uppercase; }
+.cloud-title p { margin-bottom:0; color:var(--muted); font-size:.84rem; line-height:1.35; }
+.feature-list { display:grid; gap:10px; margin-top:18px; }
+.feature-list span,.feature-list label { display:block; padding:10px; border:1px solid rgba(112,80,216,.22); border-radius:8px; color:var(--violet); background:#f8f6ff; font-size:.82rem; font-weight:800; text-align:center; }
+.aws-card { border-color: rgba(225,91,60,.38); }
+.azure-card { border-color: rgba(17,71,200,.36); }
+.gcp-card { border-color: rgba(0,140,125,.36); }
+.oci-cross-connect { --oci-connector-length: 48px; position: relative; grid-column:3 / 4; display:grid; align-content:center; gap:6px; justify-items:center; min-height:104px; padding:18px 12px 12px; border:1px dashed rgba(225,91,60,.42); border-radius:8px; background:#fffafa; text-align:center; }
+.oci-cross-connect::before { content:""; position:absolute; top:calc(var(--oci-connector-length) * -1); left:50%; width:2px; height:var(--oci-connector-length); background:var(--violet); }
+.oci-cross-connect::after { content:""; position:absolute; top:calc(var(--oci-connector-length) * -1); left:calc(50% - 5px); width:10px; height:10px; border-left:2px solid var(--violet); border-top:2px solid var(--violet); transform: rotate(45deg); }
+.oci-cross-connect strong { color: var(--coral); font-size:.78rem; line-height:1.15; text-transform:uppercase; }
+.cloud-brand { display:flex; align-items:flex-end; justify-content:space-between; gap:12px; min-height:58px; border-bottom:1px solid rgba(35,89,255,.12); padding-bottom:10px; }
+.cloud-brand > span:last-child { color:var(--muted); font-size:.78rem; font-weight:850; text-align:right; text-transform:uppercase; }
+.cloud-logo { display:inline-flex; align-items:center; justify-content:flex-start; width:108px; min-width:86px; height:38px; }
+.cloud-logo svg { display:block; width:100%; max-height:38px; }
+.cloud-logo.azure-logo { width:52px; min-width:52px; }
+.cloud-logo.azure-logo svg { width:38px; height:38px; }
+.cloud-logo.gcp-logo { width:48px; min-width:48px; }
+.cloud-services { display:grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap:8px; }
+.service-pill {
+  display:grid; grid-template-rows:30px minmax(34px,auto); place-items:center; min-height:92px; padding:9px 7px; color:var(--blue); font-size:.72rem; font-weight:850; line-height:1.2; text-align:center;
+}
+.aws-card .service-pill { color: var(--coral); border-color: rgba(225,91,60,.24); }
+.azure-card .service-pill { color: var(--blue); }
+.gcp-card .service-pill { color: var(--teal); border-color: rgba(0,140,125,.24); }
+.service-pill svg { width:28px; height:28px; }
+.spoke-band { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; padding:12px 0; border-top:1px dashed rgba(35,89,255,.2); border-bottom:1px dashed rgba(35,89,255,.2); }
+.spoke-band span { min-height:38px; display:grid; place-items:center; border-radius:8px; background:var(--surface-soft); color:var(--blue); font-size:.75rem; font-weight:900; }
+.native-strip { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:6px; }
+.native-strip span { min-height:66px; display:grid; grid-template-rows:25px minmax(0,auto); gap:6px; place-items:center; padding:8px 6px; border-radius:8px; background:#f8fbff; color:var(--muted); font-size:.68rem; font-weight:800; line-height:1.18; text-align:center; }
+.native-strip svg { width:25px; height:25px; }
+.ops-band { border-color: rgba(0,137,214,.36); background:linear-gradient(90deg, rgba(0,137,214,.07), transparent 42%), rgba(255,255,255,.9); }
+.ops-grid { grid-template-columns: repeat(auto-fit, minmax(170px,1fr)); }
+.ops-card { display:grid; grid-template-columns:38px minmax(0,1fr); align-items:center; gap:9px; min-height:78px; padding:10px; color:var(--blue); text-align:left; }
+.ops-card svg { width:34px; height:34px; }
+.ops-card span { min-width:0; font-size:.78rem; font-weight:900; line-height:1.2; }
+.kyndryl-model-section { grid-column:1; margin-top:var(--gap); padding:clamp(16px,2vw,24px); background:linear-gradient(90deg, rgba(225,91,60,.07), transparent 46%), rgba(255,255,255,.9); }
+.kyndryl-model-heading { display:grid; grid-template-columns:minmax(220px,.42fr) minmax(0,.58fr); gap:var(--gap); align-items:end; margin-bottom:14px; }
+.kyndryl-model-heading .eyebrow { color: var(--coral); }
+.kyndryl-model-heading h2 { margin-bottom:0; color:var(--blue); font-size:2rem; line-height:1.04; letter-spacing:0; }
+.project-roadmap { display:grid; gap:12px; padding:16px; border:1px solid rgba(225,91,60,.24); border-radius:8px; background:linear-gradient(135deg, rgba(7,22,63,.04), transparent 36%), #fff; }
+.roadmap-scale,.roadmap-row { display:grid; grid-template-columns:minmax(168px,.27fr) minmax(0,1fr) minmax(136px,.2fr); gap:10px; align-items:center; }
+.roadmap-scale { padding:0 10px; color:var(--muted); font-size:.7rem; font-weight:900; line-height:1.2; text-transform:uppercase; }
+.roadmap-milestones { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:8px; text-align:center; }
+.roadmap-row { min-height:90px; padding:10px; }
+.roadmap-stage { display:grid; grid-template-columns:38px minmax(0,1fr); gap:10px; align-items:center; }
+.roadmap-stage svg { width:36px; height:36px; color:var(--coral); fill:none; stroke:currentColor; stroke-linecap:round; stroke-linejoin:round; stroke-width:1.8; }
+.phase-build .roadmap-stage svg { color:var(--blue); }
+.phase-run .roadmap-stage svg { color:var(--teal); }
+.roadmap-stage strong,.roadmap-stage small,.roadmap-deliverable,.roadmap-footer strong,.roadmap-footer small { display:block; min-width:0; }
+.roadmap-stage strong { margin-bottom:4px; color:var(--ink); font-size:1rem; line-height:1.12; text-transform:uppercase; }
+.roadmap-stage small { color:var(--muted); font-size:.76rem; font-weight:800; line-height:1.25; }
+.roadmap-track { position:relative; display:grid; grid-template-columns:repeat(12, minmax(0,1fr)); align-items:center; min-height:58px; padding:8px 10px; overflow:hidden; border:1px solid rgba(35,89,255,.16); border-radius:8px; background:repeating-linear-gradient(90deg, transparent 0, transparent calc(20% - 1px), rgba(35,89,255,.14) calc(20% - 1px), rgba(35,89,255,.14) 20%), #f7fbff; }
+.roadmap-bar { position:relative; z-index:1; display:grid; min-height:34px; place-items:center; padding:7px 12px; border-radius:8px; color:#fff; font-size:.78rem; font-weight:900; line-height:1.16; text-align:center; box-shadow:0 12px 24px rgba(7,22,63,.16); }
+.phase-plan .roadmap-bar { grid-column:1 / 5; background:linear-gradient(90deg, var(--coral), var(--amber)); }
+.phase-build .roadmap-bar { grid-column:4 / 10; background:linear-gradient(90deg, var(--blue), var(--cyan)); }
+.phase-run .roadmap-bar { grid-column:9 / 13; background:linear-gradient(90deg, var(--teal), var(--green)); }
+.roadmap-checkpoint { position:absolute; top:8px; bottom:8px; width:2px; border-radius:999px; background:rgba(7,22,63,.28); }
+.roadmap-checkpoint::after { content:""; position:absolute; top:calc(50% - 6px); left:-5px; width:12px; height:12px; border:2px solid #fff; border-radius:50%; background:currentColor; box-shadow:0 0 0 2px rgba(7,22,63,.12); }
+.phase-plan .roadmap-checkpoint { left:calc(33.333% - 1px); color:var(--amber); }
+.phase-build .roadmap-checkpoint { left:calc(75% - 1px); color:var(--cyan); }
+.phase-run .roadmap-checkpoint { left:calc(91.666% - 1px); color:var(--green); }
+.roadmap-deliverable { min-height:58px; padding:10px 12px; border:1px solid rgba(35,89,255,.16); border-radius:8px; background:#f9fbff; color:var(--ink); font-size:.78rem; font-weight:900; line-height:1.18; text-align:center; }
+.roadmap-footer { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px; }
+.roadmap-footer span { min-height:58px; padding:10px; border:1px solid rgba(225,91,60,.18); border-radius:8px; background:#fff8f6; }
+.roadmap-footer strong { margin-bottom:4px; color:var(--coral); font-size:.72rem; line-height:1.1; text-transform:uppercase; }
+.roadmap-footer small { color:var(--muted); font-size:.74rem; font-weight:800; line-height:1.24; }
+.right-rail { position:sticky; top:132px; z-index:20; grid-column:2; grid-row:1 / span 3; align-self:start; min-width:0; width:100%; }
+.detail-panel { min-height:520px; max-height:calc(100vh - 158px); padding:24px; overflow:auto; background:#07163f; color:#fff; box-shadow:0 28px 86px rgba(7,22,63,.28); }
+.detail-panel p:first-child { margin-bottom:7px; color:#8bd5ff; font-size:.75rem; font-weight:900; letter-spacing:.08em; text-transform:uppercase; }
+.detail-panel h2 { margin-bottom:14px; font-size:1.82rem; line-height:1.05; letter-spacing:0; }
+.detail-panel p:last-child { margin-bottom:0; color:#dce8ff; font-size:1.08rem; line-height:1.58; }
+.benefits-card { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; padding:16px; }
+.benefits-card h2 { grid-column:1 / -1; margin-bottom:12px; color:var(--blue); font-size:1.05rem; letter-spacing:0; text-transform:uppercase; }
+.benefit { display:grid; grid-template-columns:44px minmax(0,1fr); gap:12px; align-items:center; width:100%; min-height:74px; margin-bottom:0; padding:10px; color:var(--blue); text-align:left; }
+.benefits-section { grid-column:1; margin-top:var(--gap); }
+.benefit:nth-of-type(2n) { color:var(--teal); } .benefit:nth-of-type(3n) { color:var(--amber); }
+.benefit svg { width:38px; height:38px; }
+.benefit strong,.benefit small { display:block; }
+.benefit strong { margin-bottom:3px; color:var(--ink); font-size:.9rem; line-height:1.18; }
+.benefit small { color:var(--muted); font-size:.75rem; line-height:1.25; }
+.principles-section { grid-column:1; margin-top:var(--gap); padding:clamp(16px,2vw,24px); }
+.principles-heading { display:grid; grid-template-columns:minmax(240px,.45fr) minmax(0,.55fr); gap:var(--gap); align-items:end; margin-bottom:16px; }
+.principles-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; }
+.principle-card { display:grid; align-content:center; min-height:128px; padding:14px; border:1px solid rgba(35,89,255,.2); border-radius:8px; background:#fff; }
+.principles-grid svg { width:34px; height:34px; margin-bottom:16px; color:var(--blue); }
+.principles-grid .principle-card:nth-child(2n) svg { color:var(--teal); }
+.principles-grid .principle-card:nth-child(3n) svg { color:var(--amber); }
+.principles-grid h3 { margin-bottom:0; color:var(--ink); font-size:.96rem; line-height:1.16; }
+.focus-target { scroll-margin-top:130px; }
+.focus-target.is-highlighted,.focus-target:target { box-shadow:0 0 0 3px rgba(35,89,255,.2), 0 18px 42px rgba(35,89,255,.1); }
+@media (max-width: 1380px) {
+  .topbar { align-items:flex-start; flex-direction:column; }
+  .benefits-card { grid-template-columns:repeat(2,minmax(0,1fr)); gap:9px; }
+  .architecture-heading,.kyndryl-model-heading,.principles-heading { grid-template-columns:1fr; }
+  .principles-grid { grid-template-columns:repeat(3,minmax(0,1fr)); }
+}
+@media (max-width: 1180px) {
+  .page-shell { grid-template-columns:minmax(0,1fr) minmax(300px,330px); }
+  .detail-panel { min-height:460px; max-height:calc(100vh - 144px); padding:18px; }
+  .detail-panel h2 { font-size:1.42rem; margin-bottom:9px; }
+  .detail-panel p:last-child { font-size:.96rem; line-height:1.5; }
+  .global-nodes { grid-template-columns:repeat(3,minmax(0,1fr)); }
+  .service-rail { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .zone-layout { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .oci-cross-connect { --oci-connector-length:18px; grid-column:auto; }
+  .ops-grid,.principles-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
+@media (max-width: 980px) {
+  body { padding-bottom:0; }
+  .page-shell { display:flex; flex-direction:column; }
+  .right-rail { position:static; order:2; z-index:auto; width:100%; max-width:none; margin-top:var(--gap); }
+  .map-area { order:1; } .kyndryl-model-section { order:3; } .benefits-section { order:4; } .principles-section { order:5; }
+  .detail-panel { min-height:0; max-height:none; overflow:visible; }
+}
+@media (max-width: 760px) {
+  body { background:#f7f9fe; }
+  .topbar{ padding:15px; }
+  .brand-row{ flex-wrap:wrap; gap:10px; }
+  .kyndryl-logo{ width:124px; min-width:124px; }
+  .practice-tag{ min-height:30px; font-size:.8rem; }
+  h1 { font-size:2.25rem; }
+  .subtitle { font-size:1rem; }
+  .architecture-heading h2,.kyndryl-model-heading h2,.principles-heading h2 { font-size:1.62rem; }
+  .page-shell{ padding:14px; } .map-area{ padding:14px; }
+  .global-nodes,.hub-nodes,.service-rail,.cloud-services,.native-strip,.ops-grid,.benefits-card,.roadmap-footer,.principles-grid{ grid-template-columns:1fr; }
+  .project-roadmap { padding:12px; }
+  .roadmap-scale { display:none; }
+  .roadmap-row { grid-template-columns:1fr; min-height:0; }
+  .roadmap-track { min-height:54px; }
+  .roadmap-bar { padding:7px 8px; font-size:.72rem; }
+  .roadmap-deliverable { min-height:0; text-align:left; }
+  .zone-layout { grid-template-columns:1fr; }
+  .node { grid-template-columns:42px minmax(0,1fr); grid-template-rows:auto; justify-items:start; min-height:70px; text-align:left; }
+  .service-rail label { justify-content:flex-start; }
+  .cloud-card { min-height:auto; }
+  .cloud-brand { align-items:center; }
+  .cloud-logo { width:102px; min-width:82px; }
+  .cloud-logo.azure-logo { width:52px; min-width:52px; } .cloud-logo.gcp-logo { width:48px; min-width:48px; }
+  .spoke-band { grid-template-columns:1fr; }
+  .ops-card,.benefit { min-height:68px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior:auto !important; transition:none !important; }
+}
+    </style>
+  </head>
+  <body>
+    <input class="language-radio" type="radio" name="language" id="lang-es" />
+    <input class="language-radio" type="radio" name="language" id="lang-en" checked />
+    <svg class="icon-defs" aria-hidden="true" focusable="false">
+      <symbol id="icon-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /><path d="M3.6 9h16.8M3.6 15h16.8M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18" /></symbol>
+      <symbol id="icon-shield" viewBox="0 0 24 24"><path d="M12 3l7 3v5.5c0 4.7-2.8 7.8-7 9.5-4.2-1.7-7-4.8-7-9.5V6l7-3z" /><path d="M8.4 12.2l2.1 2.1 5-5" /></symbol>
+      <symbol id="icon-cloud" viewBox="0 0 24 24"><path d="M7.2 18h9.3a4.4 4.4 0 0 0 .4-8.8 6 6 0 0 0-11.5 1.9A3.6 3.6 0 0 0 7.2 18z" /></symbol>
+      <symbol id="icon-network" viewBox="0 0 24 24"><circle cx="12" cy="5" r="2.5" /><circle cx="5" cy="18" r="2.5" /><circle cx="19" cy="18" r="2.5" /><path d="M10.7 7.1l-4.4 8.7M13.3 7.1l4.4 8.7M7.4 18h9.2" /></symbol>
+      <symbol id="icon-route" viewBox="0 0 24 24"><path d="M5 18c5 0 2-12 7-12h7" /><path d="M15.5 2.8L19 6l-3.5 3.2" /><circle cx="5" cy="18" r="2.5" /></symbol>
+      <symbol id="icon-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3" /><circle cx="17" cy="9" r="2.4" /><path d="M3.8 19c.7-3 2.6-5 5.2-5s4.5 2 5.2 5M14.2 15.2c2.5.2 4.2 1.6 5 3.8" /></symbol>
+      <symbol id="icon-building" viewBox="0 0 24 24"><path d="M5 21V5h8v16M13 9h6v12" /><path d="M8 8h2M8 12h2M8 16h2M16 12h1.5M16 16h1.5M3 21h18" /></symbol>
+      <symbol id="icon-rocket" viewBox="0 0 24 24"><path d="M13 4c3.7.4 6.2 2.9 7 7l-6 6-5-5 4-8z" /><path d="M8.5 12.5L5 13.7l1.2-3.5M11.5 15.5L10.3 19l3.5-1.2M14.5 8.5h.1" /></symbol>
+      <symbol id="icon-link" viewBox="0 0 24 24"><path d="M10 8H8a4 4 0 0 0 0 8h2M14 8h2a4 4 0 0 1 0 8h-2M9 12h6" /></symbol>
+      <symbol id="icon-lock" viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="10" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3M12 14v2.8" /></symbol>
+      <symbol id="icon-eye" viewBox="0 0 24 24"><path d="M3 12s3.2-6 9-6 9 6 9 6-3.2 6-9 6-9-6-9-6z" /><circle cx="12" cy="12" r="2.8" /></symbol>
+      <symbol id="icon-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2" /><path d="M12 2.8v3M12 18.2v3M4.3 5.2l2.1 2.1M17.6 16.7l2.1 2.1M2.8 12h3M18.2 12h3M4.3 18.8l2.1-2.1M17.6 7.3l2.1-2.1" /></symbol>
+      <symbol id="icon-ip" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /><path d="M8.2 16V8M11.2 16V8h3.1a2.5 2.5 0 0 1 0 5h-3.1" /></symbol>
+      <symbol id="icon-scale" viewBox="0 0 24 24"><path d="M12 3v18M5 8h14M7 8l-3 6h6L7 8zM17 8l-3 6h6l-3-6z" /></symbol>
+      <symbol id="icon-leaf" viewBox="0 0 24 24"><path d="M19 5c-6 0-10 4-10 10v4" /><path d="M5 19c6 0 14-2 14-14" /></symbol>
+      <symbol id="icon-cost" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /><path d="M14.7 8.5c-.5-.7-1.3-1.1-2.5-1.1-1.5 0-2.7.8-2.7 2 0 3 5.7 1.6 5.7 5 0 1.3-1.1 2.2-2.8 2.2-1.2 0-2.4-.4-3.1-1.3M12 5.5v13" /></symbol>
+      <symbol id="icon-grid" viewBox="0 0 24 24"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z" /></symbol>
+    </svg>
+
+    <input class="info-radio" type="radio" name="info-panel" id="info-intro" checked />
+    <input class="info-radio" type="radio" name="info-panel" id="info-ai-traffic" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-east-west" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-latency" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-bandwidth" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-lossless" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-clos" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-optics" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-cooling" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-predictive" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-automation" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-security" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-slicing" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-disaggregated" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-selfopt" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-plan" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-build" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-run" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-connectivity" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-performance" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-availability" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-sustainability" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-consistency" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-visibility" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-scalability" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-principle-architectures" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-principle-automation" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-principle-sustainability" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-principle-resilience" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-principle-neutrality" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-principle-observability" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-principle-network-code" />
+    <input class="info-radio" type="radio" name="info-panel" id="info-principle-modularity" />
+
+    <!-- EN -->
+    <div class="language-view language-en" lang="en">
+      <header class="topbar">
+        <div class="header-copy">
+          <div class="brand-row" aria-label="Kyndryl Network and Edge">
+            <span class="kyndryl-logo" aria-label="Kyndryl">
+              <svg viewBox="0 0 125.74 40" role="img" aria-labelledby="kyndryl-title-en" xmlns="http://www.w3.org/2000/svg"><title id="kyndryl-title-en">Kyndryl</title><path d="M120,0V30h-3.518V0ZM48.854,9.537a5.575,5.575,0,0,0-5.9,4.993h-.172V10H39.26V30h3.519V17.544c0-3.368,1.793-4.911,4.8-4.911,3.442,0,4.981,1.706,4.981,5.09V30h3.518V17.264C56.074,12.489,53.374,9.537,48.854,9.537ZM27.323,29.462h-.115L21.1,10H17.454l6.465,20h3.237l-3.3,10H27.37l9.684-30H33.409Zm77.222,0h-.115L98.322,10H94.675l6.465,20h3.237l-3.3,10h3.511l9.684-30h-3.646ZM7.325,20l8.684-10H11.73l-8.1,9.652H3.519V0H0V30H3.519V20.185H6.862L13.624,30H17.7l-7-10Zm79.021-5.468h-.171V10H82.656V30h3.519V17.508c0-3.368,1.91-4.6,5.184-4.6a9.471,9.471,0,0,1,2.181.234v-3.4a5.152,5.152,0,0,0-1.669-.212A5.4,5.4,0,0,0,86.346,14.532ZM74.617,0h3.518V30H74.617V25.47h-.17c-.337,2.791-2.478,4.993-6.536,4.993-4.951,0-8.469-3.928-8.469-10.463S62.959,9.537,67.911,9.537c4.058,0,6.2,2.2,6.536,4.993h.17Zm0,17.358c0-3.368-2.542-4.726-5.695-4.726-3.324,0-5.81,2.068-5.81,7.368s2.486,7.368,5.81,7.368c3.153,0,5.695-1.358,5.695-4.726V17.358Zm46.956,10.529v.237h.639V30h.3V28.125h.639v-.237Zm3.52,0-.525,2.084h-.006l-.5-2.084h-.579L123.422,30h.283l.063-2.084h.006L124.293,30h.528l.551-2.084h.006L125.44,30h.3l-.069-2.112h-.577Z" fill="#ff462d" /></svg>
+            </span>
+            <span class="practice-tag">Network and Edge</span>
+          </div>
+          <h1>AI in Data Center Networking - Point of View</h1>
+          <p class="subtitle">How AI workloads are reshaping data center fabrics, operations and sustainability requirements.</p>
+        </div>
+        <div class="language-switch" aria-label="Language selector"><label class="lang-option" for="lang-es">ES</label><label class="lang-option" for="lang-en">EN</label></div>
+      </header>
+      <main class="page-shell">
+        <section class="map-area" aria-label="Interactive infographic">
+          <div class="architecture-heading">
+            <p class="eyebrow">Reference architecture</p>
+            <h2>AI-ready networking architecture for bandwidth, low latency, resilience and sustainable scaling</h2>
+            <p>The perspective is organized in four layers: AI workload pressure, fabric transformation, operating model modernization and future-ready design principles.</p>
+          </div>
+          <div class="map-grid">
+            <article class="flow-panel global-panel focus-target" data-layer="drivers">
+              <div class="section-heading"><span class="step">01</span><div><h2>AI workload pressure</h2><p>AI introduces a new traffic profile that turns networking into a strategic constraint and differentiator for training and inference platforms.</p></div></div>
+              <div class="global-nodes">
+                <label class="node" for="info-ai-traffic"><svg><use href="#icon-globe" /></svg><span>AI traffic growth</span></label>
+                <label class="node" for="info-east-west"><svg><use href="#icon-network" /></svg><span>East-west patterns</span></label>
+                <label class="node" for="info-latency"><svg><use href="#icon-route" /></svg><span>Ultra-low latency</span></label>
+                <label class="node" for="info-bandwidth"><svg><use href="#icon-rocket" /></svg><span>800G–1.6T bandwidth</span></label>
+                <label class="node accent-node" for="info-lossless"><svg><use href="#icon-link" /></svg><span>Lossless transport</span></label>
+                <label class="node accent-node" for="info-availability"><svg><use href="#icon-scale" /></svg><span>Training continuity</span></label>
+              </div>
+              <div class="service-rail"><label for="info-clos"><svg><use href="#icon-grid" /></svg>Clos fabrics</label><label for="info-optics"><svg><use href="#icon-cloud" /></svg>800G optics</label><label for="info-cooling"><svg><use href="#icon-cost" /></svg>Liquid cooling</label><label for="info-sustainability"><svg><use href="#icon-leaf" /></svg>Sustainability focus</label></div>
+            </article>
+            <label class="flow-arrow" for="info-clos"><span>From traffic pressure to fabric redesign</span></label>
+            <article class="flow-panel hub-panel focus-target" data-layer="fabric">
+              <div class="section-heading compact"><span class="step">02</span><div><h2>Fabric transformation</h2><p>Modern AI fabrics move toward non-blocking topologies, advanced optics and tighter control of congestion, power and latency at large scale.</p></div></div>
+              <div class="hub-nodes">
+                <label class="node" for="info-clos"><svg><use href="#icon-network" /></svg><span>Clos topology</span></label>
+                <label class="node" for="info-optics"><svg><use href="#icon-globe" /></svg><span>Pluggable optics</span></label>
+                <label class="node" for="info-cooling"><svg><use href="#icon-shield" /></svg><span>Power & cooling</span></label>
+                <label class="node" for="info-scalability"><svg><use href="#icon-link" /></svg><span>Multi-facility scale</span></label>
+              </div>
+            </article>
+            <label class="flow-arrow" for="info-predictive"><span>From fabric redesign to smarter operations</span></label>
+            <section class="landing-zone focus-target" data-layer="operations">
+              <div class="section-heading landing-heading"><span class="step">03</span><div><h2>AI-enabled operations</h2><p>AI does not only stress the network. It also helps run it better through predictive maintenance, automation, anomaly detection and adaptive controls.</p></div></div>
+              <div class="zone-layout">
+                <article class="onprem-card cloud-card"><div class="cloud-title"><svg><use href="#icon-eye" /></svg><div><h3>Telemetry</h3><p>Streaming infrastructure data used to anticipate issues before they cause disruption</p></div></div><div class="feature-list"><label for="info-predictive">Predictive maintenance</label><label for="info-visibility">End-to-end telemetry</label><label for="info-security">Behavioral security</label><label for="info-automation">AI-assisted decisions</label></div></article>
+                <article class="cloud-card aws-card"><div class="cloud-brand"><span class="cloud-logo aws-logo"><svg viewBox="0 0 304.9 179.8" xmlns="http://www.w3.org/2000/svg"><path d="m86.4 66.4c0 3.7.4 6.7 1.1 8.9.8 2.2 1.8 4.6 3.2 7.2.5.8.7 1.6.7 2.3 0 1-.6 2-1.9 3l-6.3 4.2c-.9.6-1.8.9-2.6.9-1 0-2-.5-3-1.4-1.4-1.5-2.6-3.1-3.6-4.7-1-1.7-2-3.6-3.1-5.9-7.8 9.2-17.6 13.8-29.4 13.8-8.4 0-15.1-2.4-20-7.2s-7.4-11.2-7.4-19.2c0-8.5 3-15.4 9.1-20.6s14.2-7.8 24.5-7.8c3.4 0 6.9.3 10.6.8s7.5 1.3 11.5 2.2v-7.3c0-7.6-1.6-12.9-4.7-16-3.2-3.1-8.6-4.6-16.3-4.6-3.5 0-7.1.4-10.8 1.3s-7.3 2-10.8 3.4c-1.6.7-2.8 1.1-3.5 1.3s-1.2.3-1.6.3c-1.4 0-2.1-1-2.1-3.1v-4.9c0-1.6.2-2.8.7-3.5s1.4-1.4 2.8-2.1c3.5-1.8 7.7-3.3 12.6-4.5 4.9-1.3 10.1-1.9 15.6-1.9 11.9 0 20.6 2.7 26.2 8.1 5.5 5.4 8.3 13.6 8.3 24.6v32.4z" fill="#252f3e"/></svg></span><span>Operational shift</span></div><div class="cloud-services"><label class="service-pill" for="info-predictive"><svg><use href="#icon-eye" /></svg>Predictive maintenance</label><label class="service-pill" for="info-automation"><svg><use href="#icon-gear" /></svg>Traffic engineering</label><label class="service-pill" for="info-security"><svg><use href="#icon-shield" /></svg>Threat detection</label></div><div class="spoke-band"><span>Forecast</span><span>Detect</span><span>Act</span></div><div class="native-strip"><span><svg><use href="#icon-eye" /></svg>Telemetry</span><span><svg><use href="#icon-gear" /></svg>Automation</span><span><svg><use href="#icon-lock" /></svg>Security</span><span><svg><use href="#icon-route" /></svg>Optimization</span></div></article>
+                <article class="cloud-card azure-card"><div class="cloud-brand"><span class="cloud-logo azure-logo"><svg viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg"><path fill="#0078d4" d="M71.175 60.261h-41.29a1.911 1.911 0 0 0-1.305 3.309l26.532 24.764a4.171 4.171 0 0 0 2.846 1.121h23.38z"/><path fill="#114a8b" d="M33.338 6.544h26.038l-27.03 80.087a4.152 4.152 0 0 1-3.933 2.824H8.149a4.145 4.145 0 0 1-3.928-5.47L29.404 9.368a4.152 4.152 0 0 1 3.934-2.825z"/></svg></span><span>Best practices</span></div><div class="cloud-services"><label class="service-pill" for="info-slicing"><svg><use href="#icon-cloud" /></svg>Network slicing</label><label class="service-pill" for="info-automation"><svg><use href="#icon-shield" /></svg>Adaptive routing</label><label class="service-pill" for="info-sustainability"><svg><use href="#icon-grid" /></svg>Energy controls</label></div><div class="spoke-band"><span>Train</span><span>Infer</span><span>Shared services</span></div><div class="native-strip"><span><svg><use href="#icon-network" /></svg>Policy</span><span><svg><use href="#icon-globe" /></svg>Routing</span><span><svg><use href="#icon-lock" /></svg>Segmentation</span><span><svg><use href="#icon-route" /></svg>QoS</span></div></article>
+                <article class="cloud-card gcp-card"><div class="cloud-brand"><span class="cloud-logo gcp-logo"><svg viewBox="0 0 32 28" xmlns="http://www.w3.org/2000/svg"><path fill="#ea4335" d="M21.85,7.41l1,0,2.85-2.85.14-1.21A12.81,12.81,0,0,0,5,9.6a1.55,1.55,0,0,1,1-.06l5.7-.94s.29-.48.44-.45a7.11,7.11,0,0,1,9.73-.74Z"/><path fill="#4285f4" d="M29.76,9.6a12.84,12.84,0,0,0-3.87-6.24l-4,4A7.11,7.11,0,0,1,24.5,13v.71a3.56,3.56,0,1,1,0,7.12H17.38l-.71.72v4.27l.71.71H24.5A9.26,9.26,0,0,0,29.76,9.6Z"/><path fill="#34a853" d="M10.25,26.49h7.12v-5.7H10.25a3.54,3.54,0,0,1-1.47-.32l-1,.31L4.91,23.63l-.25,1A9.21,9.21,0,0,0,10.25,26.49Z"/><path fill="#fbbc05" d="M10.25,8A9.26,9.26,0,0,0,4.66,24.6l4.13-4.13a3.56,3.56,0,1,1,4.71-4.71l4.13-4.13A9.25,9.25,0,0,0,10.25,8Z"/></svg></span><span>Future direction</span></div><div class="cloud-services"><label class="service-pill" for="info-disaggregated"><svg><use href="#icon-route" /></svg>Disaggregated design</label><label class="service-pill" for="info-selfopt"><svg><use href="#icon-shield" /></svg>Self-optimizing</label><label class="service-pill" for="info-scalability"><svg><use href="#icon-grid" /></svg>In-network compute</label></div><div class="spoke-band"><span>Switches</span><span>NICs / DPUs</span><span>Accelerators</span></div><div class="native-strip"><span><svg><use href="#icon-network" /></svg>Programmable</span><span><svg><use href="#icon-globe" /></svg>Distributed</span><span><svg><use href="#icon-lock" /></svg>Efficient</span><span><svg><use href="#icon-route" /></svg>Scalable</span></div></article>
+                <label class="oci-cross-connect" for="info-selfopt"><strong>Self-optimizing networks</strong></label>
+              </div>
+            </section>
+            <article class="ops-band focus-target" data-layer="ops"><div class="section-heading compact"><span class="step">04</span><div><h2>Cross-cutting capabilities</h2><p>The operating model relies on observability, automation, resilience engineering, energy awareness and a pragmatic roadmap from design to operations.</p></div></div><div class="ops-grid"><label class="ops-card" for="info-visibility"><svg><use href="#icon-eye" /></svg><span>Observability</span></label><label class="ops-card" for="info-automation"><svg><use href="#icon-gear" /></svg><span>Automation</span></label><label class="ops-card" for="info-security"><svg><use href="#icon-shield" /></svg><span>Security analytics</span></label><label class="ops-card" for="info-sustainability"><svg><use href="#icon-cost" /></svg><span>Energy optimization</span></label><label class="ops-card" for="info-consistency"><svg><use href="#icon-ip" /></svg><span>Operational consistency</span></label></div></article>
+          </div>
+        </section>
+        <section class="kyndryl-model-section focus-target" aria-label="Kyndryl model"><div class="kyndryl-model-heading"><p class="eyebrow">Kyndryl model</p><h2>Plan, Build and Run</h2><p>Framework to move from point of view into execution: assess readiness, implement scalable patterns and operate AI-ready networks with measurable outcomes.</p></div><div class="project-roadmap"><div class="roadmap-scale" aria-hidden="true"><span>Phase</span><span class="roadmap-milestones"><span>Start</span><span>Assess</span><span>Design</span><span>Pilot</span><span>Operate</span></span><span>Outcome</span></div><label class="roadmap-row phase-plan" for="info-plan"><span class="roadmap-stage"><svg><use href="#icon-route" /></svg><span><strong>Plan</strong><small>Assess AI readiness and risks</small></span></span><span class="roadmap-track"><span class="roadmap-bar">Traffic patterns, power, fabric and ops baseline</span><span class="roadmap-checkpoint" aria-hidden="true"></span></span><span class="roadmap-deliverable">Roadmap + target architecture</span></label><label class="roadmap-row phase-build" for="info-build"><span class="roadmap-stage"><svg><use href="#icon-gear" /></svg><span><strong>Build</strong><small>Deploy patterns and controls</small></span></span><span class="roadmap-track"><span class="roadmap-bar">Fabric, optics, automation and validation</span><span class="roadmap-checkpoint" aria-hidden="true"></span></span><span class="roadmap-deliverable">Production-ready AI network foundation</span></label><label class="roadmap-row phase-run" for="info-run"><span class="roadmap-stage"><svg><use href="#icon-eye" /></svg><span><strong>Run</strong><small>Operate, optimize and improve</small></span></span><span class="roadmap-track"><span class="roadmap-bar">Telemetry-driven operations and continuous tuning</span><span class="roadmap-checkpoint" aria-hidden="true"></span></span><span class="roadmap-deliverable">KPIs + optimization backlog</span></label><div class="roadmap-footer"><span><strong>M0</strong><small>Current-state baseline</small></span><span><strong>M1</strong><small>Target design</small></span><span><strong>M2</strong><small>Validated pilot</small></span><span><strong>M3</strong><small>Operationalized platform</small></span></div></div></section>
+        <aside class="right-rail" aria-label="Selected detail"><article class="detail-panel" aria-live="polite">
+          <div class="detail-state detail-intro"><p>Explore the architecture</p><h2>Click the tiles to learn more</h2><p>Select any driver, fabric capability, operational practice, benefit or design principle to see its role in AI-ready data center networking.</p></div>
+          <div class="detail-state detail-ai-traffic"><p>Workload pressure</p><h2>AI traffic growth</h2><p>AI workloads could account for nearly 30% of all data center traffic, exposing critical limitations in traditional data center networking architectures, driving a structural redesign of network architectures and operational priorities.</p></div>
+          <div class="detail-state detail-east-west"><p>Workload pressure</p><h2>East-west traffic</h2><p>Unlike traditional north-south cloud patterns, AI training creates sustained, high-volume communication between clustered compute nodes, making internal fabric efficiency critical.</p></div>
+          <div class="detail-state detail-latency"><p>Fabric requirement</p><h2>Ultra-low latency</h2><p>Distributed training depends on tightly synchronized exchanges, so latency and jitter become core design parameters rather than secondary tuning variables.</p></div>
+          <div class="detail-state detail-bandwidth"><p>Fabric requirement</p><h2>800G–1.6T bandwidth</h2><p>Modern AI clusters demand extreme throughput between nodes. Higher port speeds, denser optics and non-blocking designs are becoming table-stakes.</p></div>
+          <div class="detail-state detail-lossless"><p>Fabric requirement</p><h2>Lossless transport behavior</h2><p>AI job interruption is expensive. Congestion control, packet-loss minimization and deterministic transport behavior have direct business and operational implications.</p></div>
+          <div class="detail-state detail-clos"><p>Fabric transformation</p><h2>Clos topology</h2><p>Clos fabrics are increasingly favored because they scale east-west traffic better than legacy three-tier designs and help deliver more predictable performance across large clusters.</p></div>
+          <div class="detail-state detail-optics"><p>Fabric transformation</p><h2>Pluggable optics</h2><p>800G and coherent pluggables improve density, upgrade flexibility and power efficiency—important attributes as AI fabrics expand in bandwidth and port count.</p></div>
+          <div class="detail-state detail-cooling"><p>Sustainability</p><h2>Power and cooling</h2><p>AI networking growth is inseparable from energy growth. Liquid cooling, efficient optics and consolidation strategies are increasingly central to viable scale-out models.</p></div>
+          <div class="detail-state detail-predictive"><p>Operations</p><h2>Predictive maintenance</h2><p>AI can analyze telemetry such as thermal drift, packet loss patterns and interface degradation to identify early signs of failure and reduce unplanned disruption.</p></div>
+          <div class="detail-state detail-automation"><p>Operations</p><h2>Automation and traffic engineering</h2><p>AI-supported route optimization, automated policy changes and guided decision-making improve responsiveness in dynamic environments with irregular traffic patterns.</p></div>
+          <div class="detail-state detail-security"><p>Operations</p><h2>Security analytics</h2><p>Behavioral detection can accelerate identification of anomalies, encrypted traffic threats and attack patterns beyond what static, rule-based controls can catch alone.</p></div>
+          <div class="detail-state detail-slicing"><p>Best practice</p><h2>Network slicing</h2><p>Slicing allows separate treatment of training, inference and shared services, aligning traffic paths and policy controls with workload-specific latency and throughput needs.</p></div>
+          <div class="detail-state detail-disaggregated"><p>Future direction</p><h2>Disaggregated architectures</h2><p>Separating switches, NICs, accelerators and programmable elements helps organizations evolve faster as AI hardware lifecycles accelerate.</p></div>
+          <div class="detail-state detail-selfopt"><p>Future direction</p><h2>Self-optimizing networks</h2><p>The longer-term vision is a network that anticipates demand, tunes itself continuously and balances performance, resilience and energy consumption with less manual intervention.</p></div>
+          <div class="detail-state detail-plan"><p>Kyndryl model</p><h2>Plan</h2><p>Assess current-state network readiness for AI traffic, benchmark constraints around latency, optics, power and tooling, and define a target architecture with business priorities.</p></div>
+          <div class="detail-state detail-build"><p>Kyndryl model</p><h2>Build</h2><p>Deploy the fabric patterns, operational automations and observability capabilities needed to support AI workloads with controlled risk and validated outcomes.</p></div>
+          <div class="detail-state detail-run"><p>Kyndryl model</p><h2>Run</h2><p>Operate the environment with KPI-based reviews, performance tuning, capacity management and continuous optimization informed by telemetry and policy feedback.</p></div>
+          <div class="detail-state detail-connectivity"><p>Benefit</p><h2>AI-ready connectivity</h2><p>Higher-performance fabrics improve the ability to move data efficiently between clustered compute, storage and services without creating avoidable bottlenecks.</p></div>
+          <div class="detail-state detail-performance"><p>Benefit</p><h2>Performance at scale</h2><p>Optimized topologies, bandwidth and traffic engineering help shorten training times, stabilize inference performance and improve infrastructure utilization.</p></div>
+          <div class="detail-state detail-availability"><p>Benefit</p><h2>Training continuity</h2><p>Predictive operations, self-healing behaviors and resilient fabrics reduce the probability that long-running distributed jobs fail because of network instability.</p></div>
+          <div class="detail-state detail-sustainability"><p>Benefit</p><h2>Sustainability and efficiency</h2><p>Energy-aware design becomes a competitive factor. AI-ready operations need performance and density without uncontrolled growth in power and cooling costs.</p></div>
+          <div class="detail-state detail-consistency"><p>Benefit</p><h2>Operational consistency</h2><p>Reusable patterns for fabrics, policy, observability and automation reduce complexity and make multi-site evolution more manageable.</p></div>
+          <div class="detail-state detail-visibility"><p>Benefit</p><h2>End-to-end visibility</h2><p>Telemetry across links, optics, thermals, workloads and security events gives teams the context needed to make timely decisions and prove value.</p></div>
+          <div class="detail-state detail-scalability"><p>Benefit</p><h2>Scalable architecture</h2><p>Designs that anticipate larger clusters, higher speeds and multi-facility distribution allow organizations to grow without rebuilding the network from scratch.</p></div>
+          <div class="detail-state detail-principle-architectures"><p>Design principle</p><h2>Architect for east-west workloads first</h2><p>AI-ready design starts from workload communication patterns, not from legacy topology assumptions. The network should be optimized around GPU-cluster behavior.</p></div>
+          <div class="detail-state detail-principle-automation"><p>Design principle</p><h2>Automate where reactions are too slow</h2><p>Traffic volatility, scale and failure sensitivity make manual-only operational models insufficient. Automation should be embedded by design.</p></div>
+          <div class="detail-state detail-principle-sustainability"><p>Design principle</p><h2>Design for energy efficiency</h2><p>Performance targets should always be assessed together with power, cooling and physical density implications.</p></div>
+          <div class="detail-state detail-principle-resilience"><p>Design principle</p><h2>Resilience by workload criticality</h2><p>Not every service needs the same redundancy model, but AI-critical pipelines need explicit, traceable resilience decisions aligned to business impact.</p></div>
+          <div class="detail-state detail-principle-neutrality"><p>Design principle</p><h2>Technology-neutral choices</h2><p>The target should avoid unnecessary lock-in while still taking advantage of strong native capabilities from vendors and silicon ecosystems.</p></div>
+          <div class="detail-state detail-principle-observability"><p>Design principle</p><h2>Observability as a control surface</h2><p>Telemetry is not only for monitoring. It is the basis for prediction, automation, optimization and governance of AI-ready infrastructure.</p></div>
+          <div class="detail-state detail-principle-network-code"><p>Design principle</p><h2>Network as Code</h2><p>Infrastructure as code, validation pipelines and traceable review make large-scale network changes safer, repeatable and more auditable.</p></div>
+          <div class="detail-state detail-principle-modularity"><p>Design principle</p><h2>Modular scalability</h2><p>Building composable patterns for fabrics, optics, operations and security helps teams scale by adding capabilities rather than redesigning the whole estate.</p></div>
+        </article></aside>
+        <section class="benefits-section focus-target"><article class="benefits-card"><h2>Key benefits</h2><label class="benefit" for="info-connectivity"><svg><use href="#icon-globe" /></svg><span><strong>AI-ready connectivity</strong><small>Fabrics aligned to AI traffic.</small></span></label><label class="benefit" for="info-performance"><svg><use href="#icon-rocket" /></svg><span><strong>Performance at Scale</strong><small>Lower bottlenecks, better throughput.</small></span></label><label class="benefit" for="info-availability"><svg><use href="#icon-scale" /></svg><span><strong>Higher Continuity</strong><small>More resilient training environments.</small></span></label><label class="benefit" for="info-sustainability"><svg><use href="#icon-lock" /></svg><span><strong>Sustainable Growth</strong><small>Power-aware scaling.</small></span></label><label class="benefit" for="info-consistency"><svg><use href="#icon-grid" /></svg><span><strong>Operational Consistency</strong><small>Repeatable patterns and controls.</small></span></label><label class="benefit" for="info-automation"><svg><use href="#icon-gear" /></svg><span><strong>Automation</strong><small>Faster response and tuning.</small></span></label><label class="benefit" for="info-visibility"><svg><use href="#icon-eye" /></svg><span><strong>End-to-End Visibility</strong><small>Telemetry across fabric and workloads.</small></span></label><label class="benefit" for="info-scalability"><svg><use href="#icon-network" /></svg><span><strong>Future Scalability</strong><small>Ready for larger AI clusters.</small></span></label></article></section>
+        <section class="principles-section"><div class="principles-heading"><p class="eyebrow">Design principles</p><h2>A workload-aware, modular and operationally intelligent network architecture</h2><p>The model combines AI-driven operations with fabric modernization and sustainability-aware design, using reusable patterns rather than one-off bespoke choices.</p></div><div class="principles-grid"><label class="principle-card" for="info-principle-architectures"><svg><use href="#icon-cloud" /></svg><h3>Architect for east-west AI</h3></label><label class="principle-card" for="info-principle-automation"><svg><use href="#icon-route" /></svg><h3>Automation by design</h3></label><label class="principle-card" for="info-principle-modularity"><svg><use href="#icon-network" /></svg><h3>Modular scalability</h3></label><label class="principle-card" for="info-principle-neutrality"><svg><use href="#icon-link" /></svg><h3>Technology neutrality</h3></label><label class="principle-card" for="info-principle-observability"><svg><use href="#icon-eye" /></svg><h3>Observability first</h3></label><label class="principle-card" for="info-principle-sustainability"><svg><use href="#icon-shield" /></svg><h3>Energy-aware design</h3></label><label class="principle-card" for="info-principle-resilience"><svg><use href="#icon-scale" /></svg><h3>Resilience by criticality</h3></label><label class="principle-card" for="info-principle-network-code"><svg><use href="#icon-gear" /></svg><h3>Network as Code</h3></label></div></section>
+      </main>
+    </div>
+
+    <!-- ES -->
+    <div class="language-view language-es" lang="es">
+      <header class="topbar">
+        <div class="header-copy">
+          <div class="brand-row" aria-label="Kyndryl Network and Edge">
+            <span class="kyndryl-logo" aria-label="Kyndryl">
+              <svg viewBox="0 0 125.74 40" role="img" aria-labelledby="kyndryl-title-es" xmlns="http://www.w3.org/2000/svg"><title id="kyndryl-title-es">Kyndryl</title><path d="M120,0V30h-3.518V0ZM48.854,9.537a5.575,5.575,0,0,0-5.9,4.993h-.172V10H39.26V30h3.519V17.544c0-3.368,1.793-4.911,4.8-4.911,3.442,0,4.981,1.706,4.981,5.09V30h3.518V17.264C56.074,12.489,53.374,9.537,48.854,9.537ZM27.323,29.462h-.115L21.1,10H17.454l6.465,20h3.237l-3.3,10H27.37l9.684-30H33.409Zm77.222,0h-.115L98.322,10H94.675l6.465,20h3.237l-3.3,10h3.511l9.684-30h-3.646ZM7.325,20l8.684-10H11.73l-8.1,9.652H3.519V0H0V30H3.519V20.185H6.862L13.624,30H17.7l-7-10Zm79.021-5.468h-.171V10H82.656V30h3.519V17.508c0-3.368,1.91-4.6,5.184-4.6a9.471,9.471,0,0,1,2.181.234v-3.4a5.152,5.152,0,0,0-1.669-.212A5.4,5.4,0,0,0,86.346,14.532ZM74.617,0h3.518V30H74.617V25.47h-.17c-.337,2.791-2.478,4.993-6.536,4.993-4.951,0-8.469-3.928-8.469-10.463S62.959,9.537,67.911,9.537c4.058,0,6.2,2.2,6.536,4.993h.17Zm0,17.358c0-3.368-2.542-4.726-5.695-4.726-3.324,0-5.81,2.068-5.81,7.368s2.486,7.368,5.81,7.368c3.153,0,5.695-1.358,5.695-4.726V17.358Zm46.956,10.529v.237h.639V30h.3V28.125h.639v-.237Zm3.52,0-.525,2.084h-.006l-.5-2.084h-.579L123.422,30h.283l.063-2.084h.006L124.293,30h.528l.551-2.084h.006L125.44,30h.3l-.069-2.112h-.577Z" fill="#ff462d" /></svg>
+            </span>
+            <span class="practice-tag">Network and Edge</span>
+          </div>
+          <h1>IA en Data Center Networking - Point of View</h1>
+          <p class="subtitle">Cómo las cargas de IA están transformando las fabrics, la operación y los requisitos de sostenibilidad del CPD.</p>
+        </div>
+        <div class="language-switch" aria-label="Selector de idioma"><label class="lang-option" for="lang-es">ES</label><label class="lang-option" for="lang-en">EN</label></div>
+      </header>
+      <main class="page-shell">
+        <section class="map-area" aria-label="Infografía interactiva">
+          <div class="architecture-heading"><p class="eyebrow">Arquitectura de referencia</p><h2>Arquitectura de red preparada para IA con ancho de banda, baja latencia, resiliencia y escalado sostenible</h2><p>La visión se organiza en cuatro capas: presión de las cargas de IA, transformación de la fabric, modernización del modelo operativo y principios de diseño orientados al futuro.</p></div>
+          <div class="map-grid">
+            <article class="flow-panel global-panel focus-target"><div class="section-heading"><span class="step">01</span><div><h2>Presión de las cargas de IA</h2><p>La IA introduce un nuevo perfil de tráfico que convierte la red en una restricción estratégica y en un elemento diferenciador para plataformas de training e inference.</p></div></div><div class="global-nodes"><label class="node" for="info-ai-traffic"><svg><use href="#icon-globe" /></svg><span>Crecimiento del tráfico IA</span></label><label class="node" for="info-east-west"><svg><use href="#icon-network" /></svg><span>Patrones este-oeste</span></label><label class="node" for="info-latency"><svg><use href="#icon-route" /></svg><span>Ultra-baja latencia</span></label><label class="node" for="info-bandwidth"><svg><use href="#icon-rocket" /></svg><span>800G–1.6T de ancho de banda</span></label><label class="node accent-node" for="info-lossless"><svg><use href="#icon-link" /></svg><span>Transporte sin pérdidas</span></label><label class="node accent-node" for="info-availability"><svg><use href="#icon-scale" /></svg><span>Continuidad del training</span></label></div><div class="service-rail"><label for="info-clos"><svg><use href="#icon-grid" /></svg>Clos fabrics</label><label for="info-optics"><svg><use href="#icon-cloud" /></svg>Óptica 800G</label><label for="info-cooling"><svg><use href="#icon-cost" /></svg>Refrigeración líquida</label><label for="info-sustainability"><svg><use href="#icon-eye" /></svg>Foco en sostenibilidad</label></div></article>
+            <label class="flow-arrow" for="info-clos"><span>De la presión del tráfico al rediseño de la fabric</span></label>
+            <article class="flow-panel hub-panel focus-target"><div class="section-heading compact"><span class="step">02</span><div><h2>Transformación de la fabric</h2><p>Las fabrics para IA evolucionan hacia topologías no bloqueantes, óptica avanzada y un control más estricto de la congestión, la energía y la latencia a gran escala.</p></div></div><div class="hub-nodes"><label class="node" for="info-clos"><svg><use href="#icon-network" /></svg><span>Topología Clos</span></label><label class="node" for="info-optics"><svg><use href="#icon-globe" /></svg><span>Óptica enchufable</span></label><label class="node" for="info-cooling"><svg><use href="#icon-shield" /></svg><span>Energía y cooling</span></label><label class="node" for="info-scalability"><svg><use href="#icon-link" /></svg><span>Escalado multi-site</span></label></div></article>
+            <label class="flow-arrow" for="info-predictive"><span>Del rediseño de la fabric a una operación más inteligente</span></label>
+            <section class="landing-zone focus-target"><div class="section-heading landing-heading"><span class="step">03</span><div><h2>Operación habilitada por IA</h2><p>La IA no solo tensiona la red. También ayuda a operarla mejor mediante mantenimiento predictivo, automatización, detección de anomalías y controles adaptativos.</p></div></div><div class="zone-layout"><article class="onprem-card cloud-card"><div class="cloud-title"><svg><use href="#icon-eye" /></svg><div><h3>Telemetría</h3><p>Datos continuos de infraestructura para anticipar incidencias antes de que generen impacto</p></div></div><div class="feature-list"><label for="info-predictive">Mantenimiento predictivo</label><label for="info-visibility">Telemetría end-to-end</label><label for="info-security">Seguridad basada en comportamiento</label><label for="info-automation">Decisión asistida por IA</label></div></article><article class="cloud-card aws-card"><div class="cloud-brand"><span class="cloud-logo aws-logo"><svg viewBox="0 0 304.9 179.8" xmlns="http://www.w3.org/2000/svg"><path d="m86.4 66.4c0 3.7.4 6.7 1.1 8.9.8 2.2 1.8 4.6 3.2 7.2.5.8.7 1.6.7 2.3 0 1-.6 2-1.9 3l-6.3 4.2c-.9.6-1.8.9-2.6.9-1 0-2-.5-3-1.4-1.4-1.5-2.6-3.1-3.6-4.7-1-1.7-2-3.6-3.1-5.9-7.8 9.2-17.6 13.8-29.4 13.8-8.4 0-15.1-2.4-20-7.2s-7.4-11.2-7.4-19.2c0-8.5 3-15.4 9.1-20.6s14.2-7.8 24.5-7.8c3.4 0 6.9.3 10.6.8s7.5 1.3 11.5 2.2v-7.3c0-7.6-1.6-12.9-4.7-16-3.2-3.1-8.6-4.6-16.3-4.6-3.5 0-7.1.4-10.8 1.3s-7.3 2-10.8 3.4c-1.6.7-2.8 1.1-3.5 1.3s-1.2.3-1.6.3c-1.4 0-2.1-1-2.1-3.1v-4.9c0-1.6.2-2.8.7-3.5s1.4-1.4 2.8-2.1c3.5-1.8 7.7-3.3 12.6-4.5 4.9-1.3 10.1-1.9 15.6-1.9 11.9 0 20.6 2.7 26.2 8.1 5.5 5.4 8.3 13.6 8.3 24.6v32.4z" fill="#252f3e"/></svg></span><span>Cambio operativo</span></div><div class="cloud-services"><label class="service-pill" for="info-predictive"><svg><use href="#icon-eye" /></svg>Mantenimiento predictivo</label><label class="service-pill" for="info-automation"><svg><use href="#icon-gear" /></svg>Traffic engineering</label><label class="service-pill" for="info-security"><svg><use href="#icon-shield" /></svg>Detección de amenazas</label></div><div class="spoke-band"><span>Predecir</span><span>Detectar</span><span>Actuar</span></div><div class="native-strip"><span><svg><use href="#icon-eye" /></svg>Telemetría</span><span><svg><use href="#icon-gear" /></svg>Automatización</span><span><svg><use href="#icon-lock" /></svg>Seguridad</span><span><svg><use href="#icon-route" /></svg>Optimización</span></div></article><article class="cloud-card azure-card"><div class="cloud-brand"><span class="cloud-logo azure-logo"><svg viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg"><path fill="#0078d4" d="M71.175 60.261h-41.29a1.911 1.911 0 0 0-1.305 3.309l26.532 24.764a4.171 4.171 0 0 0 2.846 1.121h23.38z"/><path fill="#114a8b" d="M33.338 6.544h26.038l-27.03 80.087a4.152 4.152 0 0 1-3.933 2.824H8.149a4.145 4.145 0 0 1-3.928-5.47L29.404 9.368a4.152 4.152 0 0 1 3.934-2.825z"/></svg></span><span>Buenas prácticas</span></div><div class="cloud-services"><label class="service-pill" for="info-slicing"><svg><use href="#icon-cloud" /></svg>Network slicing</label><label class="service-pill" for="info-automation"><svg><use href="#icon-shield" /></svg>Routing adaptativo</label><label class="service-pill" for="info-sustainability"><svg><use href="#icon-grid" /></svg>Control energético</label></div><div class="spoke-band"><span>Training</span><span>Inference</span><span>Servicios compartidos</span></div><div class="native-strip"><span><svg><use href="#icon-network" /></svg>Política</span><span><svg><use href="#icon-globe" /></svg>Routing</span><span><svg><use href="#icon-lock" /></svg>Segmentación</span><span><svg><use href="#icon-route" /></svg>QoS</span></div></article><article class="cloud-card gcp-card"><div class="cloud-brand"><span class="cloud-logo gcp-logo"><svg viewBox="0 0 32 28" xmlns="http://www.w3.org/2000/svg"><path fill="#ea4335" d="M21.85,7.41l1,0,2.85-2.85.14-1.21A12.81,12.81,0,0,0,5,9.6a1.55,1.55,0,0,1,1-.06l5.7-.94s.29-.48.44-.45a7.11,7.11,0,0,1,9.73-.74Z"/><path fill="#4285f4" d="M29.76,9.6a12.84,12.84,0,0,0-3.87-6.24l-4,4A7.11,7.11,0,0,1,24.5,13v.71a3.56,3.56,0,1,1,0,7.12H17.38l-.71.72v4.27l.71.71H24.5A9.26,9.26,0,0,0,29.76,9.6Z"/><path fill="#34a853" d="M10.25,26.49h7.12v-5.7H10.25a3.54,3.54,0,0,1-1.47-.32l-1,.31L4.91,23.63l-.25,1A9.21,9.21,0,0,0,10.25,26.49Z"/><path fill="#fbbc05" d="M10.25,8A9.26,9.26,0,0,0,4.66,24.6l4.13-4.13a3.56,3.56,0,1,1,4.71-4.71l4.13-4.13A9.25,9.25,0,0,0,10.25,8Z"/></svg></span><span>Dirección futura</span></div><div class="cloud-services"><label class="service-pill" for="info-disaggregated"><svg><use href="#icon-route" /></svg>Arquitectura desagregada</label><label class="service-pill" for="info-selfopt"><svg><use href="#icon-shield" /></svg>Self-optimizing</label><label class="service-pill" for="info-scalability"><svg><use href="#icon-grid" /></svg>In-network compute</label></div><div class="spoke-band"><span>Switches</span><span>NICs / DPUs</span><span>Aceleradores</span></div><div class="native-strip"><span><svg><use href="#icon-network" /></svg>Programable</span><span><svg><use href="#icon-globe" /></svg>Distribuido</span><span><svg><use href="#icon-lock" /></svg>Eficiente</span><span><svg><use href="#icon-route" /></svg>Escalable</span></div></article><label class="oci-cross-connect" for="info-selfopt"><strong>Redes self-optimizing</strong></label></div></section>
+            <article class="ops-band focus-target"><div class="section-heading compact"><span class="step">04</span><div><h2>Capacidades transversales</h2><p>El modelo operativo se apoya en observabilidad, automatización, ingeniería de resiliencia, eficiencia energética y una hoja de ruta pragmática desde el diseño hasta la operación.</p></div></div><div class="ops-grid"><label class="ops-card" for="info-visibility"><svg><use href="#icon-eye" /></svg><span>Observabilidad</span></label><label class="ops-card" for="info-automation"><svg><use href="#icon-gear" /></svg><span>Automatización</span></label><label class="ops-card" for="info-security"><svg><use href="#icon-shield" /></svg><span>Analítica de seguridad</span></label><label class="ops-card" for="info-sustainability"><svg><use href="#icon-cost" /></svg><span>Optimización energética</span></label><label class="ops-card" for="info-consistency"><svg><use href="#icon-ip" /></svg><span>Consistencia operativa</span></label></div></article>
+          </div>
+        </section>
+        <section class="kyndryl-model-section focus-target"><div class="kyndryl-model-heading"><p class="eyebrow">Kyndryl model</p><h2>Plan, Build y Run</h2><p>Framework para pasar del PoV a la ejecución: evaluar el grado de preparación, implantar patrones escalables y operar redes preparadas para IA con resultados medibles.</p></div><div class="project-roadmap"><div class="roadmap-scale" aria-hidden="true"><span>Fase</span><span class="roadmap-milestones"><span>Inicio</span><span>Assess</span><span>Diseño</span><span>Piloto</span><span>Operación</span></span><span>Resultado</span></div><label class="roadmap-row phase-plan" for="info-plan"><span class="roadmap-stage"><svg><use href="#icon-route" /></svg><span><strong>Plan</strong><small>Evaluar preparación y riesgos IA</small></span></span><span class="roadmap-track"><span class="roadmap-bar">Baseline de tráfico, energía, fabric y operación</span><span class="roadmap-checkpoint" aria-hidden="true"></span></span><span class="roadmap-deliverable">Roadmap + arquitectura objetivo</span></label><label class="roadmap-row phase-build" for="info-build"><span class="roadmap-stage"><svg><use href="#icon-gear" /></svg><span><strong>Build</strong><small>Desplegar patrones y controles</small></span></span><span class="roadmap-track"><span class="roadmap-bar">Fabric, óptica, automatización y validación</span><span class="roadmap-checkpoint" aria-hidden="true"></span></span><span class="roadmap-deliverable">Base de red IA productiva</span></label><label class="roadmap-row phase-run" for="info-run"><span class="roadmap-stage"><svg><use href="#icon-eye" /></svg><span><strong>Run</strong><small>Operar, optimizar y mejorar</small></span></span><span class="roadmap-track"><span class="roadmap-bar">Operación guiada por telemetría y tuning continuo</span><span class="roadmap-checkpoint" aria-hidden="true"></span></span><span class="roadmap-deliverable">KPIs + backlog de optimización</span></label><div class="roadmap-footer"><span><strong>M0</strong><small>Baseline actual</small></span><span><strong>M1</strong><small>Diseño objetivo</small></span><span><strong>M2</strong><small>Piloto validado</small></span><span><strong>M3</strong><small>Plataforma operacionalizada</small></span></div></div></section>
+        <aside class="right-rail"><article class="detail-panel" aria-live="polite"><div class="detail-state detail-intro"><p>Explora la arquitectura</p><h2>Haz clic en las tarjetas para conocer más</h2><p>Selecciona cualquier driver, capacidad de fabric, práctica operativa, beneficio o principio de diseño para ver su papel en las redes de CPD preparadas para IA.</p></div><div class="detail-state detail-ai-traffic"><p>Presión de carga</p><h2>Crecimiento del tráfico IA</h2><p>Las cargas de trabajo de IA podrían representar casi el 30 % de todo el tráfico de los centros de datos, lo que pondría de manifiesto las limitaciones críticas de las arquitecturas de red tradicionales de los centros de datos e impulsaría un rediseño estructural de las arquitecturas de red y las prioridades operativas.</p></div><div class="detail-state detail-east-west"><p>Presión de carga</p><h2>Tráfico este-oeste</h2><p>A diferencia del patrón cloud tradicional norte-sur, el training de IA genera comunicaciones sostenidas y de alto volumen entre nodos de cómputo, por lo que la eficiencia interna de la fabric es crítica.</p></div><div class="detail-state detail-latency"><p>Requisito de fabric</p><h2>Ultra-baja latencia</h2><p>El training distribuido depende de intercambios muy sincronizados, por lo que la latencia y el jitter pasan a ser parámetros de diseño críticos.</p></div><div class="detail-state detail-bandwidth"><p>Requisito de fabric</p><h2>800G–1.6T de ancho de banda</h2><p>Los clústeres modernos de IA demandan un throughput extremo entre nodos. Mayores velocidades de puerto, óptica más densa y diseños no bloqueantes se están convirtiendo en un estándar.</p></div><div class="detail-state detail-lossless"><p>Requisito de fabric</p><h2>Comportamiento sin pérdidas</h2><p>Interrumpir un job de IA es costoso. El control de congestión, la minimización de pérdida de paquetes y un transporte determinista tienen impacto directo en negocio y operación.</p></div><div class="detail-state detail-clos"><p>Transformación de fabric</p><h2>Topología Clos</h2><p>Las fabrics Clos ganan protagonismo porque escalan mejor el tráfico este-oeste que los diseños legacy de tres capas y ayudan a ofrecer un rendimiento más predecible en clústeres grandes.</p></div><div class="detail-state detail-optics"><p>Transformación de fabric</p><h2>Óptica enchufable</h2><p>Los pluggables 800G y coherentes mejoran densidad, flexibilidad de actualización y eficiencia energética, atributos clave a medida que la fabric IA crece en ancho de banda y número de puertos.</p></div><div class="detail-state detail-cooling"><p>Sostenibilidad</p><h2>Energía y cooling</h2><p>El crecimiento de la red para IA es inseparable del crecimiento energético. La refrigeración líquida, la óptica eficiente y las estrategias de consolidación son cada vez más centrales.</p></div><div class="detail-state detail-predictive"><p>Operación</p><h2>Mantenimiento predictivo</h2><p>La IA puede analizar telemetría como deriva térmica, patrones de pérdida de paquetes y degradación de interfaces para identificar señales tempranas de fallo y reducir interrupciones no planificadas.</p></div><div class="detail-state detail-automation"><p>Operación</p><h2>Automatización y traffic engineering</h2><p>La optimización de rutas, los cambios automáticos de política y la toma de decisiones asistida ayudan a responder mejor en entornos dinámicos con patrones de tráfico irregulares.</p></div><div class="detail-state detail-security"><p>Operación</p><h2>Analítica de seguridad</h2><p>La detección basada en comportamiento acelera la identificación de anomalías, amenazas en tráfico cifrado y patrones de ataque más allá de los controles estáticos basados en reglas.</p></div><div class="detail-state detail-slicing"><p>Buena práctica</p><h2>Network slicing</h2><p>El slicing permite tratar de forma diferenciada training, inference y servicios compartidos, alineando los caminos de tráfico y las políticas con las necesidades de latencia y throughput de cada carga.</p></div><div class="detail-state detail-disaggregated"><p>Dirección futura</p><h2>Arquitecturas desagregadas</h2><p>Separar switches, NICs, aceleradores y elementos programables ayuda a evolucionar más rápido a medida que se acorta el ciclo de hardware asociado a IA.</p></div><div class="detail-state detail-selfopt"><p>Dirección futura</p><h2>Redes self-optimizing</h2><p>La visión a largo plazo es una red que anticipa la demanda, se ajusta de forma continua y equilibria rendimiento, resiliencia y consumo energético con menos intervención manual.</p></div><div class="detail-state detail-plan"><p>Kyndryl model</p><h2>Plan</h2><p>Evaluar el grado de preparación de la red para el tráfico IA, medir restricciones de latencia, óptica, energía y tooling, y definir una arquitectura objetivo alineada con las prioridades de negocio.</p></div><div class="detail-state detail-build"><p>Kyndryl model</p><h2>Build</h2><p>Desplegar los patrones de fabric, automatización operativa y observabilidad necesarios para soportar cargas de IA con riesgo controlado y resultados validados.</p></div><div class="detail-state detail-run"><p>Kyndryl model</p><h2>Run</h2><p>Operar el entorno con revisiones basadas en KPIs, tuning de rendimiento, gestión de capacidad y optimización continua informada por telemetría y feedback de políticas.</p></div><div class="detail-state detail-connectivity"><p>Beneficio</p><h2>Conectividad preparada para IA</h2><p>Las fabrics de mayor rendimiento mejoran la capacidad de mover datos de forma eficiente entre compute, storage y servicios sin crear cuellos de botella evitables.</p></div><div class="detail-state detail-performance"><p>Beneficio</p><h2>Rendimiento a escala</h2><p>Topologías optimizadas, ancho de banda y traffic engineering ayudan a reducir tiempos de training, estabilizar el rendimiento de inference y mejorar la utilización de la infraestructura.</p></div><div class="detail-state detail-availability"><p>Beneficio</p><h2>Continuidad del training</h2><p>Las operaciones predictivas, los comportamientos self-healing y las fabrics resilientes reducen la probabilidad de que jobs distribuidos fallen debido a inestabilidad de red.</p></div><div class="detail-state detail-sustainability"><p>Beneficio</p><h2>Sostenibilidad y eficiencia</h2><p>El diseño consciente del consumo energético se convierte en un factor competitivo. Las operaciones IA-ready necesitan rendimiento y densidad sin un crecimiento descontrolado del gasto energético.</p></div><div class="detail-state detail-consistency"><p>Beneficio</p><h2>Consistencia operativa</h2><p>Patrones reutilizables de fabric, política, observabilidad y automatización reducen complejidad y hacen más gobernable la evolución multi-site.</p></div><div class="detail-state detail-visibility"><p>Beneficio</p><h2>Visibilidad end-to-end</h2><p>La telemetría sobre enlaces, ópticas, térmicas, workloads y eventos de seguridad proporciona contexto para tomar decisiones a tiempo y demostrar valor.</p></div><div class="detail-state detail-scalability"><p>Beneficio</p><h2>Arquitectura escalable</h2><p>Los diseños que anticipan clústeres mayores, velocidades más altas y distribución multi-facility permiten crecer sin reconstruir la red desde cero.</p></div><div class="detail-state detail-principle-architectures"><p>Principio de diseño</p><h2>Arquitectura centrada en cargas este-oeste</h2><p>El diseño IA-ready debe partir de los patrones de comunicación de la carga y no de supuestos heredados de topología. La red se optimiza alrededor del comportamiento de los clústeres GPU.</p></div><div class="detail-state detail-principle-automation"><p>Principio de diseño</p><h2>Automatizar donde la reacción humana ya no llega</h2><p>La volatilidad del tráfico, la escala y la sensibilidad al fallo hacen insuficientes los modelos operativos puramente manuales. La automatización debe venir embebida en el diseño.</p></div><div class="detail-state detail-principle-sustainability"><p>Principio de diseño</p><h2>Diseñar para eficiencia energética</h2><p>Los objetivos de rendimiento deben evaluarse siempre junto con sus implicaciones de potencia, cooling y densidad física.</p></div><div class="detail-state detail-principle-resilience"><p>Principio de diseño</p><h2>Resiliencia por criticidad</h2><p>No todos los servicios necesitan el mismo modelo de redundancia, pero los pipelines críticos para IA requieren decisiones explícitas y trazables alineadas con su impacto de negocio.</p></div><div class="detail-state detail-principle-neutrality"><p>Principio de diseño</p><h2>Neutralidad tecnológica</h2><p>El objetivo debe evitar lock-in innecesario sin renunciar a las capacidades nativas más sólidas de cada proveedor o ecosistema de silicio.</p></div><div class="detail-state detail-principle-observability"><p>Principio de diseño</p><h2>Observabilidad como plano de control</h2><p>La telemetría no es solo para monitorizar. Es la base de la predicción, la automatización, la optimización y el gobierno de una infraestructura preparada para IA.</p></div><div class="detail-state detail-principle-network-code"><p>Principio de diseño</p><h2>Network as Code</h2><p>IaC, pipelines de validación y revisión trazable hacen que los cambios a gran escala sean más seguros, repetibles y auditables.</p></div><div class="detail-state detail-principle-modularity"><p>Principio de diseño</p><h2>Escalabilidad modular</h2><p>Construir patrones componibles para fabric, óptica, operación y seguridad ayuda a escalar añadiendo capacidades, no rediseñando todo el estate.</p></div></article></aside>
+        <section class="benefits-section focus-target"><article class="benefits-card"><h2>Beneficios clave</h2><label class="benefit" for="info-connectivity"><svg><use href="#icon-globe" /></svg><span><strong>Conectividad IA-ready</strong><small>Fabrics alineadas al tráfico IA.</small></span></label><label class="benefit" for="info-performance"><svg><use href="#icon-rocket" /></svg><span><strong>Rendimiento a Escala</strong><small>Menos cuellos de botella, más throughput.</small></span></label><label class="benefit" for="info-availability"><svg><use href="#icon-scale" /></svg><span><strong>Mayor Continuidad</strong><small>Entornos de training más resilientes.</small></span></label><label class="benefit" for="info-sustainability"><svg><use href="#icon-lock" /></svg><span><strong>Crecimiento Sostenible</strong><small>Escalado consciente del consumo.</small></span></label><label class="benefit" for="info-consistency"><svg><use href="#icon-grid" /></svg><span><strong>Consistencia Operativa</strong><small>Patrones y controles repetibles.</small></span></label><label class="benefit" for="info-automation"><svg><use href="#icon-gear" /></svg><span><strong>Automatización</strong><small>Respuesta y tuning más rápidos.</small></span></label><label class="benefit" for="info-visibility"><svg><use href="#icon-eye" /></svg><span><strong>Visibilidad End-to-End</strong><small>Telemetría de fabric y workloads.</small></span></label><label class="benefit" for="info-scalability"><svg><use href="#icon-network" /></svg><span><strong>Escalabilidad Futura</strong><small>Preparada para clústeres mayores.</small></span></label></article></section>
+        <section class="principles-section"><div class="principles-heading"><p class="eyebrow">Principios de diseño</p><h2>Una arquitectura consciente de la carga, modular y operable de forma inteligente</h2><p>El modelo combina operación asistida por IA con modernización de la fabric y diseño orientado a sostenibilidad, apoyándose en patrones reutilizables en lugar de decisiones puntuales difíciles de mantener.</p></div><div class="principles-grid"><label class="principle-card" for="info-principle-architectures"><svg><use href="#icon-cloud" /></svg><h3>Arquitectura para IA este-oeste</h3></label><label class="principle-card" for="info-principle-automation"><svg><use href="#icon-route" /></svg><h3>Automatización por diseño</h3></label><label class="principle-card" for="info-principle-modularity"><svg><use href="#icon-network" /></svg><h3>Escalabilidad modular</h3></label><label class="principle-card" for="info-principle-neutrality"><svg><use href="#icon-link" /></svg><h3>Neutralidad tecnológica</h3></label><label class="principle-card" for="info-principle-observability"><svg><use href="#icon-eye" /></svg><h3>Observabilidad first</h3></label><label class="principle-card" for="info-principle-sustainability"><svg><use href="#icon-shield" /></svg><h3>Diseño energy-aware</h3></label><label class="principle-card" for="info-principle-resilience"><svg><use href="#icon-scale" /></svg><h3>Resiliencia por criticidad</h3></label><label class="principle-card" for="info-principle-network-code"><svg><use href="#icon-gear" /></svg><h3>Network as Code</h3></label></div></section>
+      </main>
+    </div>
+  </body>
+</html>
